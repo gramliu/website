@@ -1,0 +1,151 @@
+@font-face {
+    src: url("../fonts/Questrial.ttf");
+    font-family: Questrial;
+}
+
+@font-face {
+    src: url("../fonts/Roboto.ttf");
+    font-family: Roboto;
+}
+
+@keyframes intro {
+    0% {
+        margin-top: 100vh;
+        opacity:0;
+    }
+    60% {
+        margin-top: -5vh;
+    }
+    80% {
+        margin-top: 5vh;
+    }
+    100% {
+        margin-top: 0vh;
+        opacity: 1;
+    }
+}
+
+html, body {
+    height: 100%;
+}
+
+#container {
+    background: url("../images/background.png") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#box {
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.slideUp {
+    animation-name: intro;
+    animation-duration: 0.6s;
+}
+
+#portrait {
+    align-self: flex-start;
+    height: 50vh;
+    box-shadow: -10px 10px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+}
+
+#card {
+    width: 100%;
+    background: white;
+    padding: 2%;
+    font-family: Questrial;
+    min-height: 80%;
+    box-shadow: -10px 10px rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+
+#cardHeader {
+    font-size: 1.5em;
+}
+
+#cardName {
+    color: #e65100;
+}
+
+#cardDesc {
+    margin-top:-1em;
+    font-family: Roboto;
+    color: #616161;
+}
+
+#card hr {
+    border: none;
+    height: 2px;
+    background: #e0e0e0;
+}
+
+.cardIcon {
+    height: 3em;
+}
+
+#cardContent table {
+    width: 60%;
+}
+
+.iconBox {
+    width: 15%;
+}
+
+#cardContent table tr td {
+    padding: 1%;
+}
+
+#cardFooter {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.media {
+    height: 2em;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.menuItem {
+    cursor: pointer;
+}
+
+/* .menuItem:hover .cardMenu {
+    border: solid black 1px;
+    transition: 1s;
+} */
+.cardMenu {
+    width: 30%;
+    position: relative;
+}
+
+.menuItem:hover > .cardMenu:after {
+    width:100%;
+    left: 0;
+}
+
+.cardMenu:after {
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 3px;
+    left: 0;
+    position: absolute;
+    background-image: linear-gradient(to right, #00c853, #009688, #03a9f4);
+    transition: width 0.25s ease 0s, right 0.25s ease 0s;
+    width: 0;
+}
