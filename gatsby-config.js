@@ -1,11 +1,21 @@
 module.exports = {
   siteMetadata: {
-    siteUrl: "https://www.yourdomain.tld",
-    title: "gatsby-site",
+    siteUrl: "https://gramliu.com/",
+    title: "Gram Liu",
   },
   plugins: [
+    {
+      resolve: "gatsby-plugin-material-ui",
+      options: {
+        stylesProvider: {
+          injectFirst: true,
+        },
+      },
+    },
+    "gatsby-plugin-react-helmet",
     "gatsby-plugin-netlify-cms",
-    "gatsby-plugin-sass",
+    "gatsby-plugin-styled-components",
+    "gatsby-plugin-root-import",
     "gatsby-plugin-gatsby-cloud",
     "gatsby-plugin-image",
     "gatsby-plugin-mdx",
@@ -27,5 +37,15 @@ module.exports = {
       },
       __key: "pages",
     },
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: "GramLiu",
+        short_name: "GramLiu",
+        start_url: "/",
+        display: "minimal-ui",
+        icon: "src/images/logo.png",
+      },
+    },
   ],
-};
+}
