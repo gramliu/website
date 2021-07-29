@@ -62,7 +62,13 @@ const Social = () => {
       {social.map((entry) => {
         const { name, image, url } = entry
         return (
-          <a href={url} key={name} className={classes.socialLink} target='_blank'>
+          <a
+            href={url}
+            key={name}
+            className={classes.socialLink}
+            target="_blank"
+            rel="noreferrer"
+          >
             <div className={classes.socialImage}>{image}</div>
           </a>
         )

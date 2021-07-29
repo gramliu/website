@@ -3,6 +3,7 @@ import Loader from "./Loader"
 import { Helmet } from "react-helmet"
 import { makeStyles } from "@material-ui/core"
 import Social from "./Social"
+import Navbar from "./Navbar"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,6 +27,7 @@ const Layout = ({ children }) => {
         <title>Gram Liu</title>
       </Helmet>
       {/* <Loader finishLoading={finishLoading} className={classes.loader} /> */}
+      <Navbar />
       <Social />
       <div id="children" className={classes.container}>
         {children}

@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "2rem",
     color: theme.palette.textColor,
   },
+  introLabel: {
+    color: theme.palette.highlight,
+  },
   nameLabel: {
     color: theme.palette.textAlt,
   },
@@ -73,7 +76,8 @@ const Home = () => {
             />
           </div>
           <div className={classes.dialogText}>
-            Hi! 👋 <br />
+            <span className={classes.introLabel}>Hi! 👋</span>
+            <br />
             <br />
             I'm <span className={classes.nameLabel}>Gram Liu.</span>
             <br />I build things.

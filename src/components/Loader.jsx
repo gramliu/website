@@ -1,7 +1,7 @@
 import anime from "animejs"
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
-import { LoaderIcon } from "src/icons/loader"
+import { LogoIcon } from "src/icons/logo"
 
 const LoaderContainer = styled.div`
   background-color: #263238;
@@ -84,7 +84,7 @@ const Loader = ({ finishLoading }) => {
     <>
       <LoaderContainer className="loader" isMounted={isMounted}>
         <div id="logo-wrapper">
-          <LoaderIcon />
+          <LogoIcon />
         </div>
       </LoaderContainer>
     </>
