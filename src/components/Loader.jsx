@@ -1,7 +1,7 @@
-import anime from "animejs";
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import LoaderIcon from "src/icons/loader";
+import anime from "animejs"
+import React, { useState, useEffect } from "react"
+import styled from "styled-components"
+import { LoaderIcon } from "src/icons/loader"
 
 const LoaderContainer = styled.div`
   background-color: #263238;
@@ -30,19 +30,19 @@ const LoaderContainer = styled.div`
       fill: none;
       user-select: none;
       #circle {
-        opacity: 0
+        opacity: 0;
       }
     }
   }
-`;
+`
 
 const Loader = ({ finishLoading }) => {
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false)
 
   const animate = () => {
     const loader = anime.timeline({
       complete: () => finishLoading(),
-    });
+    })
     loader
       .add({
         targets: "#logo #G",
@@ -71,14 +71,14 @@ const Loader = ({ finishLoading }) => {
         easing: "easeInOutQuart",
         opacity: 0,
         zIndex: -1,
-      });
-  };
+      })
+  }
 
   useEffect(() => {
-    const timeout = setTimeout(() => setIsMounted(true), 10);
-    animate();
-    return () => clearTimeout(timeout);
-  }, []);
+    const timeout = setTimeout(() => setIsMounted(true), 10)
+    animate()
+    return () => clearTimeout(timeout)
+  }, [])
 
   return (
     <>
@@ -88,7 +88,7 @@ const Loader = ({ finishLoading }) => {
         </div>
       </LoaderContainer>
     </>
-  );
-};
+  )
+}
 
-export default Loader;
+export default Loader

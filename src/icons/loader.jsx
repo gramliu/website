@@ -1,6 +1,6 @@
 import React from "react";
 
-const LoaderIcon = () => (
+export const LoaderIcon = () => (
   <svg
     id="logo"
     xmlns="http://www.w3.org/2000/svg"
@@ -33,5 +33,3 @@ const LoaderIcon = () => (
     />
   </svg>
 );
-
-export default LoaderIcon;
