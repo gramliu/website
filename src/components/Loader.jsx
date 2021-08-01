@@ -45,20 +45,20 @@ const Loader = ({ finishLoading }) => {
     })
     loader
       .add({
-        targets: "#logo #G",
+        targets: ".loader .logo-G",
         delay: 300,
         duration: 1500,
         easing: "easeInOutQuart",
         strokeDashoffset: [anime.setDashoffset, 0],
       })
       .add({
-        targets: "#logo #circle",
+        targets: ".loader .logo-circle",
         duration: 700,
         easing: "easeInOutQuart",
         opacity: 1,
       })
       .add({
-        targets: "#logo",
+        targets: ".loader",
         delay: 500,
         duration: 300,
         easing: "easeInOutQuart",

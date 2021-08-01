@@ -1,9 +1,13 @@
 import "@fontsource/comfortaa"
+import "@fontsource/source-code-pro"
+import "src/styles/global.css"
+import * as React from "react"
 import { createTheme } from "@material-ui/core/styles"
 import { ThemeProvider } from "@material-ui/styles"
-import * as React from "react"
-import { Home, Layout } from "src/components"
-import "src/styles/global.css"
+import { Home, Layout, About } from "src/components"
+import { Scrollbars } from "react-custom-scrollbars"
+import { Helmet } from "react-helmet"
+import { Fonts } from "../components/Fonts"
 
 const theme = createTheme({
   palette: {
@@ -17,8 +21,12 @@ const theme = createTheme({
 const IndexPage = () => {
   return (
     <ThemeProvider theme={theme}>
+      <Fonts />
       <Layout>
-        <Home />
+        <Scrollbars>
+          <Home />
+          <About />
+        </Scrollbars>
       </Layout>
     </ThemeProvider>
   )

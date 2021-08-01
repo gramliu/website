@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 auto",
       backgroundColor: theme.palette.textColor,
     },
+    zIndex: 100,
   },
   socialImage: {
     margin: "10px 0 10px 0",

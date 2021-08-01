@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Loader from "./Loader"
 import { Helmet } from "react-helmet"
 import { makeStyles } from "@material-ui/core"
@@ -19,7 +19,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Layout = ({ children }) => {
   const classes = useStyles()
-  const finishLoading = () => {}
+  const [hidden, setHidden] = useState(false)
+
+  const finishLoading = () => {
+    setHidden(false)
+  }
   return (
     <>
       <Helmet>
@@ -27,9 +31,9 @@ const Layout = ({ children }) => {
         <title>Gram Liu</title>
       </Helmet>
       {/* <Loader finishLoading={finishLoading} className={classes.loader} /> */}
-      <Navbar />
-      <Social />
-      <div id="children" className={classes.container}>
+      <div id="children" className={classes.container} hidden={hidden}>
+        <Navbar />
+        <Social />
         {children}
       </div>
     </>
