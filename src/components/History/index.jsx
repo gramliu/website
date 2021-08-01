@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "20rem",
     margin: "0 auto",
     fontFamily: "'Argentum Sans', sans-serif",
-    width: "80%"
   },
   header: {
     fontSize: "2rem",
@@ -28,12 +27,12 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 0.3rem 0 0.3rem",
       textDecoration: "none",
       color: theme.palette.highlight,
-      ...theme.hoverLink
+      transition: "text-decoration 0.25s"
     }
   },
 }))
 
-const About = () => {
+const History = () => {
   const theme = useTheme()
   const classes = useStyles(theme)
   return (
@@ -57,4 +56,4 @@ const About = () => {
   )
 }
 
-export default About
+export default History

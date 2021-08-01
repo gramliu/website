@@ -14,29 +14,3 @@ body {
   background-color: #263238;
   overflow-x: hidden;
 }
-
-.hoverLink {
-  display: inline;
-  position: relative;
-  overflow: hidden;
-}
-
-.hoverLink:after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  right: 0;
-  width: 0;
-  bottom: -2px;
-  background: #5bbc6b;
-  height: 1px;
-  transition-property: width;
-  transition-duration: 0.3s;
-  transition-timing-function: ease-out;
-}
-
-.hoverLink:is(:hover,:focus,:active):after {
-  left: 0;
-  right: auto;
-  width: 100%;
-}

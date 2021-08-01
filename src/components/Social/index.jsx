@@ -1,8 +1,6 @@
-import React from "react"
 import { makeStyles, useTheme } from "@material-ui/core"
-import { GithubIcon } from "../../icons/github"
-import { LinkedInIcon } from "../../icons/linkedin"
-import { MailIcon } from "../../icons/mail"
+import React from "react"
+import { social } from "../../config"
 
 const useStyles = makeStyles((theme) => ({
   socialContainer: {
@@ -35,24 +33,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }))
-
-const social = [
-  {
-    name: "github",
-    image: <GithubIcon />,
-    url: "https://github.com/gramliu",
-  },
-  {
-    name: "linkedin",
-    image: <LinkedInIcon />,
-    url: "https://www.linkedin.com/in/gramliu/",
-  },
-  {
-    name: "mail",
-    image: <MailIcon />,
-    url: "mailto:gramliu@cmu.edu",
-  },
-]
 
 const Social = () => {
   const theme = useTheme()
