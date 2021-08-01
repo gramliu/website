@@ -30,7 +30,7 @@ const Layout = ({ children }) => {
         <meta charSet="utf-8" />
         <title>Gram Liu</title>
       </Helmet>
-      {/* <Loader finishLoading={finishLoading} className={classes.loader} /> */}
+      <Loader finishLoading={finishLoading} className={classes.loader} />
       <div id="children" className={classes.container} hidden={hidden}>
         <Navbar />
         <Social />
