@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Layout = ({ children }) => {
   const classes = useStyles()
-  const [hidden, setHidden] = useState(false)
+  const [hidden, setHidden] = useState(true)
 
   const finishLoading = () => {
     setHidden(false)
