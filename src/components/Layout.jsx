@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import Loader from "./Loader"
 import { Helmet } from "react-helmet"
 import { makeStyles } from "@material-ui/core"
-import Social from "./Social"
 import Navbar from "./Navbar"
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +32,6 @@ const Layout = ({ children }) => {
       <Loader finishLoading={finishLoading} className={classes.loader} />
       <div id="children" className={classes.container} hidden={hidden}>
         <Navbar />
-        <Social />
         {children}
       </div>
     </>
