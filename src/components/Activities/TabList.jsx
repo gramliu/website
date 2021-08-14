@@ -1,11 +1,12 @@
+import { makeStyles, useTheme } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
-import { Button, makeStyles, useTheme } from "@material-ui/core"
+import styled from "styled-components"
 
 const useStyles = makeStyles((theme) => ({
   tabList: {
     display: "flex",
     flexDirection: "column",
-    width: "40%",
+    position: "relative",
   },
   tabButton: {
     padding: "1rem",
@@ -21,6 +22,8 @@ const useStyles = makeStyles((theme) => ({
   selectedTab: {
     color: theme.palette.highlight,
     backgroundColor: theme.palette.backgroundLight,
+    borderLeft: `solid 3px ${theme.palette.highlight}`,
+    transition: "border-left 0.25s",
   },
 }))
 
@@ -43,7 +46,7 @@ const TabButton = ({ title, focusTab, setFocusTab, idx }) => {
   )
 }
 
-export const TabList = ({ activities }) => {
+export const TabList = ({ activities, setActivity }) => {
   const theme = useTheme()
   const classes = useStyles(theme)
   const [focusTab, setFocusTab] = useState(0)
@@ -54,6 +57,7 @@ export const TabList = ({ activities }) => {
         focusTab={focusTab}
         setFocusTab={setFocusTab}
         idx={idx}
+        key={idx}
       />
     )
   })
@@ -64,6 +68,7 @@ export const TabList = ({ activities }) => {
     } else if (focusTab < 0) {
       setFocusTab(0)
     }
+    setActivity(activities[focusTab])
   }, [focusTab])
 
   return <div className={classes.tabList}>{tabButtons}</div>

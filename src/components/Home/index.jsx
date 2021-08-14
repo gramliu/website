@@ -101,7 +101,7 @@ const Home = () => {
           </div>
           <div className={classes.socialButtons}>
             {social.map(({ image, url }) => (
-              <a href={url} target="_blank" rel="noopener noreferrer">
+              <a href={url} target="_blank" rel="noopener noreferrer" key={url}>
                 <div className={classes.socialImage}>{image}</div>
               </a>
             ))}

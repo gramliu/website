@@ -1,7 +1,7 @@
 import { makeStyles, useTheme } from "@material-ui/styles"
 import React from "react"
 import { LogoIcon } from "../../icons/logo"
-import scrollTo from 'gatsby-plugin-smoothscroll';
+import scrollTo from "gatsby-plugin-smoothscroll"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     zIndex: 100,
-    fontFamily: "'Josefin Sans', sans-serif"
+    fontFamily: "'Josefin Sans', sans-serif",
   },
   navLink: {
     color: theme.palette.textColor,
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: theme.palette.highlight,
     },
-    cursor: "pointer"
+    cursor: "pointer",
   },
   navLinkContainer: {
     display: "flex",
@@ -73,13 +73,14 @@ const Navbar = () => {
         </a>
       </div>
       <div className={classes.navLinkContainer}>
-        {links.map((link) => {
+        {links.map((link, idx) => {
           if (link.target) {
             return (
               <a
                 href={link.link}
                 className={classes.navLink}
                 target={link.target}
+                key={idx}
               >
                 {link.label}
               </a>
@@ -89,6 +90,7 @@ const Navbar = () => {
               <div
                 className={classes.navLink}
                 onClick={() => scrollTo(link.link)}
+                key={idx}
               >
                 {link.label}
               </div>

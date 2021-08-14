@@ -29,20 +29,31 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "0.5rem",
     textTransform: "uppercase",
     color: theme.palette.highlight,
-    fontSize: "0.8rem",
+    fontSize: "1rem",
     fontWeight: "bold",
+  },
+  dates: {
+    fontSize: "0.8rem",
+    marginTop: "0.5rem",
+    opacity: 0.8,
   },
   description: {
     marginTop: "0.5rem",
     fontSize: "0.9rem",
   },
+  descriptionItem: {
+    width: "60%",
+    marginBottom: "1rem",
+  },
 }))
 
-export const Activity = ({ title, url, role, description }) => {
+export const Activity = ({ activity }) => {
+  const { title, url, role, dates, description } = activity
   const theme = useTheme()
   const classes = useStyles(theme)
+
   return (
-    <div className={classes.container}>
+    <div className={`${classes.container} activity-container`}>
       <div className={classes.title}>
         {url ? (
           <a
@@ -58,7 +69,16 @@ export const Activity = ({ title, url, role, description }) => {
         )}
       </div>
       <div className={classes.role}>{role}</div>
-      <div className={classes.description}>{description}</div>
+      <div className={classes.dates}>{dates}</div>
+      <div className={classes.description}>
+        <ul className={classes.descriptionList}>
+          {description.map((item, index) => (
+            <li key={index} className={classes.descriptionItem}>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
