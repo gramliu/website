@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.9rem",
   },
   descriptionItem: {
-    width: "60%",
+    width: "50%",
     marginBottom: "1rem",
   },
 }))

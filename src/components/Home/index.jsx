@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   portrait: {
     height: "20vh",
     borderRadius: "50%",
-    border: `solid ${theme.palette.textColor} 1px`,
+    border: `solid ${theme.palette.textColor} 2px`,
   },
   dialogText: {
     marginLeft: "5rem",
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     border: `solid ${theme.palette.textColor} 2px`,
     borderRadius: "50%",
     padding: "1rem",
-    transition: "border 0.25s, transform 0.25s",
+    transition: "border 0.25s, transform 0.25s, background 0.25s",
     "& svg": {
       width: "35px",
       height: "35px",

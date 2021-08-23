@@ -3,8 +3,9 @@ import { createTheme } from "@material-ui/core"
 export const theme = createTheme({
   palette: {
     background: "#263238",
-    textColor: "#e7ecef",
+    textColor: "#d0d5d9",
     textAlt: "#f05d5e",
+    textFaded: "#a3b6c2",
     highlight: "#73ee87",
     highlightDarker: "#5bbc6b",
     backgroundLight: "#314149",
@@ -18,7 +19,7 @@ export const theme = createTheme({
     "&:after": {
       content: "''",
       position: "absolute",
-      zIndex: -1,
+      zIndex: 1,
       right: 0,
       width: 0,
       bottom: "-2px",

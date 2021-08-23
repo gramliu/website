@@ -47,11 +47,11 @@ const useStyles = makeStyles((theme) => ({
 const links = [
   {
     label: "About",
-    link: "about",
+    link: "#about",
   },
   {
     label: "Portfolio",
-    link: "portfolio",
+    link: "#portfolio",
   },
   {
     label: "Cooking",
@@ -73,14 +73,14 @@ const Navbar = () => {
         </a>
       </div>
       <div className={classes.navLinkContainer}>
-        {links.map((link, idx) => {
+        {links.map((link) => {
           if (link.target) {
             return (
               <a
                 href={link.link}
                 className={classes.navLink}
                 target={link.target}
-                key={idx}
+                key={link}
               >
                 {link.label}
               </a>
@@ -89,8 +89,10 @@ const Navbar = () => {
             return (
               <div
                 className={classes.navLink}
-                onClick={() => scrollTo(link.link)}
-                key={idx}
+                onClick={() => {
+                  scrollTo(link.link)
+                }}
+                key={link}
               >
                 {link.label}
               </div>

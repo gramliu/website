@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useRef } from "react"
 import { makeStyles, useTheme } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "20rem",
     margin: "0 auto",
     fontFamily: "'Argentum Sans', sans-serif",
-    width: "80%"
+    width: "80%",
   },
   header: {
     fontSize: "2rem",
@@ -28,14 +28,15 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 0.3rem 0 0.3rem",
       textDecoration: "none",
       color: theme.palette.highlight,
-      ...theme.hoverLink
-    }
+      ...theme.hoverLink,
+    },
   },
 }))
 
 const About = () => {
   const theme = useTheme()
   const classes = useStyles(theme)
+
   return (
     <>
       <div className={classes.container} id="about">
@@ -46,11 +47,20 @@ const About = () => {
           <a href="https://www.cmu.edu/" target="_blank" className="hoverLink">
             Carnegie Mellon University
           </a>
-          pursuing a major in Electrical and Computer Engineering with a minor
-          in Computer Science. My programming adventures go back to 2012, when I
-          decided that I wanted to make mods for Minecraft and well, there's a
-          lot you can learn from modifying a game written in Java.
-          <br/>
+          pursuing a major in Electrical and Computer Engineering. I am a big
+          fan of technology and the role it plays in revolutionizing various
+          aspects of our society.
+          <br />
+          <br />
+          Outside of tech, I also really enjoy cooking! I try to do the food
+          justice by honing the art of food photography over on
+          <a
+            href="https://www.instagram.com/gram_eats/"
+            target="_blank"
+            className="hoverLink"
+          >
+            Instagram.
+          </a>
         </div>
       </div>
     </>

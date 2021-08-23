@@ -1,4 +1,3 @@
-import { createTheme } from "@material-ui/core/styles"
 import { ThemeProvider } from "@material-ui/styles"
 import * as React from "react"
 import { Scrollbars } from "react-custom-scrollbars"
@@ -8,6 +7,7 @@ import Activities from "../components/Activities"
 import { Fonts } from "../components/Fonts"
 import Home from "../components/Home"
 import Layout from "../components/Layout"
+import Portfolio from "../components/Portfolio"
 import { theme } from "../styles/theme"
 
 const IndexPage = () => {
@@ -19,6 +19,7 @@ const IndexPage = () => {
           <Home />
           <About />
           <Activities />
+          <Portfolio />
         </Scrollbars>
       </Layout>
     </ThemeProvider>

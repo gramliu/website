@@ -1,9 +1,8 @@
-import React, { useState } from "react"
 import { makeStyles, useTheme } from "@material-ui/core"
-import { Activity } from "./Activity"
+import React, { useState } from "react"
 import { activities } from "../../config"
+import { Activity } from "./Activity"
 import { TabList } from "./TabList"
-import anime from "animejs"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -12,8 +11,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     color: theme.palette.textColor,
     paddingBottom: "20rem",
-    fontFamily: "'Argentum Sans', sans-serif",
-    marginLeft: "20%",
+    marginLeft: "30%",
   },
   header: {
     fontSize: "2rem",
