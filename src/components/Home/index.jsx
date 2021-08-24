@@ -25,7 +25,8 @@ const useStyles = makeStyles((theme) => ({
   portrait: {
     height: "20vh",
     borderRadius: "50%",
-    border: `solid ${theme.palette.textColor} 2px`,
+    border: `solid ${theme.palette.highlight} 0.5em`,
+    padding: "0.5em",
   },
   dialogText: {
     marginLeft: "5rem",
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       fontSize: "1.5rem",
       marginLeft: "0",
+      marginTop: "1em",
     },
     color: theme.palette.textColor,
     fontFamily: "'Argentum Sans', sans-serif",
