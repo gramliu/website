@@ -7,17 +7,72 @@ import { YouTubeIcon } from "../../icons/youtube"
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "grid",
-    "&:nth-child(even)": {
-      gridTemplateColumns: "3fr 4fr",
-      textAlign: "start",
-    },
-    "&:nth-child(odd)": {
-      gridTemplateColumns: "4fr 3fr",
-      textAlign: "end",
-    },
+    gridAutoFlow: "dense",
     color: theme.palette.textColor,
     width: "60%",
     marginTop: "2rem",
+    [theme.breakpoints.up("md")]: {
+      "&:nth-child(odd)": {
+        gridTemplateColumns: "4fr 3fr",
+        textAlign: "end",
+        "& .project-image": {
+          gridColumn: "1 / 1",
+        },
+        "& .project-content": {
+          gridColumn: "2 / 2",
+          marginLeft: "1rem",
+          alignItems: "flex-end",
+        },
+      },
+      "&:nth-child(even)": {
+        gridTemplateColumns: "3fr 4fr",
+        textAlign: "start",
+        "& .project-image": {
+          gridColumn: "2 / 2",
+        },
+        "& .project-content": {
+          gridColumn: "1 / 1",
+          marginRight: "1rem",
+          alignItems: "flex-start",
+        },
+      },
+    },
+    [theme.breakpoints.down("md")]: {
+      width: "80%",
+      "&:nth-child(odd),&:nth-child(even)": {
+        gridTemplateColumns: "1fr",
+        gridTemplateRows: "4fr 3fr",
+        textAlign: "start",
+        "& .project-image": {
+          gridRow: "1 / 1",
+          gridColumn: "1 / 1",
+        },
+        "& .project-content": {
+          gridRow: "2 / 2",
+          gridColumn: "1 / 1",
+          marginLeft: "0",
+          marginRight: "0",
+        },
+      },
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "80%",
+      "&:nth-child(odd),&:nth-child(even)": {
+        gridTemplateColumns: "1fr",
+        gridTemplateRows: "1fr",
+        textAlign: "start",
+        justifyItems: "center",
+        "& .project-image": {
+          display: "none",
+        },
+        "& .project-content": {
+          gridRow: "1 / 1",
+          gridColumn: "1 / 1",
+          marginLeft: "0",
+          marginRight: "0",
+        },
+      },
+    },
   },
   imageContainer: {
     "&:nth-child(even)": {
@@ -28,33 +83,39 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   image: {
-    maxWidth: "100%",
-    maxHeight: "30rem",
+    width: "100%",
+    height: "auto",
     boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
-    imageRendering: "crisp-edges",
   },
   content: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    "&:nth-child(even)": {
-      marginLeft: "1rem",
-      alignItems: "flex-end",
+    [theme.breakpoints.down("md")]: {
+      textAlign: "center",
     },
-    "&:nth-child(odd)": {
-      marginRight: "1rem",
-      alignItems: "flex-start",
+    [theme.breakpoints.down("xs")]: {
+      width: "90%",
     },
   },
   title: {
     fontSize: "2rem",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.7rem",
+    },
   },
   subtitle: {
     marginTop: "0.5rem",
     fontSize: "1.3rem",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1rem",
+    },
     color: theme.palette.textFaded,
   },
   description: {
+    [theme.breakpoints.down("md")]: {
+      textAlign: "start",
+    },
     marginTop: "1rem",
     padding: "1rem",
     fontSize: "1rem",
@@ -70,18 +131,23 @@ const useStyles = makeStyles((theme) => ({
   tags: {
     marginTop: "1rem",
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
+    flexWrap: "wrap",
+    gap: "0.8rem",
   },
   tag: {
     color: theme.palette.highlight,
     fontWeight: "bold",
     paddingLeft: "1rem",
     paddingRight: "1rem",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "0.8rem",
+    },
   },
   links: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     marginTop: "1rem",
   },
   link: {
@@ -98,24 +164,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const HighlightedProject = ({ project, flip }) => {
+export const HighlightedProject = ({ project }) => {
   const theme = useTheme()
   const classes = useStyles(theme)
 
-  const {
-    title,
-    subtitle,
-    description,
-    date,
-    tags,
-    github,
-    link,
-    video,
-    image,
-  } = project
+  const { title, subtitle, description, tags, github, link, video, image } =
+    project
 
   const imageContainer = (
-    <div className={classes.imageContainer}>
+    <div className={`${classes.imageContainer} project-image`}>
       <img src={image} alt={title} className={classes.image} />
     </div>
   )
@@ -127,6 +184,7 @@ export const HighlightedProject = ({ project, flip }) => {
         target="_blank"
         rel="noreferrer"
         className={classes.link}
+        key="github"
       >
         <GithubIcon />
       </a>
@@ -134,26 +192,40 @@ export const HighlightedProject = ({ project, flip }) => {
   }
   if (link) {
     links.push(
-      <a href={link} target="_blank" rel="noreferrer" className={classes.link}>
+      <a
+        href={link}
+        target="_blank"
+        rel="noreferrer"
+        className={classes.link}
+        key="link"
+      >
         <RedirectIcon />
       </a>
     )
   }
   if (video) {
     links.push(
-      <a href={video} target="_blank" rel="noreferrer" className={classes.link}>
+      <a
+        href={video}
+        target="_blank"
+        rel="noreferrer"
+        className={classes.link}
+        key="youtube"
+      >
         <YouTubeIcon />
       </a>
     )
   }
   const contentContainer = (
-    <div className={classes.content}>
+    <div className={`${classes.content} project-content`}>
       <div className={classes.title}>{title}</div>
       <div className={classes.subtitle}>{subtitle}</div>
       <div className={classes.description}>{description}</div>
       <div className={classes.tags}>
-        {tags.map((tag) => (
-          <div className={classes.tag}>{tag}</div>
+        {tags.map((tag, index) => (
+          <div className={classes.tag} key={index}>
+            {tag}
+          </div>
         ))}
       </div>
       <div className={classes.links}>{links}</div>
@@ -166,14 +238,6 @@ export const HighlightedProject = ({ project, flip }) => {
       {contentContainer}
     </>
   )
-  if (flip) {
-    content = (
-      <>
-        {contentContainer}
-        {imageContainer}
-      </>
-    )
-  }
 
   return <div className={classes.container}>{content}</div>
 }

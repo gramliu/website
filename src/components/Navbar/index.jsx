@@ -1,7 +1,9 @@
 import { makeStyles, useTheme } from "@material-ui/styles"
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { LogoIcon } from "../../icons/logo"
 import scrollTo from "gatsby-plugin-smoothscroll"
+import { SandwichIcon } from "../../icons/sandwich"
+import { Drawer } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -9,8 +11,24 @@ const useStyles = makeStyles((theme) => ({
     width: "100vw",
     display: "flex",
     justifyContent: "space-between",
-    zIndex: 100,
+    zIndex: 10,
     fontFamily: "'Josefin Sans', sans-serif",
+  },
+  logo: {
+    marginLeft: "1rem",
+    [theme.breakpoints.up("lg")]: {
+      marginLeft: "3rem",
+    },
+    "& svg": {
+      height: "50px",
+      width: "auto",
+    },
+    "& svg circle": {
+      transition: "fill 0.5s",
+    },
+    "& svg:hover circle": {
+      fill: "#e7ecef20",
+    },
   },
   navLink: {
     color: theme.palette.textColor,
@@ -29,17 +47,34 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    marginRight: "2rem",
+    paddingRight: "2rem",
+    [theme.breakpoints.down("md")]: {
+      "& :is(a,div):not(.sandwich)": {
+        display: "none",
+      },
+      "& .sandwich": {
+        display: "block",
+      },
+    },
   },
-  logo: {
+  drawer: {
+    background: theme.palette.background,
+  },
+  drawerLinks: {
+    paddingTop: "3rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  sandwich: {
+    fill: theme.palette.highlight,
+    [theme.breakpoints.up("md")]: {
+      display: "none",
+    },
+    zIndex: 20,
     "& svg": {
-      height: "50px",
-    },
-    "& svg circle": {
-      transition: "fill 0.5s",
-    },
-    "& svg:hover circle": {
-      fill: "#e7ecef20",
+      height: "2em",
+      width: "2em",
     },
   },
 }))
@@ -63,8 +98,51 @@ const links = [
 const Navbar = () => {
   const theme = useTheme()
   const classes = useStyles(theme)
+
+  const [scrollTarget, setScrollTarget] = useState(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    if (!drawerOpen && scrollTarget) {
+      // Drawer was closed. Go to scroll target
+      scrollTo(scrollTarget)
+    }
+  }, [drawerOpen])
+
+  const navLinks = links.map((link, index) => {
+    if (link.target) {
+      return (
+        <a
+          href={link.link}
+          className={classes.navLink}
+          target={link.target}
+          key={index}
+          onClick={() => setDrawerOpen(false)}
+        >
+          {link.label}
+        </a>
+      )
+    } else {
+      return (
+        <div
+          className={classes.navLink}
+          onClick={() => {
+            scrollTo(link.link)
+            setScrollTarget(link.link)
+            setDrawerOpen(false)
+          }}
+          key={index}
+        >
+          {link.label}
+        </div>
+      )
+    }
+  })
+
   return (
-    <div className={classes.container}>
+    <div
+      className={classes.container}
+    >
       <div className={classes.iconLink}>
         <a href="#" className={classes.navLink}>
           <div className={classes.logo}>
@@ -73,32 +151,28 @@ const Navbar = () => {
         </a>
       </div>
       <div className={classes.navLinkContainer}>
-        {links.map((link) => {
-          if (link.target) {
-            return (
-              <a
-                href={link.link}
-                className={classes.navLink}
-                target={link.target}
-                key={link}
-              >
-                {link.label}
-              </a>
-            )
-          } else {
-            return (
-              <div
-                className={classes.navLink}
-                onClick={() => {
-                  scrollTo(link.link)
-                }}
-                key={link}
-              >
-                {link.label}
-              </div>
-            )
-          }
-        })}
+        {drawerOpen ? null : (
+          <div
+            className={`${classes.sandwich} sandwich`}
+            key="sandwich"
+            onClick={() => {
+              setDrawerOpen(true)
+            }}
+          >
+            <SandwichIcon />
+          </div>
+        )}
+        {navLinks}
+        <Drawer
+          anchor="right"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          classes={{
+            paper: classes.drawer,
+          }}
+        >
+          <div className={classes.drawerLinks}>{navLinks}</div>
+        </Drawer>
       </div>
     </div>
   )

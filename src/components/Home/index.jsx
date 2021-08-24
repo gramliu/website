@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
   dialogContent: {
     display: "flex",
     alignItems: "center",
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
   portrait: {
     height: "20vh",
@@ -27,22 +30,29 @@ const useStyles = makeStyles((theme) => ({
   dialogText: {
     marginLeft: "5rem",
     fontSize: "2rem",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.5rem",
+      marginLeft: "0",
+    },
     color: theme.palette.textColor,
     fontFamily: "'Argentum Sans', sans-serif",
   },
   introLabel: {
     fontFamily: "'Roboto Mono', monospace",
     color: theme.palette.highlight,
-    fontSize: "1.5rem",
+    fontSize: "0.75em",
   },
   nameLabel: {
     fontWeight: "bold",
     color: theme.palette.textAlt,
   },
   subLabel: {
-    fontSize: "1rem",
+    fontSize: "0.5em",
   },
   socialButtons: {
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
     marginTop: "3rem",
     display: "flex",
     alignItems: "center",
@@ -54,11 +64,15 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px 0 10px 0",
     border: `solid ${theme.palette.textColor} 2px`,
     borderRadius: "50%",
-    padding: "1rem",
+    padding: "1em",
     transition: "border 0.25s, transform 0.25s, background 0.25s",
     "& svg": {
       width: "35px",
       height: "35px",
+      [theme.breakpoints.down("xs")]: {
+        width: "20px",
+        height: "20px",
+      },
       transition: "fill 0.25s, transform 0.25s",
       fill: theme.palette.textColor,
     },

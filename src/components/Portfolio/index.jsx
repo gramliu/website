@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "2rem",
     fontWeight: "bold",
     display: "flex",
-    width: "60%",
+    width: "100%",
+    justifyContent: "center",
   },
   content: {
     marginTop: "1rem",
@@ -36,7 +37,6 @@ const Portfolio = () => {
           {highlighted.map((project, index) => (
             <HighlightedProject
               project={project}
-              flip={index % 2 != 0}
               key={index}
             />
           ))}

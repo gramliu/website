@@ -43,12 +43,15 @@ const useStyles = makeStyles((theme) => ({
   },
   descriptionItem: {
     width: "50%",
+    [theme.breakpoints.down("md")]: {
+      width: "80%",
+    },
     marginBottom: "1rem",
   },
 }))
 
 export const Activity = ({ activity }) => {
-  const { title, url, role, dates, description } = activity
+  const { altTitle, title, url, role, dates, description } = activity
   const theme = useTheme()
   const classes = useStyles(theme)
 
@@ -61,11 +64,11 @@ export const Activity = ({ activity }) => {
             target="_blank"
             className={`${classes.title} ${classes.titleLink}`}
           >
-            {title}
+            {altTitle || title}
             <LinkIcon />
           </a>
         ) : (
-          <div className={classes.title}>{title}</div>
+          <div className={classes.title}>{altTitle || title}</div>
         )}
       </div>
       <div className={classes.role}>{role}</div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Loader from "./Loader"
 import { Helmet } from "react-helmet"
 import { makeStyles } from "@material-ui/core"
@@ -30,7 +30,11 @@ const Layout = ({ children }) => {
         <title>Gram Liu</title>
       </Helmet>
       <Loader finishLoading={finishLoading} className={classes.loader} />
-      <div id="children" className={classes.container} hidden={hidden}>
+      <div
+        id="children"
+        className={classes.container}
+        hidden={hidden}
+      >
         <Navbar />
         {children}
       </div>

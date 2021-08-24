@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.textColor,
     paddingBottom: "20rem",
     marginLeft: "30%",
+    [theme.breakpoints.down("md")]: {
+      marginLeft: "10%",
+    },
   },
   header: {
     fontSize: "2rem",
@@ -20,9 +23,11 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     marginTop: "2rem",
-    display: "grid",
-    gridTemplateColumns: "1fr 4fr",
-    columnGap: "1rem",
+    display: "flex",
+    gap: "1rem",
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
 }))
 
@@ -36,10 +41,7 @@ const Activities = () => {
       <div className={classes.container} id="activities">
         <div className={classes.header}>What I've Done</div>
         <div className={classes.content}>
-          <TabList
-            activities={activities}
-            setActivity={setActivity}
-          />
+          <TabList activities={activities} setActivity={setActivity} />
           <Activity activity={activity} />
         </div>
       </div>

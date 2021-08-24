@@ -1,11 +1,14 @@
 import { makeStyles, useTheme } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
-import styled from "styled-components"
 
 const useStyles = makeStyles((theme) => ({
   tabList: {
     display: "flex",
     flexDirection: "column",
+    width: "20%",
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "row",
+    },
     position: "relative",
   },
   tabButton: {
@@ -17,12 +20,21 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.highlight,
     },
     borderLeft: `solid 2px ${theme.palette.backgroundLighter}`,
+    [theme.breakpoints.down("xs")]: {
+      borderLeft: "none",
+      borderBottom: `solid 2px ${theme.palette.backgroundLighter}`,
+    },
+
     transition: "background 0.25s, color 0.25s",
   },
   selectedTab: {
     color: theme.palette.highlight,
     backgroundColor: theme.palette.backgroundLight,
     borderLeft: `solid 3px ${theme.palette.highlight}`,
+    [theme.breakpoints.down("xs")]: {
+      borderLeft: "none",
+      borderBottom: `solid 3px ${theme.palette.highlight}`,
+    },
     transition: "border-left 0.25s",
   },
 }))
@@ -33,7 +45,7 @@ const TabButton = ({ title, focusTab, setFocusTab, idx }) => {
   const focus = focusTab === idx
   return (
     <div
-      class={`${classes.tabButton} ${focus ? classes.selectedTab : null}`}
+      className={`${classes.tabButton} ${focus ? classes.selectedTab : null}`}
       tabIndex={idx}
       onClick={(e) => {
         e.preventDefault()

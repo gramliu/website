@@ -5,8 +5,8 @@ import { LogoIcon } from "src/icons/logo"
 
 const LoaderContainer = styled.div`
   background-color: #263238;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   position: absolute;
   top: 0;
   left: 0;
@@ -26,7 +26,6 @@ const LoaderContainer = styled.div`
       display: block;
       width: 100%;
       height: 100%;
-      margin: 0 auto;
       fill: none;
       user-select: none;
       #circle {

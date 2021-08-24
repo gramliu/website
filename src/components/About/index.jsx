@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "20rem",
     margin: "0 auto",
     fontFamily: "'Argentum Sans', sans-serif",
-    width: "80%",
   },
   header: {
     fontSize: "2rem",
@@ -20,7 +19,16 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   content: {
-    width: "40%",
+    width: "30%",
+    [theme.breakpoints.between("md", "lg")]: {
+      width: "70%",
+    },
+    [theme.breakpoints.between("sm", "md")]: {
+      width: "80%",
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "90%",
+    },
     marginTop: "2rem",
     fontSize: "1.1rem",
     lineHeight: "1.5",
@@ -48,8 +56,8 @@ const About = () => {
             Carnegie Mellon University
           </a>
           pursuing a major in Electrical and Computer Engineering. I am a big
-          fan of technology and the role it plays in revolutionizing various
-          aspects of our society.
+          fan of technology and its ability to consistently push the boundaries
+          of what we think is possible.
           <br />
           <br />
           Outside of tech, I also really enjoy cooking! I try to do the food

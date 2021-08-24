@@ -35,7 +35,8 @@ export const activities = [
     ],
   },
   {
-    title: "CMU Human-Computer Interaction Institute",
+    title: "CMU HCII",
+    altTitle: "CMU Human-Computer Interaction Institute",
     url: "https://hcii.cmu.edu/research",
     dates: "May 2020 - Present",
     role: "Research Assistant",
