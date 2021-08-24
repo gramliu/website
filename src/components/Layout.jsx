@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react"
-import Loader from "./Loader"
-import { Helmet } from "react-helmet"
 import { makeStyles } from "@material-ui/core"
-import Navbar from "./Navbar"
+import React, { useState } from "react"
+import { Helmet } from "react-helmet"
+import Loader from "./Loader"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -35,7 +34,6 @@ const Layout = ({ children }) => {
         className={classes.container}
         hidden={hidden}
       >
-        <Navbar />
         {children}
       </div>
     </>

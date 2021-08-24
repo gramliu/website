@@ -7,12 +7,15 @@ import { Drawer } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    position: "absolute",
+    position: "fixed",
     width: "100vw",
     display: "flex",
     justifyContent: "space-between",
     zIndex: 10,
     fontFamily: "'Josefin Sans', sans-serif",
+    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+    // background: "rgba(0, 0, 0, 0.3)",
+    backdropFilter: "blur(10px)",
   },
   logo: {
     marginLeft: "1rem",
@@ -140,11 +143,9 @@ const Navbar = () => {
   })
 
   return (
-    <div
-      className={classes.container}
-    >
+    <div className={classes.container} id="navbar">
       <div className={classes.iconLink}>
-        <a href="#" className={classes.navLink}>
+        <a href="#home" className={classes.navLink}>
           <div className={classes.logo}>
             <LogoIcon />
           </div>

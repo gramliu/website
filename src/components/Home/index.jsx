@@ -92,7 +92,7 @@ const Home = () => {
   const classes = useStyles(theme)
   return (
     <>
-      <div className={classes.container}>
+      <div className={classes.container} id="home">
         <div className={classes.dialog}>
           <div className={classes.dialogContent}>
             <div>

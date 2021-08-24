@@ -8,6 +8,8 @@ const useStyles = makeStyles((theme) => ({
     width: "20%",
     [theme.breakpoints.down("xs")]: {
       flexDirection: "row",
+      width: "90%",
+      overflowX: "scroll",
     },
     position: "relative",
   },

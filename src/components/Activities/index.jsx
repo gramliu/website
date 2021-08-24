@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "20rem",
     marginLeft: "30%",
     [theme.breakpoints.down("md")]: {
-      marginLeft: "10%",
+      width: "90%",
+      margin: "0 auto",
     },
   },
   header: {
