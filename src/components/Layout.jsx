@@ -20,7 +20,6 @@ const Layout = ({ children }) => {
   const [hidden, setHidden] = useState(true)
 
   const finishLoading = () => {
-    console.log("Hiding loader")
     setHidden(false)
   }
   return (

@@ -39,7 +39,6 @@ const Loader = ({ finishLoading }) => {
   const [isMounted, setIsMounted] = useState(false)
 
   const animate = () => {
-    console.log("Called animate")
     const loader = anime.timeline({
       complete: () => finishLoading(),
     })
