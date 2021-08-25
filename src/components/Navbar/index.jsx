@@ -1,4 +1,4 @@
-import { makeStyles, useTheme } from "@material-ui/styles"
+import { makeStyles, useTheme } from "@material-ui/core/styles"
 import React, { useState, useEffect } from "react"
 import { LogoIcon } from "../../icons/logo"
 import scrollTo from "gatsby-plugin-smoothscroll"
