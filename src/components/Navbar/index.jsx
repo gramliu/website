@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 10,
     fontFamily: "'Josefin Sans', sans-serif",
     boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-    // background: "rgba(0, 0, 0, 0.3)",
     backdropFilter: "blur(10px)",
   },
   logo: {
