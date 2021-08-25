@@ -56,7 +56,7 @@ const About = () => {
             Carnegie Mellon University
           </a>
           pursuing a major in Electrical and Computer Engineering. I am a big
-          fan of technology and how it changes the way we think and address
+          fan of technology and how it changes the way we think about and address
           problems from education to health care, consistently pushing
           the boundaries of what we think is possible.
           <br />
