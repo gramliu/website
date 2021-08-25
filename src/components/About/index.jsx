@@ -56,8 +56,9 @@ const About = () => {
             Carnegie Mellon University
           </a>
           pursuing a major in Electrical and Computer Engineering. I am a big
-          fan of technology and its ability to consistently push the boundaries
-          of what we think is possible.
+          fan of technology and how it changes the way we think and address
+          problems from education to health care, consistently pushing
+          the boundaries of what we think is possible.
           <br />
           <br />
           Outside of tech, I also really enjoy cooking! I try to do the food
