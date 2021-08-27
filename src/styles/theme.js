@@ -9,7 +9,8 @@ export const theme = createTheme({
     highlight: "#73ee87",
     highlightDarker: "#5bbc6b",
     backgroundLight: "#314149",
-    backgroundLighter: "#526e7c"
+    backgroundLighter: "#526e7c",
+    errorText: "#E05652",
   },
   hoverLink: {
     display: "inline",

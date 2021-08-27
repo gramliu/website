@@ -1,53 +1,59 @@
 import * as React from "react"
 import { Link } from "gatsby"
+import { makeStyles, useTheme } from "@material-ui/core"
 
-// styles
-const pageStyles = {
-  color: "#232129",
-  padding: "96px",
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "12px",
+    height: "100vh",
+    width: "100vw",
+  },
+  dialog: {
+    background: theme.palette.backgroundLight,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "30%",
+    padding: "2em",
+    fontSize: "1.5em",
+    color: theme.palette.textColor,
+    gap: "0.5em",
+    zIndex: 0,
+    "& a": {
+      margin: "0 0.3rem 0 0.3rem",
+      textDecoration: "none",
+      color: theme.palette.highlight,
+      ...theme.hoverLink,
+    },
+  },
+  errorTitle: {
+    color: theme.palette.errorText,
+    fontSize: "3em",
+  },
+  errorDescription: {
+    marginBottom: "2em",
+  }
+}))
 
-const paragraphStyles = {
-  marginBottom: 48,
-}
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
-
-// markup
 const NotFoundPage = () => {
+  const theme = useTheme()
+  const classes = useStyles(theme)
+  console.log(theme.palette.error)
+
   return (
-    <main style={pageStyles}>
-      <title>Not found</title>
-      <h1 style={headingStyles}>Page not found</h1>
-      <p style={paragraphStyles}>
-        Sorry{" "}
-        <span role="img" aria-label="Pensive emoji">
-          😔
-        </span>{" "}
-        we couldn’t find what you were looking for.
-        <br />
-        {process.env.NODE_ENV === "development" ? (
-          <>
-            <br />
-            Try creating a page in <code style={codeStyles}>src/pages/</code>.
-            <br />
-          </>
-        ) : null}
-        <br />
-        <Link to="/">Go home</Link>.
-      </p>
-    </main>
+    <div className={classes.container}>
+      <div className={classes.dialog}>
+        <div className={classes.errorTitle}>Error 404</div>
+        <div className={classes.errorDescription}>The page or resource you were looking for does not exist!</div>
+        <a href="/" className="hoverLink">
+          Return home
+        </a>
+      </div>
+    </div>
   )
 }
 

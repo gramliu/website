@@ -26,7 +26,6 @@ module.exports = {
     "gatsby-plugin-root-import",
     "gatsby-plugin-gatsby-cloud",
     "gatsby-plugin-image",
-    "gatsby-plugin-mdx",
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
     {

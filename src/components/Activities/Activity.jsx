@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
+    width: "70%"
   },
   title: {
     fontSize: "2rem",
