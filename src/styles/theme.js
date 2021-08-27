@@ -3,7 +3,7 @@ import { createTheme } from "@material-ui/core"
 export const theme = createTheme({
   palette: {
     background: "#263238",
-    textColor: "#d0d5d9",
+    textColor: "#e6edf2",
     textAlt: "#f05d5e",
     textFaded: "#a3b6c2",
     highlight: "#73ee87",
