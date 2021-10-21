@@ -6,9 +6,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     width: "20%",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       flexDirection: "row",
-      width: "90%",
+      width: "100%",
       overflowX: "scroll",
     },
     position: "relative",
