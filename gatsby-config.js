@@ -5,6 +5,14 @@ module.exports = {
   },
   plugins: [
     {
+      resolve: "gatsby-plugin-sass",
+      options: {
+        sassOptions: {
+          includePaths: ["src/styles"],
+        },
+      },
+    },
+    {
       resolve: "gatsby-plugin-material-ui",
       options: {
         stylesProvider: {
@@ -20,7 +28,7 @@ module.exports = {
         ],
       },
     },
-    'gatsby-plugin-smoothscroll',
+    "gatsby-plugin-smoothscroll",
     "gatsby-plugin-react-helmet",
     "gatsby-plugin-styled-components",
     "gatsby-plugin-root-import",
@@ -55,4 +63,4 @@ module.exports = {
       },
     },
   ],
-}
+};

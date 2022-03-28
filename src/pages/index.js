@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core"
 import React, { useState } from "react"
-import "src/styles/global.css"
+import "src/styles/global.scss"
 import About from "../components/About"
 import Activities from "../components/Activities"
 import Home from "../components/Home"
