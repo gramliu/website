@@ -17,7 +17,7 @@ export const social = [
   {
     name: "mail",
     image: <MailIcon />,
-    url: "mailto:gramliu@cmu.edu",
+    url: "mailto:gram@gramliu.com",
   },
 ]
 
