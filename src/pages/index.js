@@ -18,14 +18,14 @@ const useStyles = makeStyles((theme) => ({
 
 const IndexPage = () => {
   const classes = useStyles()
-  const [hidden, setHidden] = useState(true)
+  const [hidden, setHidden] = useState(false)
 
   const finishLoading = () => {
     setHidden(false)
   }
   return (
     <>
-      <Loader finishLoading={finishLoading} className={classes.loader} />
+      {/* <Loader finishLoading={finishLoading} className={classes.loader} /> */}
       <div hidden={hidden}>
         <Navbar />
         <Home />

@@ -51,9 +51,35 @@
 }
 
 .nameLabel {
+  display: inline-flex;
   font-weight: bold;
   color: $text-highlight;
   font-family: $font-mono;
+  animation: typing 8s steps(10) infinite, blink .5s step-end infinite alternate;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid;
+}
+
+@keyframes typing {
+  0% {
+    width: 0
+  }
+  30% {
+    width: 10ch
+  }
+  95% {
+    width: 10ch
+  }
+  100% {
+    width: 0ch
+  }
+}
+    
+@keyframes blink {
+  50% {
+    border-color: transparent
+  }
 }
 
 .subLabel {
