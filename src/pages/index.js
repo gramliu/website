@@ -25,7 +25,7 @@ const IndexPage = () => {
   }
   return (
     <>
-      {/* <Loader finishLoading={finishLoading} className={classes.loader} /> */}
+      <Loader finishLoading={finishLoading} className={classes.loader} />
       <div hidden={hidden}>
         <Navbar />
         <Home />
