@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     color: theme.palette.textColor,
-    paddingBottom: "20rem",
+    paddingTop: "20rem",
     margin: "0 auto",
     fontFamily: "'Argentum Sans', sans-serif",
   },

@@ -9,7 +9,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     color: theme.palette.textColor,
-    paddingBottom: "20rem",
+    paddingTop: "10rem",
+    paddingBottom: "10rem",
   },
   header: {
     fontSize: "2rem",

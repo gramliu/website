@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "center",
     color: theme.palette.textColor,
-    paddingBottom: "20rem",
+    paddingTop: "20rem",
     marginLeft: "30%",
     [theme.breakpoints.down("md")]: {
       width: "90%",
