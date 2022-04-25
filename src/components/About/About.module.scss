@@ -1,0 +1,42 @@
+@import "./src/styles/variables.scss";
+@import "./src/styles/mixins.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20rem;
+  margin: 0 auto;
+  color: $text-primary;
+  font-family: 'Argentum Sans', sans-serif;
+}
+
+.header {
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  width: 40%;
+  @include down($breakpoint-lg) {
+    width: 70%;
+  }
+  @include down($breakpoint-md) {
+    width: 80%;
+  }
+  @include down($breakpoint-sm) {
+    width: 90%;
+  }
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.content a {
+  margin: 0 0.3rem 0 0.3 rem;
+  text-decoration: none;
+  color: $text-highlight;
+}

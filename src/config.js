@@ -44,7 +44,7 @@ export const activities = [
       "Created a smart home app development framework that enables reusable native privacy features using Node-RED and Node.JS",
       "Developed machine learning microservices with openpose and openface using Docker and Flask",
       "Created smart applications using the framework, including a smart irrigation hub and indoor triangulation using accelerometers",
-      "Developing a decentralized economy and app ecosystem to enable the development of IoT applications on a city-wide scale without compromising privacy or security of individual users",
+      "Developing a decentralized and privacy-focused app ecosystem that supports building city-scale smart applications using AWS and NoFlo JS",
     ],
   },
   {

@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.textColor,
     paddingTop: "20rem",
     marginLeft: "30%",
+    marginBottom: "20rem",
     [theme.breakpoints.down("md")]: {
       width: "90%",
       margin: "0 auto",
