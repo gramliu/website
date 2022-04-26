@@ -19,7 +19,7 @@ const About = () => {
           <br />
           <br />
           Outside of tech, I also really enjoy cooking! I try to do the food
-          justice by honing the art of food photography over on
+          justice by honing the art of food photography over on{" "}
           <a
             href="https://www.instagram.com/gram_eats/"
             target="_blank"
