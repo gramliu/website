@@ -48,6 +48,19 @@ export const activities = [
     ],
   },
   {
+    title: "ScottyLabs",
+    url: "http://scottylabs.org/",
+    dates: "Aug 2019 - Present",
+    role: "TartanHacks Software Lead",
+    roleAlt: "Former Director of Technology",
+    description: [
+      "Designed and developed a TypeScript backend that unified our TartanHacks software suite, which powered TartanHacks 2022 with over 400 participants",
+      "Coordinated the active development of 13 different software project teams over the 2020-2021 school year",
+      "Led the development and deployment of the website, registration system, judging platform, and participant dashboard for TartanHacks 2021 with over 300 participants from 18 countries",
+      "Developed a REST API and website using a MERN stack for looking up course information at CMU, attracting over 700 users to the platform",
+    ],
+  },
+  {
     title: "Dashboard Philippines",
     url: "https://www.dashboardphilippines.com/",
     dates: "May - Aug 2020",
@@ -56,17 +69,6 @@ export const activities = [
       "Developed a dashboard to centralize information about hospitals, transportation routes, and relief distribution in the Philippines at the height of the COVID-19 pandemic",
       "Designed a database schema and RESTful backend to track patient/supply capacities of over 2,000 hospitals using MongoDB, Express, and React/Redux in TypeScript",
       "Performed data migration for the Philippine Red Cross from a legacy database to a more robust schema, bringing down COVID-19 testing time from 2 weeks to 3 days",
-    ],
-  },
-  {
-    title: "ScottyLabs",
-    url: "http://scottylabs.org/",
-    dates: "Aug 2019 - Present",
-    role: "Project Lead, Former Director of Technology",
-    description: [
-      "Coordinated the active development of 13 different software project teams over the 2020-2021 school year",
-      "Led the development and deployment of the website, registration system, judging platform, and participant dashboard for TartanHacks 2021 with over 300 participants from 18 countries",
-      "Developed a REST API and website using a MERN stack for looking up course information at CMU, attracting over 700 users to the platform",
     ],
   },
 ]

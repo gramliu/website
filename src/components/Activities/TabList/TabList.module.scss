@@ -1,0 +1,45 @@
+@import "./src/styles/variables.scss";
+@import "./src/styles/mixins.scss";
+
+.tabList {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  position: relative;
+
+  @include down($breakpoint-sm) {
+    flex-direction: row;
+    width: 100%;
+    overflow-x: scroll;
+  }
+}
+
+.tabButton {
+  padding: 1rem;
+  background: none;
+  color: $text-primary;
+  cursor: pointer;
+  border-left: solid 2px $background-light2;
+  transition: background 0.5s, color 0.25s;
+
+  &:hover {
+    color: $text-highlight;
+  }
+
+  @include down($breakpoint-xs) {
+    border-left: none;
+    border-bottom: solid 2px $background-light2;
+  }
+}
+
+.selectedTab {
+  color: $text-highlight;
+  background-color: $background-light;
+  border-left: solid 3px $text-highlight;
+  transition: border-left 0.25s;
+
+  @include down($breakpoint-xs) {
+    border-left: none;
+    border-bottom: solid 3px $text-highlight;
+  }
+}
