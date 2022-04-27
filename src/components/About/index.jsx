@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import * as styles from "./About.module.scss";
+import React from "react";
+import * as styles from "./index.module.scss";
 
 const About = () => {
   return (

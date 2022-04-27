@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { activities } from "../../config"
 import { Activity } from "./Activity"
 import { TabList } from "./TabList"
-import * as styles from "./Activities.module.scss"
+import * as styles from "./index.module.scss"
 
 const Activities = () => {
   const [activity, setActivity] = useState(activities[0])

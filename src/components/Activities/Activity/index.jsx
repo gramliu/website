@@ -1,6 +1,6 @@
 import React from "react"
 import { LinkIcon } from "../../../icons/link"
-import * as styles from "./Activity.module.scss"
+import * as styles from "./index.module.scss"
 
 export const Activity = ({ activity }) => {
   const { altTitle, title, url, role, roleAlt, dates, description } = activity
