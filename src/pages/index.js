@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 const IndexPage = () => {
   const classes = useStyles()
-  const [hidden, setHidden] = useState(false)
+  const [hidden, setHidden] = useState(true)
 
   const finishLoading = () => {
     setHidden(false)

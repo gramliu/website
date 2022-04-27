@@ -1,0 +1,31 @@
+@import "./src/styles/variables.scss";
+@import "./src/styles/mixins.scss";
+
+.loaderContainer {
+  background-color: $background-color;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.logoWrapper {
+  width: max-content;
+  max-width: 100px;
+  transition: var(--transition);
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    user-select: none;
+    #circle {
+      opacity: 0;
+    }
+  }
+}
