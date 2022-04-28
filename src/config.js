@@ -80,7 +80,7 @@ export const highlighted = [
     description: (
       <div>
         🏆 Top 3, Best Use of Google Cloud
-        <a href="http://2020f.pennapps.com/" target="_blank" rel="noreferrer">
+        <a href="http://2020f.pennapps.com/" target="_blank" rel="noreferrer" className="hoverLink">
           @Pennapps XXI.
         </a>
         A consolidated suite of deep-learning powered NLP tools powered by GPT-3
@@ -114,6 +114,7 @@ export const highlighted = [
           href="https://upload.wikimedia.org/wikipedia/commons/3/33/Carnegie_Mellon_University_Pausch_Bridge_rainbow.jpg"
           target="_blank"
           rel="noreferrer"
+          className="hoverLink"
         >
           Randy Pausch Bridge
         </a>
