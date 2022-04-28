@@ -9,7 +9,7 @@ const Activities = () => {
 
   return (
     <>
-      <div className={styles.container} id="activities">
+      <div className={styles.container}>
         <div className={styles.header}>What I've Done</div>
         <div className={styles.content}>
           <TabList activities={activities} setActivity={setActivity} />

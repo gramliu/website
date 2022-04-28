@@ -4,7 +4,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  width: 70%;
+  width: 100%;
   @include down($breakpoint-sm) {
     width: 100%;
   }
@@ -61,7 +61,7 @@
 }
 
 .descriptionItem {
-  width: 50%;
+  width: 100%;
   margin-bottom: 1rem;
 
   @include down($breakpoint-md) {
