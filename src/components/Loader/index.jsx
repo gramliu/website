@@ -5,17 +5,17 @@ import { LogoIcon } from "src/icons/logo"
 import * as styles from "./index.module.scss"
 
 const FadingDiv = styled.div`
-  opacity: ${props => props.isMounted ? 1 : 0};
+  opacity: ${(props) => (props.isMounted ? 1 : 0)};
 `
 
 const Loader = ({ finishLoading }) => {
   const [isMounted, setIsMounted] = useState(false)
-  const loaderClass = `.${styles.loaderContainer}`;
-  console.log(isMounted, loaderClass);
+  const loaderClass = `.${styles.loaderContainer}`
+  console.log(isMounted, loaderClass)
 
   const animate = () => {
     const loader = anime.timeline({
-      complete: () => finishLoading(),
+      complete: () => finishLoading()
     })
     loader
       .add({
@@ -23,13 +23,13 @@ const Loader = ({ finishLoading }) => {
         delay: 300,
         duration: 1500,
         easing: "easeInOutQuart",
-        strokeDashoffset: [anime.setDashoffset, 0],
+        strokeDashoffset: [anime.setDashoffset, 0]
       })
       .add({
         targets: `${loaderClass} .logo-circle`,
         duration: 700,
         easing: "easeInOutQuart",
-        opacity: 1,
+        opacity: 1
       })
       .add({
         targets: loaderClass,
@@ -37,14 +37,14 @@ const Loader = ({ finishLoading }) => {
         duration: 300,
         easing: "easeInOutQuart",
         opacity: 0,
-        scale: 0.1,
+        scale: 0.1
       })
       .add({
         targets: loaderClass,
         duration: 200,
         easing: "easeInOutQuart",
         opacity: 0,
-        zIndex: -1,
+        zIndex: -1
       })
   }
 
@@ -56,11 +56,11 @@ const Loader = ({ finishLoading }) => {
 
   return (
     <>
-    <div className={styles.loaderContainer}>
-      <FadingDiv className={styles.logoWrapper} isMounted={isMounted}>
-        <LogoIcon />
-      </FadingDiv>
-    </div>
+      <div className={styles.loaderContainer}>
+        <FadingDiv className={styles.logoWrapper} isMounted={isMounted}>
+          <LogoIcon />
+        </FadingDiv>
+      </div>
     </>
   )
 }

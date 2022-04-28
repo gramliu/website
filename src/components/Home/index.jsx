@@ -1,6 +1,6 @@
-import React from "react";
-import { social } from "../../config";
-import * as styles from "./index.module.scss";
+import React from "react"
+import { social } from "../../config"
+import * as styles from "./index.module.scss"
 
 const Home = () => {
   return (

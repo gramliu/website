@@ -1,0 +1,11 @@
+dist
+node_modules
+*.json
+.env
+.env.template
+*.md
+Dockerfile
+.next
+.cache
+public
+static

@@ -12,8 +12,8 @@ const useStyles = makeStyles((theme) => ({
   loader: {
     height: "100vh",
     width: "100vw",
-    position: "absolute",
-  },
+    position: "absolute"
+  }
 }))
 
 const IndexPage = () => {

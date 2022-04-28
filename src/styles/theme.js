@@ -10,7 +10,7 @@ export const theme = createTheme({
     highlightDarker: "#5bbc6b",
     backgroundLight: "#314149",
     backgroundLighter: "#526e7c",
-    errorText: "#E05652",
+    errorText: "#E05652"
   },
   hoverLink: {
     display: "inline",
@@ -28,12 +28,12 @@ export const theme = createTheme({
       height: "1px",
       transitionProperty: "width",
       transitionDuration: "0.3s",
-      transitionTimingFunction: "ease-out",
+      transitionTimingFunction: "ease-out"
     },
     "&:is(:hover,:focus,:active):after": {
       left: 0,
       right: "auto",
-      width: "100%",
-    },
-  },
+      width: "100%"
+    }
+  }
 })

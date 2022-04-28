@@ -1,16 +1,16 @@
-import { makeStyles } from "@material-ui/core";
-import React from "react";
-import { Helmet } from "react-helmet";
+import { makeStyles } from "@material-ui/core"
+import React from "react"
+import { Helmet } from "react-helmet"
 
 const useStyles = makeStyles((theme) => ({
   container: {
     height: "100vh",
-    width: "100vw",
-  },
-}));
+    width: "100vw"
+  }
+}))
 
 const Layout = ({ children }) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <>
@@ -22,7 +22,7 @@ const Layout = ({ children }) => {
         {children}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

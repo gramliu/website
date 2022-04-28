@@ -1,5 +1,5 @@
-import React from "react";
-import * as styles from "./index.module.scss";
+import React from "react"
+import * as styles from "./index.module.scss"
 
 const About = () => {
   return (
@@ -30,7 +30,7 @@ const About = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default About;
+export default About

@@ -22,10 +22,8 @@ export const Activity = ({ activity }) => {
         )}
       </div>
       <div className={styles.role}>{role}</div>
-      {
-        roleAlt == null ? null : <div className={styles.roleAlt}>{roleAlt}</div>
-      }
-      
+      {roleAlt == null ? null : <div className={styles.roleAlt}>{roleAlt}</div>}
+
       <div className={styles.dates}>{dates}</div>
       <div className={styles.description}>
         <ul className={styles.descriptionList}>

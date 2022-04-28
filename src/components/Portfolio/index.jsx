@@ -10,10 +10,7 @@ const Portfolio = () => {
         <div className={styles.header}>Things I've Built</div>
         <div className={styles.content}>
           {highlighted.map((project, index) => (
-            <Project
-              project={project}
-              key={index}
-            />
+            <Project project={project} key={index} />
           ))}
         </div>
       </div>

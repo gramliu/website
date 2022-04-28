@@ -1,19 +1,19 @@
-import React from "react";
-import { GithubIcon } from "../../../icons/github";
-import { RedirectIcon } from "../../../icons/redirect";
-import { YouTubeIcon } from "../../../icons/youtube";
-import * as styles from "./index.module.scss";
+import React from "react"
+import { GithubIcon } from "../../../icons/github"
+import { RedirectIcon } from "../../../icons/redirect"
+import { YouTubeIcon } from "../../../icons/youtube"
+import * as styles from "./index.module.scss"
 
 const Project = ({ project }) => {
   const { title, subtitle, description, tags, github, link, video, image } =
-    project;
+    project
 
   const imageContainer = (
     <div className={`${styles.imageContainer} ${styles.projectImage}`}>
       <img src={image} alt={title} className={styles.image} />
     </div>
-  );
-  const links = [];
+  )
+  const links = []
   if (github) {
     links.push(
       <a
@@ -25,7 +25,7 @@ const Project = ({ project }) => {
       >
         <GithubIcon />
       </a>
-    );
+    )
   }
   if (link) {
     links.push(
@@ -38,7 +38,7 @@ const Project = ({ project }) => {
       >
         <RedirectIcon />
       </a>
-    );
+    )
   }
   if (video) {
     links.push(
@@ -51,7 +51,7 @@ const Project = ({ project }) => {
       >
         <YouTubeIcon />
       </a>
-    );
+    )
   }
   const contentContainer = (
     <div className={`${styles.content} ${styles.projectContent}`}>
@@ -67,14 +67,14 @@ const Project = ({ project }) => {
       </div>
       <div className={styles.links}>{links}</div>
     </div>
-  );
+  )
 
   return (
     <div className={styles.container}>
       {imageContainer}
       {contentContainer}
     </div>
-  );
-};
+  )
+}
 
-export default Project;
+export default Project

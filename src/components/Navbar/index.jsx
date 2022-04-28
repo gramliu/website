@@ -1,25 +1,24 @@
-import { makeStyles, useTheme } from "@material-ui/core/styles"
-import React, { useState, useEffect } from "react"
-import { LogoIcon } from "../../icons/logo"
-import scrollTo from "gatsby-plugin-smoothscroll"
-import { SandwichIcon } from "../../icons/sandwich"
 import { Drawer } from "@material-ui/core"
-import * as styles from "./index.module.scss";
+import scrollTo from "gatsby-plugin-smoothscroll"
+import React, { useEffect, useState } from "react"
+import { LogoIcon } from "../../icons/logo"
+import { SandwichIcon } from "../../icons/sandwich"
+import * as styles from "./index.module.scss"
 
 const links = [
   {
     label: "About",
-    link: "#about",
+    link: "#about"
   },
   {
     label: "Portfolio",
-    link: "#portfolio",
+    link: "#portfolio"
   },
   {
     label: "Cooking",
     link: "https://instagram.com/gram_eats",
-    target: "_blank",
-  },
+    target: "_blank"
+  }
 ]
 
 const Navbar = () => {
@@ -90,7 +89,7 @@ const Navbar = () => {
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           classes={{
-            paper: styles.drawer,
+            paper: styles.drawer
           }}
         >
           <div className={styles.drawerLinks}>{navLinks}</div>

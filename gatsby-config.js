@@ -2,32 +2,33 @@ module.exports = {
   siteMetadata: {
     siteUrl: "https://gramliu.com/",
     title: "Gram Liu",
-    description: "Hi! I'm Gram and I build things, from web apps to full stack to IoT. I'm a rising junior at Carnegie Mellon University pursuing a major in Electrical and Computer Engineering. I am a big fan of technology and how it changes the way we think about and address problems from education to health care, consistently pushing the boundaries of what we think is possible."
+    description:
+      "Hi! I'm Gram and I build things, from web apps to full stack to IoT. I'm a rising junior at Carnegie Mellon University pursuing a major in Electrical and Computer Engineering. I am a big fan of technology and how it changes the way we think about and address problems from education to health care, consistently pushing the boundaries of what we think is possible."
   },
   plugins: [
     {
       resolve: "gatsby-plugin-sass",
       options: {
         sassOptions: {
-          includePaths: ["src/styles"],
-        },
-      },
+          includePaths: ["src/styles"]
+        }
+      }
     },
     {
       resolve: "gatsby-plugin-material-ui",
       options: {
         stylesProvider: {
-          injectFirst: true,
-        },
-      },
+          injectFirst: true
+        }
+      }
     },
     {
       resolve: `gatsby-plugin-google-gtag`,
       options: {
         trackingIds: [
-          "UA-135464080-1", // Google Analytics / GA
-        ],
-      },
+          "UA-135464080-1" // Google Analytics / GA
+        ]
+      }
     },
     "gatsby-plugin-smoothscroll",
     "gatsby-plugin-react-helmet",
@@ -41,17 +42,17 @@ module.exports = {
       resolve: "gatsby-source-filesystem",
       options: {
         name: "images",
-        path: "./static/images/",
+        path: "./static/images/"
       },
-      __key: "images",
+      __key: "images"
     },
     {
       resolve: "gatsby-source-filesystem",
       options: {
         name: "pages",
-        path: "./src/pages/",
+        path: "./src/pages/"
       },
-      __key: "pages",
+      __key: "pages"
     },
     {
       resolve: `gatsby-plugin-manifest`,
@@ -60,8 +61,8 @@ module.exports = {
         short_name: "GramLiu",
         start_url: "/",
         display: "minimal-ui",
-        icon: "static/images/logo.png",
-      },
-    },
-  ],
-};
+        icon: "static/images/logo.png"
+      }
+    }
+  ]
+}

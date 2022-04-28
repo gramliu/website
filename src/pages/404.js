@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     fontSize: "12px",
     height: "100vh",
-    width: "100vw",
+    width: "100vw"
   },
   dialog: {
     background: theme.palette.backgroundLight,
@@ -27,15 +27,15 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 0.3rem 0 0.3rem",
       textDecoration: "none",
       color: theme.palette.highlight,
-      ...theme.hoverLink,
-    },
+      ...theme.hoverLink
+    }
   },
   errorTitle: {
     color: theme.palette.errorText,
-    fontSize: "3em",
+    fontSize: "3em"
   },
   errorDescription: {
-    marginBottom: "2em",
+    marginBottom: "2em"
   }
 }))
 
@@ -48,7 +48,9 @@ const NotFoundPage = () => {
     <div className={classes.container}>
       <div className={classes.dialog}>
         <div className={classes.errorTitle}>Error 404</div>
-        <div className={classes.errorDescription}>The page or resource you were looking for does not exist!</div>
+        <div className={classes.errorDescription}>
+          The page or resource you were looking for does not exist!
+        </div>
         <a href="/" className="hoverLink">
           Return home
         </a>
