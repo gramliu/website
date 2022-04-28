@@ -1,42 +1,16 @@
 import React from "react"
-import { makeStyles, useTheme } from "@material-ui/core"
 import { highlighted } from "../../config"
-import { HighlightedProject } from "./HighlightedProject"
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    color: theme.palette.textColor,
-    paddingTop: "10rem",
-    paddingBottom: "10rem",
-  },
-  header: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    display: "flex",
-    width: "100%",
-    justifyContent: "center",
-  },
-  content: {
-    marginTop: "1rem",
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-}))
+import Project from "./Project"
+import * as styles from "./index.module.scss"
 
 const Portfolio = () => {
-  const theme = useTheme()
-  const classes = useStyles(theme)
   return (
     <>
-      <div className={classes.container} id="portfolio">
-        <div className={classes.header}>Things I've Built</div>
-        <div className={classes.content}>
+      <div className={styles.container} id="portfolio">
+        <div className={styles.header}>Things I've Built</div>
+        <div className={styles.content}>
           {highlighted.map((project, index) => (
-            <HighlightedProject
+            <Project
               project={project}
               key={index}
             />
