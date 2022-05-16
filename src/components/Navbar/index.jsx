@@ -15,6 +15,11 @@ const links = [
     link: "#portfolio"
   },
   {
+    label: "Resume",
+    link: "Gregory_Liu_Resume.pdf",
+    target: "_blank"
+  },
+  {
     label: "Cooking",
     link: "https://instagram.com/gram_eats",
     target: "_blank"
