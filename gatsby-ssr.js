@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@material-ui/styles"
 import React from "react"
-import { Scrollbars } from "react-custom-scrollbars"
+import { Scrollbars } from "react-custom-scrollbars-2"
 import "src/styles/global.scss"
 import { Fonts } from "src/components/Fonts"
 import Layout from "src/components/Layout"

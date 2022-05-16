@@ -7,6 +7,14 @@ module.exports = {
   },
   plugins: [
     {
+      resolve: "gatsby-plugin-google-fonts",
+      options: {
+        fonts: [
+          "Red Hat Display\:300,400,500,600,700,800"
+        ]
+      }
+    },
+    {
       resolve: "gatsby-plugin-sass",
       options: {
         sassOptions: {
