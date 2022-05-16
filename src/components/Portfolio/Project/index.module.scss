@@ -177,6 +177,7 @@
 
   svg {
     fill: $text-primary;
+    stroke: $text-primary;
     height: 2rem;
     width: auto;
     transition: fill 0.25s;
@@ -184,5 +185,6 @@
 
   svg:hover {
     fill: $text-highlight;
+    stroke: $text-highlight;
   }
 }

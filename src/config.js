@@ -100,9 +100,9 @@ export const highlighted = [
   },
   {
     title: "📃 Course API",
-    subtitle: "REST API for CMU Course Data",
+    subtitle: "REST API and Website for CMU Course Data",
     description:
-      "A RESTful API for accessing CMU faculty and course evaulation data. Search your upcoming courses to see the difficulty of the content and the amount of time you can expect to work on each course each week.",
+      "A RESTful API and website for accessing CMU faculty and course evaulation data. Search your upcoming courses to see the difficulty of the content and the amount of time you can expect to work on each course each week.",
     date: "March 2020",
     tags: ["MongoDB", "Express", "React", "Node.js"],
     github: "https://github.com/ScottyLabs/course-api-v2",
