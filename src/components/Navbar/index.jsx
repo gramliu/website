@@ -16,7 +16,7 @@ const links = [
   },
   {
     label: "Resume",
-    link: "Gregory_Liu_Resume.pdf",
+    link: "Gram_Liu_Resume.pdf",
     target: "_blank"
   },
   {
