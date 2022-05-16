@@ -24,11 +24,6 @@ module.exports = {
     },
     {
       resolve: "gatsby-plugin-material-ui",
-      options: {
-        stylesProvider: {
-          injectFirst: true
-        }
-      }
     },
     {
       resolve: `gatsby-plugin-google-gtag`,
