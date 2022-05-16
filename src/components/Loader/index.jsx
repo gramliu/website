@@ -1,5 +1,5 @@
 import anime from "animejs"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { LogoIcon } from "src/icons/logo"
 import * as styles from "./index.module.scss"
@@ -48,11 +48,13 @@ const Loader = ({ finishLoading }) => {
       })
   }
 
+  const animateCallback = useCallback(animate, [finishLoading, loaderClass])
+
   useEffect(() => {
     const timeout = setTimeout(() => setIsMounted(true), 10)
-    animate()
+    animateCallback()
     return () => clearTimeout(timeout)
-  }, [])
+  }, [animateCallback])
 
   return (
     <>

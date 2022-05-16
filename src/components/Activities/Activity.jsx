@@ -1,6 +1,6 @@
 import React from "react"
-import { LinkIcon } from "../../../icons/link"
-import * as styles from "./index.module.scss"
+import { LinkIcon } from "../../icons/link"
+import * as styles from "./Activity.module.scss"
 
 export const Activity = ({ activity }) => {
   const { altTitle, title, url, role, roleAlt, dates, description } = activity
@@ -12,6 +12,7 @@ export const Activity = ({ activity }) => {
           <a
             href={url}
             target="_blank"
+            rel="noreferrer"
             className={`${styles.title} ${styles.titleLink}`}
           >
             {altTitle || title}
@@ -26,7 +27,7 @@ export const Activity = ({ activity }) => {
 
       <div className={styles.dates}>{dates}</div>
       <div className={styles.description}>
-        <ul className={styles.descriptionList}>
+        <ul>
           {description.map((item, index) => (
             <li key={index} className={styles.descriptionItem}>
               {item}

@@ -1,6 +1,5 @@
-import * as React from "react"
-import { Link } from "gatsby"
 import { makeStyles, useTheme } from "@material-ui/core"
+import * as React from "react"
 
 const useStyles = makeStyles((theme) => ({
   container: {

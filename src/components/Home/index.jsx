@@ -11,7 +11,7 @@ const Home = () => {
             <div>
               <img
                 src={"/images/profilePhoto.jpg"}
-                alt="Picture of me"
+                alt="Gram Liu"
                 className={styles.portrait}
               />
             </div>

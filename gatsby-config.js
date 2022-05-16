@@ -9,9 +9,7 @@ module.exports = {
     {
       resolve: "gatsby-plugin-google-fonts",
       options: {
-        fonts: [
-          "Red Hat Display\:300,400,500,600,700,800"
-        ]
+        fonts: ["Red Hat Display:300,400,500,600,700,800"]
       }
     },
     {
@@ -23,7 +21,7 @@ module.exports = {
       }
     },
     {
-      resolve: "gatsby-plugin-material-ui",
+      resolve: "gatsby-plugin-material-ui"
     },
     {
       resolve: `gatsby-plugin-google-gtag`,

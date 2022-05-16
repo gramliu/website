@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import * as styles from "./index.module.scss"
+import * as styles from "./TabList.module.scss"
 
 const TabButton = ({ title, focusTab, setFocusTab, idx }) => {
   const focus = focusTab === idx

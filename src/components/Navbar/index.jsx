@@ -35,7 +35,7 @@ const Navbar = () => {
       // Drawer was closed. Go to scroll target
       scrollTo(scrollTarget)
     }
-  }, [drawerOpen])
+  }, [drawerOpen, scrollTarget])
 
   const navLinks = links.map((link, index) => {
     if (link.target) {
@@ -69,7 +69,7 @@ const Navbar = () => {
 
   return (
     <div className={styles.container} id="navbar">
-      <div className={styles.iconLink}>
+      <div>
         <a href="#home" className={styles.navLink}>
           <div className={styles.logo}>
             <LogoIcon />
