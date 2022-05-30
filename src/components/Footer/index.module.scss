@@ -1,0 +1,14 @@
+@import "./src/styles/variables.scss";
+@import "./src/styles/mixins.scss";
+
+.container {
+  padding-bottom: 1rem;
+  width: 100%;
+  text-align: center;
+}
+
+.footerText {
+  font-size: 1rem;
+  color: $text-primary;
+  font-family: $font-primary;
+}

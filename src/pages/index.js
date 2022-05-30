@@ -3,6 +3,7 @@ import React, { useState } from "react"
 import "src/styles/global.scss"
 import About from "../components/About"
 import Activities from "../components/Activities"
+import Footer from "../components/Footer"
 import Home from "../components/Home"
 import Loader from "../components/Loader"
 import Navbar from "../components/Navbar"
@@ -32,6 +33,7 @@ const IndexPage = () => {
         <About />
         <Activities />
         <Portfolio />
+        <Footer />
       </div>
     </>
   )
