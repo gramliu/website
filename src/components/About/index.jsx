@@ -8,7 +8,7 @@ const About = () => {
         <div className={styles.header}>About Me</div>
         <div className={styles.content}>
           Hi! I'm Gram and I build things, from web apps to full stack to IoT.
-          I'm a rising junior at{" "}
+          I'm a rising senior at{" "}
           <a
             href="https://www.cmu.edu/"
             target="_blank"
