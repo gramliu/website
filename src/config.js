@@ -23,6 +23,17 @@ export const social = [
 
 export const activities = [
   {
+    title: "Stripe",
+    url: "https://stripe.com/",
+    dates: "May - Aug 2022",
+    role: "Software Engineering Intern",
+    description: [
+      "Built a first-of-a-kind CI testing framework for the Stripe Terminal Readers, emulating the physical readers on CI for automated testing",
+      "Fixed flakiness on CI that two engineers tried to solve unsuccessfully over the past 12 months, improving reliability of a core test suite from 80% to 100%",
+      "Drove collaboration across 5 teams to scope out a key problem in the development of future emulator tests, identified potential solutions, and determined concrete steps for the fix"
+    ]
+  },
+  {
     title: "Dashlabs.ai",
     url: "https://dashlabs.ai/",
     dates: "May - Aug 2021",
