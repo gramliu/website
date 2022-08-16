@@ -11,7 +11,6 @@ const FadingDiv = styled.div`
 const Loader = ({ finishLoading }) => {
   const [isMounted, setIsMounted] = useState(false)
   const loaderClass = `.${styles.loaderContainer}`
-  console.log(isMounted, loaderClass)
 
   const animate = () => {
     const loader = anime.timeline({
