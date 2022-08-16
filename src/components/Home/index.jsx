@@ -13,6 +13,8 @@ const Home = () => {
                 src={"/images/profilePhoto.jpg"}
                 alt="Gram Liu"
                 className={styles.portrait}
+                height="128"
+                width="128"
               />
             </div>
             <div className={styles.dialogText}>
