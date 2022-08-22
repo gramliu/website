@@ -19,7 +19,6 @@ function TabButton({ title, focusTab, setFocusTab, idx }: TabButtonProps) {
       tabIndex={idx}
       onClick={(e) => {
         e.preventDefault();
-        e.target.focus();
         setFocusTab(idx);
       }}
     >
