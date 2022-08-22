@@ -1,0 +1,130 @@
+@import "~/styles/variables.scss";
+@import "~/styles/mixins.scss";
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  height: 100vh;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5%;
+  justify-content: space-between;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: center;
+  @include down($breakpoint-sm) {
+    flex-direction: column;
+  }
+}
+
+.portrait {
+  height: 20vh;
+  width: auto;
+  border-radius: 50%;
+  border: solid $text-highlight 0.5em;
+  padding: 0.5em;
+}
+
+.dialogText {
+  margin-left: 5rem;
+  font-size: 2rem;
+  color: $text-primary;
+  font-family: $font-primary;
+
+  @include down($breakpoint-sm) {
+    font-size: 1.5rem;
+    margin-left: 0;
+    margin-top: 1em;
+  }
+}
+
+.introLabel {
+  font-family: $font-mono;
+  color: $text-highlight;
+  font-size: 0.75em;
+}
+
+.nameLabel {
+  display: inline-flex;
+  font-weight: bold;
+  color: $text-highlight;
+  font-family: $font-mono;
+  animation: typing 8s steps(10) infinite,
+    blink 0.5s step-end infinite alternate;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid;
+}
+
+@keyframes typing {
+  0% {
+    width: 0;
+  }
+  30% {
+    width: 10ch;
+  }
+  95% {
+    width: 10ch;
+  }
+  100% {
+    width: 0ch;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+.subLabel {
+  font-size: 0.5em;
+}
+
+.socialIconsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 5em;
+  @include down($breakpoint-sm) {
+    width: 100%;
+  }
+}
+
+.socialIcon {
+  margin: 10px 0 10px 0;
+  border: solid $text-primary 2px;
+  border-radius: 50%;
+  padding: 1em;
+  aspect-ratio: 1 / 1;
+  transition: border 0.25s, background 0.25s;
+}
+
+.socialIcon svg {
+  width: 35px;
+  height: 35px;
+  transition: fill 0.25s;
+  fill: $text-primary;
+  @include down($breakpoint-sm) {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.socialImage:hover {
+  border: solid $text-primary 2px;
+  background: $text-primary;
+}
+
+.socialImage:hover svg {
+  fill: $text-highlight1;
+}

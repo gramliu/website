@@ -1,0 +1,70 @@
+@import "~/styles/variables.scss";
+@import "~/styles/mixins.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  @include down($breakpoint-sm) {
+    width: 100%;
+  }
+}
+
+.title {
+  font-size: 2rem;
+}
+
+.titleLink {
+  color: $text-primary;
+  text-decoration: none;
+  transition: transform 0.25s;
+  display: inline-block;
+
+  & svg {
+    height: 0.8rem;
+    margin-left: 0.3rem;
+    fill: $text-primary;
+    opacity: 0.8;
+  }
+
+  &:hover {
+    transform: translate(0, -3px);
+  }
+}
+
+.role {
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  color: $text-highlight;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.roleAlt {
+  margin-top: 0.2rem;
+  text-transform: uppercase;
+  color: $text-highlight;
+  font-size: 0.8rem;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.dates {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+.description {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.descriptionItem {
+  width: 100%;
+  margin-bottom: 1rem;
+
+  @include down($breakpoint-md) {
+    width: 80%;
+  }
+}
