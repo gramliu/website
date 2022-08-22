@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Image from "next/future/image";
 import React, { ReactNode } from "react";
 import { Project } from "../../config/projects";
 import GitHubIcon from "../../icons/github";
@@ -15,10 +16,18 @@ export default function ProjectEntry({
   link,
   video,
   image,
+  imageHeight,
+  imageWidth,
 }: Project) {
   const imageContainer = (
     <div className={clsx(styles.imageContainer, styles.projectImage)}>
-      <img src={image} alt={title} className={styles.image} />
+      <Image
+        src={image}
+        alt={title}
+        className={styles.image}
+        height={imageHeight}
+        width={imageWidth}
+      />
     </div>
   );
   const links = [];

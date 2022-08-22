@@ -8,6 +8,8 @@ export interface Project {
   tags: string[];
   github: string;
   image: string;
+  imageHeight: number;
+  imageWidth: number;
   link?: string;
   video?: string;
 }
@@ -20,6 +22,8 @@ const projects: Project[] = [
     tags: ["GPT-3", "Flask", "React", "Google Cloud"],
     github: "https://github.com/medisure-ai/medisure-ai",
     image: "/projects/medisure.png",
+    imageHeight: 1080,
+    imageWidth: 720,
     description: (
       <div>
         🏆 Top 3, Best Use of Google Cloud
@@ -47,6 +51,8 @@ const projects: Project[] = [
     github: "https://github.com/ScottyLabs/course-api-v2",
     link: "https://course.scottylabs.org/",
     image: "/projects/course-api.png",
+    imageHeight: 1080,
+    imageWidth: 720,
   },
   {
     title: "🌈 Illuminate Designer",
@@ -72,6 +78,8 @@ const projects: Project[] = [
     video: "https://youtu.be/5LwwyFJoPSw",
     image: "/projects/illuminate.png",
     link: "https://illuminate.scottylabs.org/",
+    imageHeight: 1080,
+    imageWidth: 720,
   },
 ];
 
