@@ -6,8 +6,8 @@ export default function About() {
       <div className={styles.container} id="about">
         <div className={styles.header}>About Me</div>
         <div className={styles.content}>
-          Hi! I'm Gram and I build things, from web apps to full stack to IoT.
-          I'm a rising senior at{" "}
+          Hi! I&apos;m Gram and I build things, from web apps to full stack to
+          IoT. I&apos;m a rising senior at{" "}
           <a
             href="https://www.cmu.edu/"
             target="_blank"

@@ -21,7 +21,7 @@ export default function Hero() {
               <span className={styles.introLabel}>Hi! 👋</span>
               <br />
               <br />
-              I'm <span className={styles.nameLabel}>Gram Liu.</span>
+              I&apos;m <span className={styles.nameLabel}>Gram Liu.</span>
               <br />
               <span className={styles.subLabel}>
                 Developer. Engineer. Tech Enthusiast.

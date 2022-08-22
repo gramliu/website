@@ -14,7 +14,7 @@ export default function RedirectIcon() {
     >
       <path
         fill="none"
-        class="st0"
+        className="st0"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeMiterlimit={10}
@@ -22,7 +22,7 @@ export default function RedirectIcon() {
 		c0-51.1,41.4-92.5,92.5-92.5H192"
       />
       <line
-        class="st0"
+        className="st0"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeMiterlimit={10}
@@ -32,7 +32,7 @@ export default function RedirectIcon() {
         y2="41.6"
       />
       <line
-        class="st1"
+        className="st1"
         strokeWidth={strokeWidth}
         strokeLinecap="square"
         strokeMiterlimit={10}
@@ -42,7 +42,7 @@ export default function RedirectIcon() {
         y2="39"
       />
       <line
-        class="st0"
+        className="st0"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeMiterlimit={10}
@@ -52,7 +52,7 @@ export default function RedirectIcon() {
         y2="39"
       />
       <line
-        class="st1"
+        className="st1"
         strokeWidth={strokeWidth}
         strokeLinecap="square"
         strokeMiterlimit={10}
@@ -62,7 +62,7 @@ export default function RedirectIcon() {
         y2="39"
       />
       <line
-        class="st0"
+        className="st0"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeMiterlimit={10}
@@ -71,7 +71,7 @@ export default function RedirectIcon() {
         x2="474"
         y2="54.3"
       />
-      <line class="st2" fill="none" x1="495" y1="256" x2="495" y2="384" />
+      <line className="st2" fill="none" x1="495" y1="256" x2="495" y2="384" />
     </svg>
   );
 }

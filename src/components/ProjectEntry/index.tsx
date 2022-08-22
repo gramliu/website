@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import React, { ReactNode } from "react";
 import { Project } from "../../config/projects";
 import GitHubIcon from "../../icons/github";
@@ -16,7 +17,7 @@ export default function ProjectEntry({
   image,
 }: Project) {
   const imageContainer = (
-    <div className={`${styles.imageContainer} ${styles.projectImage}`}>
+    <div className={clsx(styles.imageContainer, styles.projectImage)}>
       <img src={image} alt={title} className={styles.image} />
     </div>
   );
