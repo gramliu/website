@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import { Activity } from "../../config/activities";
@@ -14,7 +15,7 @@ function TabButton({ title, focusTab, setFocusTab, idx }: TabButtonProps) {
   const focus = focusTab === idx;
   return (
     <div
-      className={`${styles.tabButton} ${focus ? styles.selectedTab : null}`}
+      className={clsx(styles.tabButton, focus ? styles.selectedTab : null)}
       tabIndex={idx}
       onClick={(e) => {
         e.preventDefault();

@@ -5,6 +5,7 @@ import LogoIcon from "../../icons/logo";
 import SandwichIcon from "../../icons/sandwich";
 import styles from "./index.module.scss";
 import { scroller } from "react-scroll";
+import clsx from "clsx";
 
 const links = [
   {
@@ -84,7 +85,7 @@ export default function Navbar() {
       <div className={styles.navLinkContainer}>
         {drawerOpen ? null : (
           <div
-            className={`${styles.sandwich} sandwich`}
+            className={clsx(styles.sandwich, "sandwich")}
             key="sandwich"
             onClick={() => {
               setDrawerOpen(true);

@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Activity } from "../../config/activities";
 import LinkIcon from "../../icons/link";
 import styles from "./index.module.scss";
@@ -19,7 +20,7 @@ export default function ActivityEntry({
             href={url}
             target="_blank"
             rel="noreferrer"
-            className={`${styles.title} ${styles.titleLink}`}
+            className={clsx(styles.title, styles.titleLink)}
           >
             {altTitle || title}
             <LinkIcon />

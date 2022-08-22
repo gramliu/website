@@ -62,7 +62,7 @@ export default function ProjectEntry({
     );
   }
   const contentContainer = (
-    <div className={`${styles.content} ${styles.projectContent}`}>
+    <div className={clsx(styles.content, styles.projectContent)}>
       <div className={styles.title}>{title}</div>
       <div className={styles.subtitle}>{subtitle}</div>
       <div className={styles.description}>{description}</div>
