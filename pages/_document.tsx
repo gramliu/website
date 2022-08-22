@@ -5,7 +5,6 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        <title>Gram Liu</title>
         <meta name="title" content="Gram Liu" />
         <meta
           name="description"

@@ -1,8 +1,16 @@
-import "../styles/global.scss";
 import type { AppProps } from "next/app";
+import Head from "next/head";
+import "../styles/global.scss";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+  return (
+    <>
+      <Head>
+        <title>Gram Liu</title>
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
 }
 
 export default MyApp;
