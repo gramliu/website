@@ -27,6 +27,7 @@ export default function ProjectEntry({
         className={styles.image}
         height={imageHeight}
         width={imageWidth}
+        loading="lazy"
       />
     </div>
   );
