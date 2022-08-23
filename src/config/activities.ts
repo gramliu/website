@@ -15,9 +15,10 @@ const activities: Activity[] = [
     dates: "May - Aug 2022",
     role: "Software Engineering Intern",
     description: [
-      "Built a first-of-a-kind CI testing framework for the Stripe Terminal Readers, emulating the physical readers on CI for automated testing",
+      "Built a first-of-a-kind CI testing framework for the Stripe Terminal Readers, emulating the physical readers with Android on CI for automated testing",
       "Fixed flakiness on CI that two engineers tried to solve unsuccessfully over the past 12 months, improving reliability of a core test suite from 80% to 100%",
       "Drove collaboration across 5 teams to scope out a key problem in the development of future emulator tests, identified potential solutions, and determined concrete steps for the fix",
+      "Created various developer productivity improvements such as emulator crash detection, concurrent log streaming, and faster failure detection, bringing down test time-to-failure from 1 hour to 20 minutes",
     ],
   },
   {
