@@ -5,6 +5,7 @@ import Hero from "../src/components/Hero";
 import Layout from "../src/components/Layout";
 import Navbar from "../src/components/Navbar";
 import Portfolio from "../src/components/Portfolio";
+import ProjectGallery from "../src/components/ProjectGallery";
 
 export default function HomePage() {
   return (
@@ -14,6 +15,7 @@ export default function HomePage() {
       <About />
       <ActivitiesList />
       <Portfolio />
+      <ProjectGallery />
       <Footer />
     </Layout>
   );
