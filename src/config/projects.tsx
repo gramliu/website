@@ -4,7 +4,6 @@ export interface Project {
   title: string;
   subtitle: string;
   description: ReactNode;
-  date: string;
   tags: string[];
   github: string;
   image: string;
@@ -18,7 +17,6 @@ const projects: Project[] = [
   {
     title: "🩺 Medisure.ai",
     subtitle: "Personalized assistant for medical insurance",
-    date: "September 2020",
     tags: ["GPT-3", "Flask", "React", "Google Cloud"],
     github: "https://github.com/medisure-ai/medisure-ai",
     image: "/projects/medisure.png",
@@ -46,7 +44,6 @@ const projects: Project[] = [
     subtitle: "REST API and Website for CMU Course Data",
     description:
       "A RESTful API and website for accessing CMU faculty and course evaulation data. Search your upcoming courses to see the difficulty of the content and the amount of time you can expect to work on each course each week.",
-    date: "March 2020",
     tags: ["MongoDB", "Express", "React", "Node.js"],
     github: "https://github.com/ScottyLabs/course-api-v2",
     link: "https://course.scottylabs.org/",
@@ -72,7 +69,6 @@ const projects: Project[] = [
         create lighting designs that were then displayed on the bridge.
       </div>
     ),
-    date: "April 2021",
     tags: ["React", "Redux", "Express", "Jimp"],
     github: "https://github.com/ScottyLabs/pausch-ui",
     video: "https://youtu.be/5LwwyFJoPSw",

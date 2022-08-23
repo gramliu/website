@@ -14,7 +14,7 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={github}
         target="_blank"
         rel="noreferrer"
-        className={styles.link}
+        className={styles.cardLink}
         key="github"
       >
         <GitHubIcon />
@@ -27,7 +27,7 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={link}
         target="_blank"
         rel="noreferrer"
-        className={styles.link}
+        className={styles.cardLink}
         key="link"
       >
         <RedirectIcon />
@@ -40,7 +40,7 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={video}
         target="_blank"
         rel="noreferrer"
-        className={styles.link}
+        className={styles.cardLink}
         key="youtube"
       >
         <YouTubeIcon />
@@ -56,6 +56,7 @@ export default function ProjectCard({
   subtitle,
   description,
   github,
+  tags,
   link,
   video,
   image,
@@ -73,10 +74,18 @@ export default function ProjectCard({
         height={256}
         width={imageWidth * scaleFactor}
         className={styles.projectImage}
+        sizes="(min-height: 256) 256"
       />
       <span className={styles.cardTitle}>{title}</span>
       <span className={styles.cardSubtitle}>{subtitle}</span>
       <span className={styles.cardDescription}>{description}</span>
+      <div className={styles.tags}>
+        {tags.map((tag, index) => (
+          <div className={styles.tag} key={index}>
+            {tag}
+          </div>
+        ))}
+      </div>
       <div className={styles.cardLinks}>{links}</div>
     </div>
   );

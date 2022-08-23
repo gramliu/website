@@ -25,4 +25,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 5rem;
+
+  @include down($breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
 }

@@ -53,6 +53,25 @@
   }
 }
 
+.tags {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.tag {
+  color: $text-highlight;
+  font-weight: bold;
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  @include down($breakpoint-xs) {
+    font-size: 0.8rem;
+  }
+}
+
 .cardLinks {
   width: 100%;
   display: flex;
@@ -61,14 +80,7 @@
   margin-top: auto;
 }
 
-.links {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  margin-top: 1rem;
-}
-
-.link {
+.cardLink {
   margin: 1rem;
 
   svg {

@@ -6,30 +6,7 @@ import RedirectIcon from "../../icons/redirect";
 import YouTubeIcon from "../../icons/youtube";
 import styles from "./index.module.scss";
 
-export default function ProjectEntry({
-  title,
-  subtitle,
-  description,
-  tags,
-  github,
-  link,
-  video,
-  image,
-  imageHeight,
-  imageWidth,
-}: Project) {
-  const imageContainer = (
-    <div className={clsx(styles.imageContainer, styles.projectImage)}>
-      <Image
-        src={image}
-        alt={title}
-        className={styles.image}
-        height={imageHeight}
-        width={imageWidth}
-        loading="lazy"
-      />
-    </div>
-  );
+function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
   const links = [];
   if (github) {
     links.push(
@@ -70,6 +47,35 @@ export default function ProjectEntry({
       </a>
     );
   }
+
+  return links;
+}
+
+export default function ProjectEntry({
+  title,
+  subtitle,
+  description,
+  tags,
+  github,
+  link,
+  video,
+  image,
+  imageHeight,
+  imageWidth,
+}: Project) {
+  const imageContainer = (
+    <div className={clsx(styles.imageContainer, styles.projectImage)}>
+      <Image
+        src={image}
+        alt={title}
+        className={styles.image}
+        height={imageHeight}
+        width={imageWidth}
+        loading="lazy"
+      />
+    </div>
+  );
+  const links = getLinks(github, link, video);
   const contentContainer = (
     <div className={clsx(styles.content, styles.projectContent)}>
       <div className={styles.title}>{title}</div>
