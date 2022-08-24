@@ -7,7 +7,6 @@ const nextConfig = {
       allowFutureImage: true,
     },
   },
-  target: "serverless",
 };
 
 module.exports = nextConfig;
