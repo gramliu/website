@@ -39,7 +39,7 @@ const archive: Project[] = [
     title: "TartanHacks Backend",
     subtitle: "Backend for the TartanHacks Software Suite",
     github: "https://github.com/ScottyLabs/tartanhacks-backend",
-    image: "/projects/tartanhacks-backend.jpg",
+    image: "/projects/tartanhacks-backend.png",
     imageHeight: 345,
     imageWidth: 247,
     tags: ["TypeScript", "Express", "MongoDB"],
