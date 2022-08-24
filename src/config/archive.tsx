@@ -36,7 +36,7 @@ const archive: Project[] = [
       "Web app where hackers sign up to enter TartanHacks, CMU's largest hackathon",
   },
   {
-    title: "TartanHacks Backend",
+    title: "TartanHacks Helix",
     subtitle: "Backend for the TartanHacks Software Suite",
     github: "https://github.com/ScottyLabs/tartanhacks-backend",
     image: "/projects/tartanhacks-backend.png",
