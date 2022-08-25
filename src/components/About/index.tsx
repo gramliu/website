@@ -16,10 +16,10 @@ export default function About() {
           >
             Carnegie Mellon University
           </a>{" "}
-          pursuing a major in Electrical and Computer Engineering. I am a big{" "}
-          fan of technology and how it changes the way we think about and{" "}
-          address problems from education to health care, consistently pushing{" "}
-          the boundaries of what we think is possible.
+          pursuing a major in Electrical and Computer Engineering. I'm a big fan
+          of technology and how it changes the way we tackle everything from
+          payments to health care, consistently pushing the boundaries of what
+          we think is possible.
           <br />
           <br />
           Outside of tech, I also really enjoy cooking! I try to do the food
