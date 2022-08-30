@@ -8,7 +8,7 @@
   width: 60%;
   margin-top: 2rem;
 
-  @include up($breakpoint-md) {
+  @include up($breakpoint-lg) {
     &:nth-child(odd) {
       grid-template-columns: 4fr 3fr;
       text-align: start;
