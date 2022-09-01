@@ -37,6 +37,17 @@ const archive: Project[] = [
       "One-stop-shop for finding out on-campus dining availabilities with 1,000 weekly unique users.",
   },
   {
+    title: "ScottyLabs Website",
+    subtitle: "Club Website",
+    link: "https://scottylabs.org",
+    github: "https://github.com/ScottyLabs/scottylabs.org",
+    image: "/projects/scottylabs-website.jpg",
+    imageHeight: 1280,
+    imageWidth: 720,
+    tags: ["TypeScript", "React", "Next.js"],
+    description: "Club website for ScottyLabs, the largest tech club at CMU",
+  },
+  {
     title: "TartanHacks Registration System",
     subtitle: "Hackathon Application Portal",
     github: "https://github.com/ScottyLabs/tartanhacks-registration",
