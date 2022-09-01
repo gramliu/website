@@ -25,6 +25,18 @@ const archive: Project[] = [
     ),
   },
   {
+    title: "CMUEats",
+    subtitle: "Dining Location Status @ CMU",
+    link: "https://cmueats.com",
+    github: "https://github.com/ScottyLabs/cmueats",
+    image: "/projects/cmueats.jpg",
+    imageHeight: 1280,
+    imageWidth: 720,
+    tags: ["React"],
+    description:
+      "One-stop-shop for finding out on-campus dining availabilities with 1,000 weekly unique users.",
+  },
+  {
     title: "TartanHacks Registration System",
     subtitle: "Hackathon Application Portal",
     github: "https://github.com/ScottyLabs/tartanhacks-registration",
