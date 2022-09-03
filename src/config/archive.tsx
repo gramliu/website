@@ -23,6 +23,7 @@ const archive: Project[] = [
         Web app that identifies parking spots from CCTV footage using OpenCV
       </div>
     ),
+    year: 2021,
   },
   {
     title: "CMUEats",
@@ -35,6 +36,7 @@ const archive: Project[] = [
     tags: ["React"],
     description:
       "One-stop-shop for finding out on-campus dining availabilities with 1,000 weekly unique users.",
+    year: 2022,
   },
   {
     title: "ScottyLabs Website",
@@ -46,6 +48,7 @@ const archive: Project[] = [
     imageWidth: 720,
     tags: ["TypeScript", "React", "Next.js"],
     description: "Club website for ScottyLabs, the largest tech club at CMU",
+    year: 2022,
   },
   {
     title: "TartanHacks Registration System",
@@ -57,6 +60,7 @@ const archive: Project[] = [
     tags: ["TypeScript", "React", "Next.JS"],
     description:
       "Web app where hackers sign up to enter TartanHacks, CMU's largest hackathon",
+    year: 2021,
   },
   {
     title: "TartanHacks Helix",
@@ -68,6 +72,7 @@ const archive: Project[] = [
     tags: ["TypeScript", "Express", "MongoDB"],
     description:
       "Spearheaded development of the backend for the TartanHacks Software Suite, encompassing registration, scheduling, project submission, and live event logistics",
+    year: 2021,
   },
   {
     title: "TartanHacks Website",
@@ -78,6 +83,7 @@ const archive: Project[] = [
     imageWidth: 1010,
     tags: ["TypeScript", "React", "Next.JS"],
     description: "Built the promotional website for TartanHacks",
+    year: 2021,
   },
   {
     title: "Craft112",
@@ -90,6 +96,7 @@ const archive: Project[] = [
     tags: ["Python", "PyGame"],
     description:
       "A Terraria-inspired adventure game. Fight and mine to survive against enemies in a randomly generated world. Created using Pygame.",
+    year: 2019,
   },
   {
     title: "Unawa",
@@ -101,6 +108,7 @@ const archive: Project[] = [
     tags: ["Android", "Java", "OpenCV", "TensorFlow"],
     description:
       'Unawa (Filipino word for "understanding") is an Android app designed to help people with communication disabilities through OCR, Sign Language Recognition, and Speech-to-Text Recognition.',
+    year: 2018,
   },
   {
     title: "Suroy",
@@ -118,6 +126,7 @@ const archive: Project[] = [
         promoting visibility of small businesses along their commute.
       </div>
     ),
+    year: 2018,
   },
   {
     title: "Daloy",
@@ -135,6 +144,7 @@ const archive: Project[] = [
         air and water pressure for educational or research purposes.
       </div>
     ),
+    year: 2018,
   },
   {
     title: "GripAid",
@@ -152,6 +162,7 @@ const archive: Project[] = [
         air and water pressure for educational or research purposes.
       </div>
     ),
+    year: 2018,
   },
 ];
 

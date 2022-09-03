@@ -11,6 +11,7 @@ export interface Project {
   imageWidth: number;
   link?: string;
   video?: string;
+  year?: number;
 }
 
 const projects: Project[] = [

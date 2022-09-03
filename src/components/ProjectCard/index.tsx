@@ -62,6 +62,7 @@ export default function ProjectCard({
   image,
   imageHeight,
   imageWidth,
+  year,
 }: Project) {
   const scaleFactor = 256 / imageHeight;
   const links = getLinks(github, link, video);
@@ -87,6 +88,7 @@ export default function ProjectCard({
         ))}
       </div>
       <div className={styles.cardLinks}>{links}</div>
+      <div className={styles.year}>{year}</div>
     </div>
   );
 }
