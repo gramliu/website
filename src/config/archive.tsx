@@ -153,13 +153,13 @@ const archive: Project[] = [
     image: "/projects/gripaid.jpg",
     imageHeight: 512,
     imageWidth: 512,
-    tags: ["Android", "Arduino", "Raspberry Pi", "Zigbee Radio"],
+    tags: ["Arduino", "3D Printing"],
     description: (
       <div>
-        🏆 1st Place, InnoBox Project Philippines. Daloy (Filipino word for
-        &quot;flow&quot; 🌊) is a drone and submarine-based research tool that
-        remotely demonstrates real-time changes in environmental parameters like
-        air and water pressure for educational or research purposes.
+        GripAid is a wearable grip exoskeleton that assists people with
+        neurodegenerative diseases. It also displays heart pulse biometrics,
+        since this demographic is often at high risk of cardiovascular diseases.
+        Frame was 3D printed, mechanism powered by Arduino.
       </div>
     ),
     year: 2018,
