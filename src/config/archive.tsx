@@ -71,7 +71,7 @@ const archive: Project[] = [
     imageWidth: 247,
     tags: ["TypeScript", "Express", "MongoDB"],
     description:
-      "Spearheaded development of the backend for the TartanHacks Software Suite, encompassing registration, scheduling, project submission, and live event logistics",
+      "Spearheaded planning, design, and development of the backend for the TartanHacks Software Suite, encompassing registration, scheduling, project submission, and live event logistics",
     year: 2021,
   },
   {
