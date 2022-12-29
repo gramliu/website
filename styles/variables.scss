@@ -23,3 +23,26 @@ $box-shadow:
   0 2px 4px rgba(0, 0, 0, 0.07),
   0 4px 8px rgba(0, 0, 0, 0.07), 
   0 8px 16px rgba(0, 0, 0, 0.07);
+
+// Font sizes
+$hero-font-sizes: (
+  default: 5rem,
+  sm: 2.5rem,
+  xs: 2rem,
+);
+$h1-font-sizes: (
+  default: 3rem,
+);
+$h2-font-sizes: (
+  default: 2rem,
+  xs: 1.5rem,
+);
+$body-font-sizes: (
+  default: 1rem,
+);
+$subtitle-font-sizes: (
+  default: 0.8rem,
+);
+$subtitle1-font-sizes: (
+  default: 0.6rem,
+);
