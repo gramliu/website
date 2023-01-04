@@ -1,4 +1,4 @@
-import About from "../src/components/About";
+import AboutSection from "../src/components/AboutSection";
 import ActivitiesList from "../src/components/ActivitiesList";
 import Footer from "../src/components/Footer";
 import Hero from "../src/components/Hero";
@@ -12,7 +12,7 @@ export default function HomePage() {
     <Layout>
       <Navbar />
       <Hero />
-      <About />
+      <AboutSection />
       <ActivitiesList />
       <Portfolio />
       <ProjectArchive />

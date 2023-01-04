@@ -2,6 +2,34 @@ import type { Project } from "./projects";
 
 const archive: Project[] = [
   {
+    title: "Pol.Lit",
+    subtitle: "Political Literacy and Transparency Platform",
+    github: "https://github.com/gramliu/pollit",
+    image: "/projects/pollit.jpg",
+    imageHeight: 1897,
+    imageWidth: 1008,
+    tags: ["Next.JS", "MongoDB", "Express", "BERT", "Pegasus", "GCP"],
+    description: (
+      <div>
+        🏆 Best NLP Hack
+        <a
+          href="https://hackmit.org/"
+          target="_blank"
+          rel="noreferrer"
+          className="hoverLink"
+        >
+          @HackMIT 2022.
+        </a>
+        <br />
+        Platform to improve political literacy and accountability in the
+        Philippines. Used OCR, Pegasus, and BERT to scan and summarize PDF bills
+        from the Philippine Congress. Scraped members of legislation and built
+        profiles based on activity and semantic tags of bills authored.
+      </div>
+    ),
+    year: 2022,
+  },
+  {
     title: "Parking Finder",
     subtitle: "Computer Vision Powered Parking Spot Finder",
     github: "https://github.com/dark-red-green",
@@ -20,6 +48,7 @@ const archive: Project[] = [
         >
           @HackMIT 2021.
         </a>
+        <br />
         Web app that identifies parking spots from CCTV footage using OpenCV
       </div>
     ),
@@ -35,7 +64,7 @@ const archive: Project[] = [
     imageWidth: 720,
     tags: ["React"],
     description:
-      "One-stop-shop for finding out on-campus dining availabilities with 1,000 weekly unique users.",
+      "One-stop-shop for finding out on-campus dining availabilities with over 1,000 weekly unique users.",
     year: 2022,
   },
   {
@@ -49,6 +78,17 @@ const archive: Project[] = [
     tags: ["TypeScript", "React", "Next.js"],
     description: "Club website for ScottyLabs, the largest tech club at CMU",
     year: 2022,
+  },
+  {
+    title: "TartanHacks Website",
+    subtitle: "Promotional Website for TartanHacks",
+    github: "https://github.com/ScottyLabs/tartanhacks",
+    image: "/projects/tartanhacks.jpg",
+    imageHeight: 1904,
+    imageWidth: 1010,
+    tags: ["TypeScript", "React", "Next.JS", "Tailwind"],
+    description: "Built the promotional website for TartanHacks",
+    year: "2021 - 2023",
   },
   {
     title: "TartanHacks Registration System",
@@ -72,17 +112,6 @@ const archive: Project[] = [
     tags: ["TypeScript", "Express", "MongoDB"],
     description:
       "Spearheaded planning, design, and development of the backend for the TartanHacks Software Suite, encompassing registration, scheduling, project submission, and live event logistics",
-    year: 2021,
-  },
-  {
-    title: "TartanHacks Website",
-    subtitle: "Promotional Website for TartanHacks",
-    github: "https://github.com/ScottyLabs/tartanhacks",
-    image: "/projects/tartanhacks.png",
-    imageHeight: 1904,
-    imageWidth: 1010,
-    tags: ["TypeScript", "React", "Next.JS"],
-    description: "Built the promotional website for TartanHacks",
     year: 2021,
   },
   {
