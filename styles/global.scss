@@ -31,6 +31,8 @@ img {
   display: inline;
   position: relative;
   overflow: hidden;
+  text-decoration: none;
+  color: $text-highlight;
 
   &::after {
     content: "";
