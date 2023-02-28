@@ -1,6 +1,7 @@
 import Image from "next/future/image";
 import social from "../../config/social";
 import styles from "./index.module.scss";
+import ProfilePhoto from "../../../public/images/profilePhoto.jpg";
 
 export default function Hero() {
   return (
@@ -8,13 +9,15 @@ export default function Hero() {
       <div className={styles.container} id="home">
         <div className={styles.dialog}>
           <div className={styles.dialogContent}>
-            <div>
+            <div className={styles.portraitContainer}>
               <Image
-                src="/images/profilePhoto.jpg"
+                src={ProfilePhoto}
                 alt="Picture of me"
                 className={styles.portrait}
                 height={512}
                 width={512}
+                placeholder="blur"
+                priority
               />
             </div>
             <div className={styles.dialogText}>

@@ -24,12 +24,17 @@
   }
 }
 
+.portraitContainer {
+  border-radius: 50%;
+  border: solid $text-highlight 0.5em;
+  padding: 0.5em;
+  overflow: none;
+}
+
 .portrait {
   height: 20vh;
   width: auto;
   border-radius: 50%;
-  border: solid $text-highlight 0.5em;
-  padding: 0.5em;
 }
 
 .dialogText {
