@@ -8,9 +8,7 @@ export default function ProjectArchive() {
       <div className={styles.header}>Other Past Projects</div>
       <div className={styles.content}>
         {archive.map((project, index) => (
-          <>
             <ProjectCard {...project} key={index} />
-          </>
         ))}
       </div>
     </div>

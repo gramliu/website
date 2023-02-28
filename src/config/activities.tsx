@@ -20,7 +20,7 @@ const activities: Activity[] = [
       "Built a first-of-a-kind CI testing framework for the Stripe Terminal Readers, emulating the physical readers with Android on CI for automated testing",
       "Fixed flakiness on CI that two engineers tried to solve unsuccessfully over the past 12 months, improving reliability of a core test suite from 80% to 100%",
       "Drove collaboration across 5 teams to scope out a key problem in the development of future emulator tests, identified potential solutions, and determined concrete steps for the fix",
-      "Created various developer productivity improvements such as emulator crash detection, concurrent log streaming, and faster failure detection, bringing down test time-to-failure from 1 hour to 20 minutes",
+      "Created various developer productivity improvements such as emulator crash detection, concurrent log streaming, and faster failure detection, bringing down the time required for failure detection from 1 hour to 20 minutes",
     ],
   },
   {
@@ -32,7 +32,7 @@ const activities: Activity[] = [
       "Built a client and membership management platform for the Philippine Red Cross (PRC) using React and Next.js",
       "Developed a GraphQL schema backend using TypeScript and Apollo Server to facilitate queries and mutations with our MongoDB database",
       "Leveraged MongoDB aggregation pipelines to optimize calls to the database",
-      "Created backend integrations to automatically generate vaccination cards upon appointment bookings with QR codes for verification",
+      "Created a microservice to automatically generate vaccination cards upon appointment bookings with QR codes for verification",
     ],
   },
   {
@@ -43,7 +43,6 @@ const activities: Activity[] = [
     role: "Research Assistant",
     description: [
       <p key="publication">
-        Co-authored{" "}
         <strong>
           Peekaboo: A Hub-Based Approach to Enable Transparency in Data
           Processing within Smart Homes
@@ -59,9 +58,8 @@ const activities: Activity[] = [
         </a>
         )
       </p>,
-      "Created a smart home app development framework that enables reusable native privacy features using Node-RED and Node.JS",
-      "Developed machine learning microservices with openpose and openface using Docker and Flask",
-      "Developing a decentralized and privacy-focused app ecosystem that supports building city-scale smart applications using AWS and NoFlo JS",
+      "Created a smart home app development framework that enables the reuse of native privacy features using Node-RED and Node.js",
+      "Designed a domain-specific language (DSL), interpreter, and runtime for building privacy-centric city-scale smart applications",
     ],
   },
   {
