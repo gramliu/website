@@ -88,7 +88,8 @@ const archive: Project[] = [
     imageHeight: 1904,
     imageWidth: 1010,
     tags: ["TypeScript", "React", "Next.JS", "Tailwind"],
-    description: "Built the promotional website for TartanHacks",
+    description:
+      "Built the promotional websites for TartanHacks from 2021-2023",
     year: "2021 - 2023",
   },
   {
@@ -100,7 +101,7 @@ const archive: Project[] = [
     imageWidth: 900,
     tags: ["TypeScript", "React", "Next.JS"],
     description:
-      "Web app where hackers sign up to enter TartanHacks, CMU's largest hackathon",
+      "Web portals for participants to sign up and join TartanHacks, CMU's largest hackathon",
     year: 2021,
   },
   {
@@ -111,8 +112,10 @@ const archive: Project[] = [
     imageHeight: 345,
     imageWidth: 247,
     tags: ["TypeScript", "Express", "MongoDB"],
-    description:
-      "Spearheaded planning, design, and development of the backend for the TartanHacks Software Suite, encompassing registration, scheduling, project submission, and live event logistics",
+    description: `Spearheaded planning, design, and development of the backend for the TartanHacks Software Suite, 
+    encompassing registration, scheduling, project submission, 
+    and live event logistics. Worked across five different teams to scope out requirements and design for the
+    cross-platform API`,
     year: 2021,
   },
   {
