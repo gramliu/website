@@ -7,7 +7,7 @@ export default function About() {
         <div className={styles.header}>About Me</div>
         <div className={styles.content}>
           Hi! I&apos;m Gram and I build things, from web apps to full stack to
-          IoT. I&apos;m a senior at{" "}
+          IoT. I graduated from{" "}
           <a
             href="https://www.cmu.edu/"
             target="_blank"
@@ -16,10 +16,11 @@ export default function About() {
           >
             Carnegie Mellon University
           </a>{" "}
-          pursuing a major in Electrical and Computer Engineering. I&apos;m a
-          big fan of technology and how it changes the way we tackle everything
-          from payments to health care, consistently pushing the boundaries of
-          what we think is possible.
+          with a major in Electrical and Computer Engineering and a minor in
+          Computer Science. I&apos;m a big fan of technology and how it
+          revolutionizes the way we tackle everything from payments to
+          education, consistently pushing the boundaries of what we think is
+          possible.
           <br />
           <br />
           Outside of tech, I also really enjoy cooking! I try to do the food
