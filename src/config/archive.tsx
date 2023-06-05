@@ -49,7 +49,8 @@ const archive: Project[] = [
           @HackMIT 2021.
         </a>
         <br />
-        Web app that identifies parking spots from CCTV footage using OpenCV
+        Web app that aggregates CCTV footage from parking lots near you to find
+        available parking spots using computer vision.
       </div>
     ),
     year: 2021,
