@@ -23,7 +23,7 @@ const links = [
   },
   {
     label: "Cooking",
-    link: "https://instagram.com/gram_eats",
+    link: "https://instagram.com/gram_cooks",
     target: "_blank",
   },
 ];
