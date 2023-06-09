@@ -2,6 +2,7 @@ import Image from "next/future/image";
 import social from "../../config/social";
 import styles from "./index.module.scss";
 import ProfilePhoto from "../../../public/images/profilePhoto.jpg";
+import ProfileDisc from "../ProfileDisc";
 
 export default function Hero() {
   return (
@@ -9,7 +10,8 @@ export default function Hero() {
       <div className={styles.container} id="home">
         <div className={styles.dialog}>
           <div className={styles.dialogContent}>
-            <div className={styles.portraitContainer}>
+            <ProfileDisc />
+            {/* <div className={styles.portraitContainer}>
               <Image
                 src={ProfilePhoto}
                 alt="Picture of me"
@@ -19,7 +21,7 @@ export default function Hero() {
                 placeholder="blur"
                 priority
               />
-            </div>
+            </div> */}
             <div className={styles.dialogText}>
               <span className={styles.introLabel}>Hi! 👋</span>
               <br />
