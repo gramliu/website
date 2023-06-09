@@ -23,8 +23,8 @@ export default function About() {
           possible.
           <br />
           <br />
-          Outside of tech, I also really enjoy cooking! I try to do the food
-          justice by honing the art of food photography over on{" "}
+          Outside of tech, I also love to cook! I try to do the food justice by
+          honing the art of food photography over on{" "}
           <a
             href="https://www.instagram.com/gram_cooks/"
             target="_blank"
