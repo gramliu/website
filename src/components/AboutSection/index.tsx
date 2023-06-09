@@ -26,7 +26,7 @@ export default function About() {
           Outside of tech, I also really enjoy cooking! I try to do the food
           justice by honing the art of food photography over on{" "}
           <a
-            href="https://www.instagram.com/gram_eats/"
+            href="https://www.instagram.com/gram_cooks/"
             target="_blank"
             rel="noreferrer"
             className="hoverLink"
