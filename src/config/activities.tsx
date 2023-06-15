@@ -39,7 +39,7 @@ const activities: Activity[] = [
     title: "CMU HCII",
     altTitle: "CMU Human-Computer Interaction Institute",
     url: "https://hcii.cmu.edu/research",
-    dates: "May 2020 - Present",
+    dates: "May 2020 - May 2023",
     role: "Research Assistant",
     description: [
       <p key="publication">
@@ -65,7 +65,7 @@ const activities: Activity[] = [
   {
     title: "ScottyLabs",
     url: "http://scottylabs.org/",
-    dates: "Aug 2019 - Present",
+    dates: "Aug 2019 - May 2023",
     role: "TartanHacks Software Lead",
     roleAlt: "Former Director of Technology",
     description: [
