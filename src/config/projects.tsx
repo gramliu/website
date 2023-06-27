@@ -66,8 +66,8 @@ const projects: Project[] = [
         >
           Randy Pausch Bridge
         </a>
-        at CMU. This was used during Illuminate 2021 to enable students to
-        create lighting designs that were then displayed on the bridge.
+        at CMU. In Spring 2021, I helped organize an event in collaboration with ScottyLabs and CMU SCS 
+        to create a space where students used this tool to design lighting sequences which were displayed on the bridge.
       </div>
     ),
     tags: ["React", "Redux", "Express", "Jimp"],
