@@ -1,5 +1,5 @@
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import "react-modern-drawer/dist/index.css";
 import { scroller } from "react-scroll";
 import LogoIcon from "../../icons/logo";
 import styles from "./index.module.scss";
@@ -77,17 +77,29 @@ export default function NavPill() {
 
   return (
     <div className={styles.container} id="navbar">
-      <div className={styles.pill}>
-        <div className={styles.navLinkContainer}>
-          <a href="#home" className={styles.navLink}>
-            <div className={styles.logo}>
-              <LogoIcon />
-            </div>
-          </a>
-          {divider}
-          {navLinksDivided}
+      <motion.div
+        initial={{ scale: 0, opacity: 0, translateY: -100 }}
+        animate={{ scale: 1, opacity: 1, translateY: 0 }}
+        transition={{
+          type: "spring",
+          stiffness: 150,
+          damping: 20,
+          duration: 0.5,
+          delay: 1.5,
+        }}
+      >
+        <div className={styles.pill}>
+          <div className={styles.navLinkContainer}>
+            <a href="#home" className={styles.navLink}>
+              <div className={styles.logo}>
+                <LogoIcon />
+              </div>
+            </a>
+            {divider}
+            {navLinksDivided}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

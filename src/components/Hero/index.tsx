@@ -50,8 +50,8 @@ export default function Hero() {
       <div className={styles.container} id="home">
         <div className={styles.dialog}>
           <motion.div
-            initial={{ scale: 0, translateY: -100 }}
-            animate={{ scale: 1, translateY: 0 }}
+            initial={{ opacity: 0, translateY: 100 }}
+            animate={{ opacity: 1, translateY: 0 }}
             transition={{
               duration: 0.3,
             }}
@@ -59,11 +59,14 @@ export default function Hero() {
             <HeroContent />
           </motion.div>
           <motion.div
-            initial={{ scale: 0, translateY: -100 }}
-            animate={{ scale: 1, translateY: 0 }}
+            initial={{ opacity: 0, translateY: 100 }}
+            animate={{ opacity: 1, translateY: 0 }}
             transition={{
               duration: 0.3,
               delay: 1,
+              type: "spring",
+              stiffness: 150,
+              damping: 15,
             }}
           >
             <SocialIcons />
