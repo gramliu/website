@@ -1,43 +1,73 @@
+import { motion } from "framer-motion";
 import Image from "next/future/image";
+import ProfilePhoto from "../../../public/images/profilePhoto.jpg";
 import social from "../../config/social";
 import styles from "./index.module.scss";
-import ProfilePhoto from "../../../public/images/profilePhoto.jpg";
+
+function HeroContent() {
+  return (
+    <div className={styles.dialogContent}>
+      <div className={styles.portraitContainer}>
+        <Image
+          src={ProfilePhoto}
+          alt="Picture of me"
+          className={styles.portrait}
+          height={512}
+          width={512}
+          placeholder="blur"
+          priority
+        />
+      </div>
+      <div className={styles.dialogText}>
+        <span className={styles.introLabel}>Hi! 👋</span>
+        <br />
+        <br />
+        I&apos;m <span className={styles.nameLabel}>Gram Liu.</span>
+        <br />
+        <span className={styles.subLabel}>
+          Developer. Engineer. Tech Enthusiast.
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function SocialIcons() {
+  return (
+    <div className={styles.socialIconsContainer}>
+      {social.map(({ image, url }) => (
+        <a href={url} target="_blank" rel="noopener noreferrer" key={url}>
+          <div className={styles.socialIcon}>{image}</div>
+        </a>
+      ))}
+    </div>
+  );
+}
 
 export default function Hero() {
   return (
     <>
       <div className={styles.container} id="home">
         <div className={styles.dialog}>
-          <div className={styles.dialogContent}>
-            <div className={styles.portraitContainer}>
-              <Image
-                src={ProfilePhoto}
-                alt="Picture of me"
-                className={styles.portrait}
-                height={512}
-                width={512}
-                placeholder="blur"
-                priority
-              />
-            </div>
-            <div className={styles.dialogText}>
-              <span className={styles.introLabel}>Hi! 👋</span>
-              <br />
-              <br />
-              I&apos;m <span className={styles.nameLabel}>Gram Liu.</span>
-              <br />
-              <span className={styles.subLabel}>
-                Developer. Engineer. Tech Enthusiast.
-              </span>
-            </div>
-          </div>
-          <div className={styles.socialIconsContainer}>
-            {social.map(({ image, url }) => (
-              <a href={url} target="_blank" rel="noopener noreferrer" key={url}>
-                <div className={styles.socialIcon}>{image}</div>
-              </a>
-            ))}
-          </div>
+          <motion.div
+            initial={{ scale: 0, translateY: -100 }}
+            animate={{ scale: 1, translateY: 0 }}
+            transition={{
+              duration: 0.3,
+            }}
+          >
+            <HeroContent />
+          </motion.div>
+          <motion.div
+            initial={{ scale: 0, translateY: -100 }}
+            animate={{ scale: 1, translateY: 0 }}
+            transition={{
+              duration: 0.3,
+              delay: 1,
+            }}
+          >
+            <SocialIcons />
+          </motion.div>
         </div>
       </div>
     </>
