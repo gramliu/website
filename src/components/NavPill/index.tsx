@@ -25,6 +25,8 @@ const links = [
   },
 ];
 
+const divider = <span className={styles.divider}>|</span>
+
 export default function NavPill() {
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -69,17 +71,21 @@ export default function NavPill() {
       );
     }
   });
+  const navLinksDivided = navLinks.reduce((acc, curr) => {
+    return acc === null ? [curr] : [...acc, divider, curr];
+  }, null);
 
   return (
     <div className={styles.container} id="navbar">
       <div className={styles.pill}>
-        <div className={styles.navLinks}>
+        <div className={styles.navLinkContainer}>
           <a href="#home" className={styles.navLink}>
             <div className={styles.logo}>
               <LogoIcon />
             </div>
           </a>
-          {navLinks}
+          {divider}
+          {navLinksDivided}
         </div>
       </div>
     </div>
