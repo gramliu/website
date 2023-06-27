@@ -25,7 +25,7 @@ const links = [
   },
 ];
 
-const divider = <span className={styles.divider}>|</span>
+const divider = <span className={styles.divider}>|</span>;
 
 export default function NavPill() {
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
@@ -72,8 +72,8 @@ export default function NavPill() {
     }
   });
   const navLinksDivided = navLinks.reduce((acc, curr) => {
-    return acc === null ? [curr] : [...acc, divider, curr];
-  }, null);
+    return acc.length === 0 ? [curr] : [...acc, divider, curr];
+  }, [] as JSX.Element[]);
 
   return (
     <div className={styles.container} id="navbar">
