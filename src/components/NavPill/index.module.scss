@@ -1,0 +1,58 @@
+@import "~/styles/variables.scss";
+@import "~/styles/mixins.scss";
+
+.container {
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-family: $font-nav;
+  font-size: 1rem;
+
+  padding-top: 2rem;
+  backdrop-filter: blur(5px);
+}
+
+.pill {
+  display: flex;
+  justify-content: center;
+  border-radius: 30em;
+  border: solid gray 1px;
+  padding: 1rem 2rem;
+  background-color: $background-color;
+}
+
+.logo {
+  & svg {
+    height: 30px;
+    width: auto;
+  }
+
+  & svg circle {
+    transition: fill 0.5s;
+  }
+
+  & svg:hover circle {
+    fill: $background-highlighted;
+  }
+}
+
+.navLink {
+  color: $text-primary;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.5s;
+  cursor: pointer;
+
+  &:hover {
+    color: $text-highlight;
+  }
+}
+
+.navLinks {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1em;
+}
