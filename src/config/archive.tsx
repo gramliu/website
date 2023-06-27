@@ -2,32 +2,30 @@ import type { Project } from "./projects";
 
 const archive: Project[] = [
   {
-    title: "Pol.Lit",
-    subtitle: "Political Literacy and Transparency Platform",
-    github: "https://github.com/gramliu/pollit",
-    image: "/projects/pollit.jpg",
-    imageHeight: 1897,
-    imageWidth: 1008,
-    tags: ["Next.JS", "MongoDB", "Express", "BERT", "Pegasus", "GCP"],
+    title: "🩺 Medisure.ai",
+    subtitle: "Personalized assistant for medical insurance",
+    tags: ["GPT-3", "Flask", "React", "Google Cloud"],
+    github: "https://github.com/medisure-ai/medisure-ai",
+    image: "/projects/medisure.png",
+    imageHeight: 1080,
+    imageWidth: 720,
     description: (
       <div>
-        🏆 Best NLP Hack
+        🏆 Top 3, Best Use of Google Cloud
         <a
-          href="https://hackmit.org/"
+          href="http://2020f.pennapps.com/"
           target="_blank"
           rel="noreferrer"
           className="hoverLink"
         >
-          @HackMIT 2022.
+          @Pennapps XXI.
         </a>
-        <br />
-        Platform to improve political literacy and accountability in the
-        Philippines. Used OCR, Pegasus, and BERT to scan and summarize PDF bills
-        from the Philippine Congress. Scraped members of legislation and built
-        profiles based on activity and semantic tags of bills authored.
+        A consolidated suite of deep-learning powered NLP tools powered by GPT-3
+        to help demystify medical insurance and generate insurance claim denial
+        appeals.
       </div>
     ),
-    year: 2022,
+    year: 2020
   },
   {
     title: "Parking Finder",
