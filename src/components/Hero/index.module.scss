@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border 0.25s, background 0.25s;
+  transition: background 0.25s;
 
   @include down($breakpoint-sm) {
     height: 1rem;
@@ -111,11 +111,6 @@
   }
 }
 
-.socialImage:hover {
-  border: solid $text-primary 2px;
-  background: $text-primary;
-}
-
-.socialImage:hover svg {
-  fill: $text-highlight1;
+.socialIcon:hover {
+  background-color: $background-highlighted;
 }
