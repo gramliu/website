@@ -78,14 +78,14 @@ export default function NavPill() {
   return (
     <div className={styles.container} id="navbar">
       <motion.div
-        initial={{ scale: 0, opacity: 0, translateY: -100 }}
-        animate={{ scale: 1, opacity: 1, translateY: 0 }}
+        initial={{ opacity: 0, translateY: -100 }}
+        animate={{ opacity: 1, translateY: 0 }}
         transition={{
           type: "spring",
-          stiffness: 150,
+          stiffness: 50,
           damping: 20,
-          duration: 0.5,
-          delay: 1.5,
+          duration: 1,
+          delay: 0.7,
         }}
       >
         <div className={styles.pill}>

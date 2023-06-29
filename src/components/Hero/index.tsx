@@ -53,7 +53,10 @@ export default function Hero() {
             initial={{ opacity: 0, translateY: 100 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{
-              duration: 0.3,
+              type: "spring",
+              duration: 0.5,
+              stiffness: 150,
+              damping: 50,
             }}
           >
             <HeroContent />
@@ -62,11 +65,11 @@ export default function Hero() {
             initial={{ opacity: 0, translateY: 100 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{
-              duration: 0.3,
-              delay: 1,
               type: "spring",
-              stiffness: 150,
-              damping: 15,
+              stiffness: 50,
+              damping: 20,
+              duration: 1,
+              delay: 0.7,
             }}
           >
             <SocialIcons />
