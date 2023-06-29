@@ -41,7 +41,7 @@
   }
 
   @include between($breakpoint-sm, $breakpoint-md) {
-    width: 80%;
+    width: 100%;
 
     & > div {
       grid-template-columns: 1fr;
@@ -64,7 +64,7 @@
   }
 
   @include down($breakpoint-sm) {
-    width: 80%;
+    width: 100%;
 
     & > div {
       grid-template-columns: 1fr;
