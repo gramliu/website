@@ -16,7 +16,7 @@ export interface Project {
 
 const projects: Project[] = [
   {
-    title: "Pol.Lit",
+    title: "🧑‍⚖️ Pol.Lit",
     subtitle: "Political Literacy and Transparency Platform",
     github: "https://github.com/gramliu/pollit",
     image: "/projects/pollit.jpg",
@@ -35,10 +35,11 @@ const projects: Project[] = [
           @HackMIT 2022.
         </a>
         <br />
-        We built a platform to improve political literacy and accountability in the
-        Philippines. We used the Google Cloud Vision SDK, Pegasus, and BERT to scan and summarize PDF bills
-        from the Philippine Congress. We also scraped members of legislation and built
-        profiles based on activity and semantic tags of authored bills.
+        We built a platform to improve political literacy and accountability in
+        the Philippines. We used the Google Cloud Vision SDK, Pegasus, and BERT
+        to scan and summarize PDF bills from the Philippine Congress. We also
+        scraped members of legislation and built profiles based on activity and
+        semantic tags of authored bills.
       </div>
     ),
     year: 2022,
@@ -69,8 +70,9 @@ const projects: Project[] = [
         >
           Randy Pausch Bridge
         </a>
-        at CMU. In Spring 2021, I helped organize an event in collaboration with ScottyLabs and CMU SCS 
-        to create a space where students used this tool to design lighting sequences which were displayed on the bridge.
+        at CMU. In Spring 2021, I helped organize an event in collaboration with
+        ScottyLabs and CMU SCS to create a space where students used this tool
+        to design lighting sequences which were displayed on the bridge.
       </div>
     ),
     tags: ["React", "Redux", "Express", "Jimp"],

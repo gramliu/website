@@ -2,7 +2,7 @@ import type { Project } from "./projects";
 
 const archive: Project[] = [
   {
-    title: "🩺 Medisure.ai",
+    title: "Medisure.ai",
     subtitle: "Personalized assistant for medical insurance",
     tags: ["GPT-3", "Flask", "React", "Google Cloud"],
     github: "https://github.com/medisure-ai/medisure-ai",
@@ -25,7 +25,7 @@ const archive: Project[] = [
         appeals.
       </div>
     ),
-    year: 2020
+    year: 2020,
   },
   {
     title: "Parking Finder",
