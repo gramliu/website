@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function InstagramIcon() {
+export default function InstagramIcon({ className }: { className: string }) {
   return (
     <svg
       id="instagram"
@@ -9,6 +9,7 @@ export default function InstagramIcon() {
       viewBox="0 0 24 24"
       width="512"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path d="m4.75 24h14.5c2.619 0 4.75-2.131 4.75-4.75v-14.5c0-2.619-2.131-4.75-4.75-4.75h-14.5c-2.619 0-4.75 2.131-4.75 4.75v14.5c0 2.619 2.131 4.75 4.75 4.75zm-3.25-19.25c0-1.792 1.458-3.25 3.25-3.25h14.5c1.792 0 3.25 1.458 3.25 3.25v14.5c0 1.792-1.458 3.25-3.25 3.25h-14.5c-1.792 0-3.25-1.458-3.25-3.25z" />
       <path d="m12 18.13c3.38 0 6.13-2.75 6.13-6.13s-2.75-6.13-6.13-6.13-6.13 2.75-6.13 6.13 2.75 6.13 6.13 6.13zm0-10.76c2.553 0 4.63 2.077 4.63 4.63s-2.077 4.63-4.63 4.63-4.63-2.077-4.63-4.63 2.077-4.63 4.63-4.63z" />
