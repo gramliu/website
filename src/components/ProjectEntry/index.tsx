@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import Image from "next/future/image";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { Project } from "../../config/projects";
 import GitHubIcon from "../../icons/github";

@@ -1,4 +1,4 @@
-import Image from "next/future/image";
+import Image from "next/image";
 import { ReactNode } from "react";
 import { Project } from "../../config/projects";
 import GitHubIcon from "../../icons/github";
