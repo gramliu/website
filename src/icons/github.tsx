@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function GitHubIcon({ className }: { className: string }) {
+export default function GitHubIcon({ className }: { className?: string }) {
   return (
     <svg
       enableBackground="new 0 0 24 24"

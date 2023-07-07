@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function MailIcon({ className }: { className: string }) {
+export default function MailIcon({ className }: { className?: string }) {
   return (
     <svg id="mail" x="0px" y="0px" viewBox="0 0 512 512" className={className}>
       <path
