@@ -6,7 +6,7 @@ export default function About() {
         id="about"
       >
         <div className="flex items-center font-bold text-3xl">About Me</div>
-        <div className="w-5/12 mt-8 text-lg">
+        <div className="w-10/12 md:w-8/12 lg:w-5/12 mt-8 text-lg">
           Hi! I&apos;m Gram and I build things, from web apps to full stack to
           IoT. I graduated from{" "}
           <a
