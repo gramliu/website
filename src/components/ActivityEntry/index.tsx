@@ -1,7 +1,5 @@
-import clsx from "clsx";
 import { Activity } from "../../config/activities";
 import LinkIcon from "../../icons/link";
-import styles from "./index.module.scss";
 
 export default function ActivityEntry({
   altTitle,
@@ -13,30 +11,41 @@ export default function ActivityEntry({
   description,
 }: Activity) {
   return (
-    <div className={styles.container}>
-      <div className={styles.title}>
+    <div className="flex flex-col w-full">
+      <div className="text-2xl">
         {url ? (
           <a
             href={url}
             target="_blank"
             rel="noreferrer"
-            className={clsx(styles.title, styles.titleLink)}
+            className={
+              "text-2xl no-underline flex items-center text-text-primary hover:translate-y-[-3px] transition-all"
+            }
           >
             {altTitle || title}
-            <LinkIcon />
+            <LinkIcon className="text-text-primary fill-text-primary h-4 ml-1 opacity-80" />
           </a>
         ) : (
-          <div className={styles.title}>{altTitle || title}</div>
+          <div className="text-2xl">{altTitle || title}</div>
         )}
       </div>
-      <div className={styles.role}>{role}</div>
-      {roleAlt == null ? null : <div className={styles.roleAlt}>{roleAlt}</div>}
+      <div className="mt-2 uppercase text-text-highlight text-base font-bold">
+        {role}
+      </div>
+      {roleAlt == null ? null : (
+        <div className="mt-1 uppercase text-text-highlight text-sm font-bold opacity-80">
+          {roleAlt}
+        </div>
+      )}
 
-      <div className={styles.dates}>{dates}</div>
-      <div className={styles.description}>
+      <div className="text-sm mt-2 opacity-80">{dates}</div>
+      <div className="mt-2">
         <ul>
           {description.map((item, index) => (
-            <li key={index} className={styles.descriptionItem}>
+            <li
+              key={index}
+              className="mb-4 w-10/12 lg:w-full ml-8 lg:ml-12 list-disc"
+            >
               {item}
             </li>
           ))}

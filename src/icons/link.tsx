@@ -1,8 +1,14 @@
 import React from "react";
 
-export default function LinkIcon() {
+export default function LinkIcon({ className }: { className?: string }) {
   return (
-    <svg id="link" x="0px" y="0px" viewBox="0 0 482.8 482.8">
+    <svg
+      id="link"
+      x="0px"
+      y="0px"
+      viewBox="0 0 482.8 482.8"
+      className={className}
+    >
       <path
         d="M255.2,209.3c-5.3,5.3-5.3,13.8,0,19.1c21.9,21.9,21.9,57.5,0,79.4l-115,115c-21.9,21.9-57.5,21.9-79.4,0l-17.3-17.3
 			c-21.9-21.9-21.9-57.5,0-79.4l115-115c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-115,115C8.7,322.7,0,343.6,0,365.8

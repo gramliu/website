@@ -42,11 +42,11 @@ const activities: Activity[] = [
     dates: "May 2020 - May 2023",
     role: "Research Assistant",
     description: [
-      <p key="publication">
-        <strong>
+      <p key="publication" className="block block-start">
+        <span className="font-bold">
           Peekaboo: A Hub-Based Approach to Enable Transparency in Data
           Processing within Smart Homes
-        </strong>{" "}
+        </span>{" "}
         (
         <a
           href="https://www.computer.org/csdl/proceedings-article/sp/2022/131600b571/1CIO8pmx6jm"
