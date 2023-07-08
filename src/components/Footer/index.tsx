@@ -1,10 +1,8 @@
-import styles from "./index.module.scss";
-
 export default function Footer() {
   return (
     <>
-      <div className={styles.container} id="footer">
-        <span className={styles.footerText}>&copy; Gram Liu 2023</span>
+      <div className="pb-4 w-full text-center" id="footer">
+        <span className="text-base">&copy; Gram Liu 2023</span>
       </div>
     </>
   );
