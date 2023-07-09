@@ -13,6 +13,7 @@ module.exports = {
           primary: "#e6edf2",
           highlight: "#73ee87",
         },
+        divider: "#49636f",
       },
     },
     fontFamily: {

@@ -1,16 +1,17 @@
+import clsx from "clsx";
 import React from "react";
 
-export default function LogoIcon() {
+export default function LogoIcon({ className }: { className?: string }) {
   return (
     <svg
-      className="logo"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 802.96 802.96"
       height="150"
       width="150"
+      className={clsx(className, "group")}
     >
       <circle
-        className="logo-circle"
+        className="logo-circle group-hover:fill-background-highlight transition-all"
         cx="401.48"
         cy="401.48"
         r="391.48"

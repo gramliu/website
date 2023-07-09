@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { scroller } from "react-scroll";
 import LogoIcon from "../../icons/logo";
-import styles from "./index.module.scss";
 
 const links = [
   {
@@ -25,7 +24,7 @@ const links = [
   },
 ];
 
-const divider = <span className={styles.divider}>|</span>;
+const divider = <span className="text-divider text-2xl">|</span>;
 
 export default function NavPill() {
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
@@ -45,7 +44,7 @@ export default function NavPill() {
       return (
         <a
           href={linkTarget.link}
-          className={styles.navLink}
+          className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
           target={linkTarget.target}
           key={index}
           onClick={() => setDrawerOpen(false)}
@@ -56,7 +55,7 @@ export default function NavPill() {
     } else {
       return (
         <div
-          className={styles.navLink}
+          className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
           onClick={() => {
             scroller.scrollTo(linkTarget.link, {
               smooth: true,
@@ -76,7 +75,10 @@ export default function NavPill() {
   }, [] as JSX.Element[]);
 
   return (
-    <div className={styles.container} id="navbar">
+    <div
+      className="fixed w-full flex justify-center pt-8 backdrop-blur-sm"
+      id="navbar"
+    >
       <motion.div
         initial={{ opacity: 0, translateY: -100 }}
         animate={{ opacity: 1, translateY: 0 }}
@@ -88,12 +90,13 @@ export default function NavPill() {
           delay: 0.7,
         }}
       >
-        <div className={styles.pill}>
-          <div className={styles.navLinkContainer}>
-            <a href="#home" className={styles.navLink}>
-              <div className={styles.logo}>
-                <LogoIcon />
-              </div>
+        <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-background-primary p-3 md:p-4">
+          <div className="flex flex-row items-center gap-2 md:gap-4">
+            <a
+              href="#home"
+              className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
+            >
+              <LogoIcon className="h-8 w-auto" />
             </a>
             {divider}
             {navLinksDivided}
