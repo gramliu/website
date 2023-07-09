@@ -5,7 +5,6 @@ import { Project } from "../../config/projects";
 import GitHubIcon from "../../icons/github";
 import RedirectIcon from "../../icons/redirect";
 import YouTubeIcon from "../../icons/youtube";
-import styles from "./index.module.scss";
 
 function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
   const links = [];
@@ -15,10 +14,10 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={github}
         target="_blank"
         rel="noreferrer"
-        className={styles.link}
+        className="m-4"
         key="github"
       >
-        <GitHubIcon />
+        <GitHubIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
       </a>
     );
   }
@@ -28,10 +27,10 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={link}
         target="_blank"
         rel="noreferrer"
-        className={styles.link}
+        className="m-4"
         key="link"
       >
-        <RedirectIcon />
+        <RedirectIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
       </a>
     );
   }
@@ -41,10 +40,10 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={video}
         target="_blank"
         rel="noreferrer"
-        className={styles.link}
+        className="m-4"
         key="youtube"
       >
-        <YouTubeIcon />
+        <YouTubeIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
       </a>
     );
   }
@@ -65,11 +64,18 @@ export default function ProjectEntry({
   imageWidth,
 }: Project) {
   const imageContainer = (
-    <div className={clsx(styles.imageContainer, styles.projectImage)}>
+    <div
+      className={clsx(
+        "lg:group-odd:col-[1/1] lg:group-even:col-[2/2]",
+        "sm:grid-cols-1 sm:grid-rows-[4fr_3fr] sm:text-center",
+        "sm:row-[1/1] sm:col-[1/1]",
+        "grid-cols-1 grid-rows-1 justify-center hidden sm:block"
+      )}
+    >
       <Image
         src={image}
         alt={title}
-        className={styles.image}
+        className="w-full shadow-2xl rounded-sm"
         height={imageHeight}
         width={imageWidth}
         loading="lazy"
@@ -78,23 +84,40 @@ export default function ProjectEntry({
   );
   const links = getLinks(github, link, video);
   const contentContainer = (
-    <div className={clsx(styles.content, styles.projectContent)}>
-      <div className={styles.title}>{title}</div>
-      <div className={styles.subtitle}>{subtitle}</div>
-      <div className={styles.description}>{description}</div>
-      <div className={styles.tags}>
+    <div
+      className={clsx(
+        "flex flex-col justify-center",
+        "lg:group-odd:col-[2/2] lg:group-odd:items-start",
+        "lg:group-even:col-[1/1] lg:group-even:items-end",
+        "lg:mt-0 lg:row-[1/1]",
+        "sm:grid-cols-1 sm:grid-rows-[4fr_3fr] sm:text-center",
+        "sm:row-[2/2] sm:col-[1/1] sm:mx-0 sm:mt-8"
+      )}
+    >
+      <div className="text-4xl">{title}</div>
+      <div className="text-text-faded text-xl">{subtitle}</div>
+      <div className="mt-4 p-4 shadow-2xl bg-background-light rounded-sm text-center lg:group-odd:text-start lg:group-even:text-end">
+        {description}
+      </div>
+      <div className="mt-4 flex justify-evenly flex-wrap gap-3">
         {tags.map((tag, index) => (
-          <div className={styles.tag} key={index}>
+          <div className="text-text-highlight font-bold px-4" key={index}>
             {tag}
           </div>
         ))}
       </div>
-      <div className={styles.links}>{links}</div>
+      <div className="flex flex-row justify-evenly mt-4">{links}</div>
     </div>
   );
 
   return (
-    <div className={styles.container}>
+    <div
+      className={clsx(
+        "grid grid-flow-dense w-full mt-8 group lg:gap-4",
+        "lg:odd:grid-cols-[4fr_3fr] lg:odd:text-start",
+        "lg:even:grid-cols-[3fr_4fr] lg:even:text-end"
+      )}
+    >
       {imageContainer}
       {contentContainer}
     </div>

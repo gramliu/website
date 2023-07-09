@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function RedirectIcon() {
+export default function RedirectIcon({ className }: { className?: string }) {
   const strokeWidth = 50;
 
   return (
@@ -11,6 +11,7 @@ export default function RedirectIcon() {
       enableBackground="new 0 0 24 24"
       height="512"
       width="512"
+      className={className}
     >
       <path
         fill="none"
