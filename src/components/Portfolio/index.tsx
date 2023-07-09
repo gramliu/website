@@ -1,12 +1,14 @@
 import projects from "../../config/projects";
 import ProjectEntry from "../ProjectEntry";
-import styles from "./index.module.scss";
 
 export default function Portfolio() {
   return (
-    <div className={styles.container} id="portfolio">
-      <div className={styles.header}>Things I&apos;ve Built</div>
-      <div className={styles.content}>
+    <div
+      className="flex flex-col items-center pt-40 w-10/12 mx-auto"
+      id="portfolio"
+    >
+      <div className="text-4xl font-bold">Things I&apos;ve Built</div>
+      <div className="mt-4 flex flex-col items-center">
         {projects.map((project, index) => (
           <ProjectEntry {...project} key={index} />
         ))}
