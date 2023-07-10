@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { ReactNode } from "react";
-import { Project } from "../../config/projects";
-import GitHubIcon from "../../icons/github";
-import RedirectIcon from "../../icons/redirect";
-import YouTubeIcon from "../../icons/youtube";
+import { Project } from "../config/projects";
+import GitHubIcon from "../icons/github";
+import RedirectIcon from "../icons/redirect";
+import YouTubeIcon from "../icons/youtube";
 
 function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
   const links = [];

@@ -1,5 +1,5 @@
-import projects from "../../config/projects";
-import ProjectEntry from "../ProjectEntry";
+import projects from "../config/projects";
+import ProjectEntry from "./ProjectEntry";
 
 export default function Portfolio() {
   return (

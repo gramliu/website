@@ -1,5 +1,5 @@
-import { Activity } from "../../config/activities";
-import LinkIcon from "../../icons/link";
+import { Activity } from "../config/activities";
+import LinkIcon from "../icons/link";
 
 export default function ActivityEntry({
   altTitle,

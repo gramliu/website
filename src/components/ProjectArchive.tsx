@@ -1,5 +1,5 @@
-import archive from "../../config/archive";
-import ProjectCard from "../ProjectCard";
+import archive from "../config/archive";
+import ProjectCard from "./ProjectCard";
 
 export default function ProjectArchive() {
   return (

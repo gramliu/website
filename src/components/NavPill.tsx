@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { scroller } from "react-scroll";
-import LogoIcon from "../../icons/logo";
+import LogoIcon from "../icons/logo";
 
 const links = [
   {

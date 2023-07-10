@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
-import ProfilePhoto from "../../../public/images/profilePhoto.jpg";
-import social from "../../config/social";
+import ProfilePhoto from "../../public/images/profilePhoto.jpg";
+import social from "../config/social";
 
 function HeroContent() {
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import activities from "../../config/activities";
-import ActivityEntry from "../ActivityEntry";
-import TabList from "../TabList";
+import activities from "../config/activities";
+import ActivityEntry from "./ActivityEntry";
+import TabList from "./TabList";
 
 export default function ActivitiesList() {
   const [activity, setActivity] = useState(activities[0]);

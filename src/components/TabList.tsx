@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
-import { Activity } from "../../config/activities";
+import { Activity } from "../config/activities";
 
 interface TabButtonProps {
   title: string;
