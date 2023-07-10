@@ -1,14 +1,15 @@
 import archive from "../../config/archive";
 import ProjectCard from "../ProjectCard";
-import styles from "./index.module.scss";
 
 export default function ProjectArchive() {
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>Other Past Projects</div>
-      <div className={styles.content}>
+    <div className="flex flex-col items-center py-40 w-10/12 mx-auto">
+      <div className="text-4xl font-bold flex justify-center w-full">
+        Other Past Projects
+      </div>
+      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-20 mt-8">
         {archive.map((project, index) => (
-            <ProjectCard {...project} key={index} />
+          <ProjectCard {...project} key={index} />
         ))}
       </div>
     </div>
