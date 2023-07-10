@@ -4,7 +4,6 @@ import { Project } from "../../config/projects";
 import GitHubIcon from "../../icons/github";
 import RedirectIcon from "../../icons/redirect";
 import YouTubeIcon from "../../icons/youtube";
-import styles from "./index.module.scss";
 
 function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
   const links = [];
@@ -14,10 +13,10 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={github}
         target="_blank"
         rel="noreferrer"
-        className={styles.cardLink}
+        className="m-4"
         key="github"
       >
-        <GitHubIcon />
+        <GitHubIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
       </a>
     );
   }
@@ -27,10 +26,10 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={link}
         target="_blank"
         rel="noreferrer"
-        className={styles.cardLink}
+        className="m-4"
         key="link"
       >
-        <RedirectIcon />
+        <RedirectIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
       </a>
     );
   }
@@ -40,10 +39,10 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         href={video}
         target="_blank"
         rel="noreferrer"
-        className={styles.cardLink}
+        className="m-4"
         key="youtube"
       >
-        <YouTubeIcon />
+        <YouTubeIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
       </a>
     );
   }
@@ -68,27 +67,32 @@ export default function ProjectCard({
   const links = getLinks(github, link, video);
 
   return (
-    <div className={styles.card}>
+    <div className="flex flex-col bg-background-light shadow-2xl pb-4">
       <Image
         src={image}
         alt={title}
         height={256}
         width={imageWidth * scaleFactor}
-        className={styles.projectImage}
+        className="object-cover aspect-[2/1] w-full h-auto"
         sizes="(min-height: 256) 256"
       />
-      <span className={styles.cardTitle}>{title}</span>
-      <span className={styles.cardSubtitle}>{subtitle}</span>
-      <span className={styles.cardDescription}>{description}</span>
-      <div className={styles.tags}>
+      <span className="text-center text-2xl mt-4 px-4">{title}</span>
+      <span className="text-center text-text-faded px-4">{subtitle}</span>
+      <span className="mt-4 px-4">{description}</span>
+      <div className="mt-auto pt-4 flex justify-evenly flex-wrap gap-3">
         {tags.map((tag, index) => (
-          <div className={styles.tag} key={index}>
+          <div
+            className="text-text-highlight font-bold px-4 flex-1 text-center"
+            key={index}
+          >
             {tag}
           </div>
         ))}
       </div>
-      <div className={styles.cardLinks}>{links}</div>
-      <div className={styles.year}>{year}</div>
+      <div className="w-full flex flex-row justify-center">{links}</div>
+      <div className="text-text-highlight font-bold text-center text-xl">
+        {year}
+      </div>
     </div>
   );
 }
