@@ -76,7 +76,7 @@ export default function NavPill() {
 
   return (
     <div
-      className="fixed w-full flex justify-center pt-8 backdrop-blur-sm"
+      className="fixed w-full flex justify-center pt-8 backdrop-blur-sm z-10"
       id="navbar"
     >
       <motion.div
