@@ -16,7 +16,7 @@ const archive: Project[] = [
           href="http://2020f.pennapps.com/"
           target="_blank"
           rel="noreferrer"
-          className="hoverLink"
+          className="hoverLink mx-1"
         >
           @Pennapps XXI.
         </a>
@@ -42,7 +42,7 @@ const archive: Project[] = [
           href="https://hackmit.org/"
           target="_blank"
           rel="noreferrer"
-          className="hoverLink"
+          className="hoverLink mx-1"
         >
           @HackMIT 2021.
         </a>

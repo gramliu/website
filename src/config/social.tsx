@@ -9,20 +9,22 @@ export interface Social {
   url: string;
 }
 
+const socialIconClass = "w-6 h-6 md:w-10 md:h-10 fill-text-primary";
+
 const social: Social[] = [
   {
     name: "github",
-    image: <GitHubIcon />,
+    image: <GitHubIcon className={socialIconClass} />,
     url: "https://github.com/gramliu",
   },
   {
     name: "linkedin",
-    image: <LinkedInIcon />,
+    image: <LinkedInIcon className={socialIconClass} />,
     url: "https://www.linkedin.com/in/gramliu/",
   },
   {
     name: "mail",
-    image: <MailIcon />,
+    image: <MailIcon className={socialIconClass} />,
     url: "mailto:gram@gramliu.com",
   },
 ];

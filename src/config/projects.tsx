@@ -30,7 +30,7 @@ const projects: Project[] = [
           href="https://hackmit.org/"
           target="_blank"
           rel="noreferrer"
-          className="hoverLink"
+          className="hoverLink mx-1"
         >
           @HackMIT 2022.
         </a>
@@ -66,7 +66,7 @@ const projects: Project[] = [
           href="https://upload.wikimedia.org/wikipedia/commons/3/33/Carnegie_Mellon_University_Pausch_Bridge_rainbow.jpg"
           target="_blank"
           rel="noreferrer"
-          className="hoverLink"
+          className="hoverLink mx-1"
         >
           Randy Pausch Bridge
         </a>

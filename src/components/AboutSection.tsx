@@ -1,18 +1,19 @@
-import styles from "./index.module.scss";
-
 export default function About() {
   return (
     <>
-      <div className={styles.container} id="about">
-        <div className={styles.header}>About Me</div>
-        <div className={styles.content}>
+      <div
+        className="flex flex-col items-center justify-center pt-10 my-0 mx-auto"
+        id="about"
+      >
+        <div className="flex items-center font-bold text-3xl">About Me</div>
+        <div className="w-10/12 md:w-8/12 lg:w-5/12 mt-8 text-lg">
           Hi! I&apos;m Gram and I build things, from web apps to full stack to
           IoT. I graduated from{" "}
           <a
             href="https://www.cmu.edu/"
             target="_blank"
             rel="noreferrer"
-            className="hoverLink"
+            className="hoverLink text-highlight no-underline"
           >
             Carnegie Mellon University
           </a>{" "}
@@ -29,7 +30,7 @@ export default function About() {
             href="https://www.instagram.com/gram_cooks/"
             target="_blank"
             rel="noreferrer"
-            className="hoverLink"
+            className="hoverLink text-highlight"
           >
             Instagram.
           </a>
