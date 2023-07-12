@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
 import { Book } from "../../pages/api/books";
@@ -149,8 +150,21 @@ export default function Bookshelf({
           </filter>
         </defs>
       </svg>
-      <InteractiveBookshelf books={books} />
-      <StaticBookshelf books={books} />
+      {books.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, translateY: 50 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 50,
+            damping: 20,
+            duration: 1,
+          }}
+        >
+          <InteractiveBookshelf books={books} />
+          <StaticBookshelf books={books} />
+        </motion.div>
+      )}
     </div>
   );
 }
