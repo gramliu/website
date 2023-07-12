@@ -5,19 +5,19 @@ import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
 import { Book } from "./api/books";
 
-export default function BookshelfPage() {
-  const [books, setBooks] = useState<Book[]>([]);
-
-  useEffect(() => {
-    axios.get("/api/books").then((response) => {
-      setBooks(response.data);
-    });
-  }, []);
-
+export default function BookshelfPage({ books }: { books: Book[] }) {
   return (
     <Layout>
       <NavPill />
       <Bookshelf books={books} className="py-48" />
     </Layout>
   );
+}
+
+export async function getStaticProps() {
+  const { data: books } = await axios.get<Book[]>("/api/books");
+
+  return {
+    props: { books },
+  };
 }
