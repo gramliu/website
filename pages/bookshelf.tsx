@@ -15,7 +15,9 @@ export default function BookshelfPage({ books }: { books: Book[] }) {
 }
 
 export async function getStaticProps() {
-  const { data: books } = await axios.get<Book[]>("/api/books");
+  const { data: books } = await axios.get<Book[]>(
+    "https://gramliu.com/api/books"
+  );
 
   return {
     props: { books },
