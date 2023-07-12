@@ -8,9 +8,7 @@ export default function BookshelfPage({ books }: { books: Book[] }) {
   return (
     <Layout>
       <NavPill />
-      <div className="py-32">
-        <Bookshelf books={books} className="py-16" />
-      </div>
+      <Bookshelf books={books} className="py-48" />
     </Layout>
   );
 }

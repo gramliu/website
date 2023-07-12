@@ -10,6 +10,8 @@ import {
   NavigationMenuContent,
   NavigationMenuLink,
 } from "./ui/navigation-menu";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const links = [
   {
@@ -30,6 +32,10 @@ const links = [
 const divider = <span className="text-divider text-2xl">|</span>;
 
 export default function NavPill() {
+  const router = useRouter();
+  const path = router.pathname;
+  const isHome = path === "/";
+
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -43,10 +49,12 @@ export default function NavPill() {
   }, [drawerOpen, scrollTarget]);
 
   const navLinks = links.map((linkTarget, index) => {
-    if (linkTarget.target) {
+    if (linkTarget.target || !isHome) {
       return (
         <a
-          href={linkTarget.link}
+          href={
+            linkTarget.target == null ? `/#${linkTarget.link}` : linkTarget.link
+          }
           className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
           target={linkTarget.target}
           key={index}
@@ -95,12 +103,12 @@ export default function NavPill() {
       >
         <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-bgcolor-primary p-3 md:p-4">
           <div className="flex flex-row items-center gap-2 md:gap-4">
-            <a
-              href="#home"
+            <Link
+              href="/#home"
               className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
             >
               <LogoIcon className="h-8 w-auto" />
-            </a>
+            </Link>
             {divider}
             {navLinksDivided}
             {divider}
