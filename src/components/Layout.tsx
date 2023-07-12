@@ -12,7 +12,10 @@ export default function Layout({ children }: LayoutProps) {
         <meta charSet="utf-8" />
         <title>Gram Liu</title>
       </Helmet>
-      <div id="children" className="h-screen w-screen">
+      <div
+        id="children"
+        className="h-screen w-screen bg-bgcolor-primary text-text-primary overflow-x-hidden"
+      >
         {children}
       </div>
     </>

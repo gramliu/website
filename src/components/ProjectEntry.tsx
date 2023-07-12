@@ -96,7 +96,7 @@ export default function ProjectEntry({
     >
       <div className="text-4xl">{title}</div>
       <div className="text-text-faded text-xl">{subtitle}</div>
-      <div className="mt-4 p-4 shadow-2xl bg-background-light rounded-sm text-center lg:group-odd:text-start lg:group-even:text-end">
+      <div className="mt-4 p-4 shadow-2xl bg-bgcolor-light rounded-sm text-center lg:group-odd:text-start lg:group-even:text-end">
         {description}
       </div>
       <div className="mt-4 flex justify-evenly flex-wrap gap-3">

@@ -90,7 +90,7 @@ export default function NavPill() {
           delay: 0.7,
         }}
       >
-        <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-background-primary p-3 md:p-4">
+        <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-bgcolor-primary p-3 md:p-4">
           <div className="flex flex-row items-center gap-2 md:gap-4">
             <a
               href="#home"
