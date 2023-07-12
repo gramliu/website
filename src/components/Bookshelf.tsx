@@ -78,7 +78,10 @@ export default function Bookshelf({
           </filter>
         </defs>
       </svg>
-      <div role="list" className="flex flex-row justify-center gap-2">
+      <div
+        role="list"
+        className="flex flex-row flex-wrap flex-start gap-4 lg:w-8/12 mx-auto"
+      >
         {books.map((book, index) => (
           <button
             role="listitem"
@@ -101,7 +104,7 @@ export default function Bookshelf({
           >
             <div
               className={clsx(
-                "z-50 h-72 w-[50px] shrink-0 origin-right py-4 brightness-[0.80] contrast-[2.00]",
+                "z-50 h-72 w-[50px] shrink-0 origin-right py-4 brightness-[0.80] contrast-[2.00] drop-shadow-2xl",
                 animationStyle
               )}
               style={{
@@ -118,7 +121,7 @@ export default function Bookshelf({
                 className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full opacity-40 [filter:url(#paper)]"
               />
               <h2
-                className="text-md m-auto text-ellipsis h-64 w-[44px] font-semibold line-clamp-2"
+                className="text-base m-auto text-ellipsis h-64 w-[44px] font-semibold line-clamp-2 align-middle leading-tight text-start"
                 style={{ writingMode: "vertical-rl" }}
               >
                 {book.title}
