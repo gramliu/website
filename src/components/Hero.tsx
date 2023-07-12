@@ -37,7 +37,7 @@ function SocialIcons() {
     <div className="flex items-center justify-evenly w-full md:w-10/12 mt-10 mx-auto gap-10">
       {social.map(({ image, url }) => (
         <a href={url} target="_blank" rel="noopener noreferrer" key={url}>
-          <div className="mt-5 border-2 rounded-full p-4 flex items-center justify-center transition hover:bg-background-highlight">
+          <div className="mt-5 border-2 rounded-full p-4 flex items-center justify-center transition hover:bg-bgcolor-highlight">
             {image}
           </div>
         </a>

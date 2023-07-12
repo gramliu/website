@@ -20,7 +20,7 @@ function TabButton({ title, focusTab, setFocusTab, idx }: TabButtonProps) {
         "sm:border-b-0 sm:border-l-2 sm:border-l-background-light",
         focus
           ? clsx(
-              "text-text-highlight bg-background-light transition-all",
+              "text-text-highlight bg-bgcolor-light transition-all",
               "border-l-0 border-b-2 border-b-text-highlight",
               "sm:border-b-0 sm:border-l-2 sm:border-l-text-highlight"
             )

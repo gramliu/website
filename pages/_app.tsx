@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import "../styles/shadcn.css";
 import "../styles/global.scss";
 
 function MyApp({ Component, pageProps }: AppProps) {

@@ -67,7 +67,7 @@ export default function ProjectCard({
   const links = getLinks(github, link, video);
 
   return (
-    <div className="flex flex-col bg-background-light shadow-2xl pb-4">
+    <div className="flex flex-col bg-bgcolor-light shadow-2xl pb-4">
       <Image
         src={image}
         alt={title}
