@@ -6,6 +6,14 @@ import rgbHex from "rgb-hex";
 
 const url = "https://www.goodreads.com/review/list/153517339?shelf=read";
 
+export interface Book {
+  title: string;
+  author: string;
+  imageUrl: string;
+  fgColor: string;
+  bgColor: string;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -20,7 +28,7 @@ export default async function handler(
     .map((i, tr) => ({
       title: $(tr).find(".title > .value > a").attr("title")?.trim() ?? "",
       author: $(tr).find(".author > .value > a").text().trim(),
-      image:
+      imageUrl:
         $(tr)
           .find(".cover > .value a > img")
           .attr("src")
@@ -30,7 +38,9 @@ export default async function handler(
 
   // Download images into base64
   const images = await Promise.all(
-    books.map((book) => axios.get(book.image, { responseType: "arraybuffer" }))
+    books.map((book) =>
+      axios.get(book.imageUrl, { responseType: "arraybuffer" })
+    )
   );
   const imageData = images.map(
     (image) =>
@@ -43,7 +53,7 @@ export default async function handler(
   const rgb = await Promise.all(imageData.map((image) => getColor(image)));
   const fgColors = rgb.map(getForegroundColor);
   const bgColors = rgb.map((rgb) => `#${rgbHex(rgb[0], rgb[1], rgb[2])}`);
-  const booksWithColors = books.map((book, i) => ({
+  const booksWithColors: Book[] = books.map((book, i) => ({
     ...book,
     fgColor: fgColors[i],
     bgColor: bgColors[i],

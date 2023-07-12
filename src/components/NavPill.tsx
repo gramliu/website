@@ -123,7 +123,7 @@ export default function NavPill() {
                       </li>
                       <li>
                         <NavigationMenuLink
-                          href="/books"
+                          href="/bookshelf"
                           className="hover:text-text-highlight font-semibold"
                         >
                           Bookshelf
