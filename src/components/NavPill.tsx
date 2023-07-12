@@ -2,6 +2,14 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { scroller } from "react-scroll";
 import LogoIcon from "../icons/logo";
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
+} from "./ui/navigation-menu";
 
 const links = [
   {
@@ -15,11 +23,6 @@ const links = [
   {
     label: "Resume",
     link: "Gram_Liu_Resume.pdf",
-    target: "_blank",
-  },
-  {
-    label: "Cooking",
-    link: "https://instagram.com/gram_cooks",
     target: "_blank",
   },
 ];
@@ -100,6 +103,37 @@ export default function NavPill() {
             </a>
             {divider}
             {navLinksDivided}
+            {divider}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-text-primary font-sans font-semibold text-base hover:bg-none focus:bg-none">
+                    Other
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid grid-cols-1 gap-3 p-6 w-48 bg-bgcolor-primary text-text-primary drop-shadow">
+                      <li>
+                        <NavigationMenuLink
+                          href="https://instagram.com/gram_cooks"
+                          target="_blank"
+                          className="hover:text-text-highlight font-semibold"
+                        >
+                          Cooking
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink
+                          href="/books"
+                          className="hover:text-text-highlight font-semibold"
+                        >
+                          Bookshelf
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
         </div>
       </motion.div>
