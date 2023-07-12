@@ -5,13 +5,11 @@ import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
 import { Book } from "./api/books";
 
-const url = "http://localhost:3000/api/books";
-
 export default function BookshelfPage() {
   const [books, setBooks] = useState<Book[]>([]);
 
   useEffect(() => {
-    axios.get(url).then((response) => {
+    axios.get("/api/books").then((response) => {
       setBooks(response.data);
     });
   }, []);
