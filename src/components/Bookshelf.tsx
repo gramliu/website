@@ -53,7 +53,7 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
               className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full opacity-40 [filter:url(#paper)]"
             />
             <h2
-              className="text-base m-auto text-ellipsis h-64 w-[44px] font-semibold line-clamp-2 align-middle leading-tight text-start"
+              className="text-base m-auto text-ellipsis h-64 w-[44px] font-serif font-medium line-clamp-2 align-middle leading-tight text-start"
               style={{ writingMode: "vertical-rl" }}
             >
               {book.title}

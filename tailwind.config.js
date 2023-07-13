@@ -86,6 +86,7 @@ module.exports = {
     fontFamily: {
       sans: ['"Red Hat Display"', "sans-serif"],
       mono: ['"Source Code Pro"', "monospace"],
+      serif: ['"Roboto Slab"', "serif"],
     },
   },
   plugins: [require("tailwindcss-animate")],
