@@ -4,7 +4,8 @@ import * as cheerio from "cheerio";
 import { getColor } from "colorthief";
 import rgbHex from "rgb-hex";
 
-const url = "https://www.goodreads.com/review/list/153517339?shelf=read";
+const url =
+  "https://www.goodreads.com/review/list/153517339?shelf=read&sort=date_read";
 
 export interface Book {
   title: string;

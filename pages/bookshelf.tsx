@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
 import Bookshelf from "../src/components/Bookshelf";
 import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
