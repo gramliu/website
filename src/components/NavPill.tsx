@@ -98,7 +98,7 @@ export default function NavPill() {
           stiffness: 50,
           damping: 20,
           duration: 1,
-          delay: 0.7,
+          delay: isHome ? 0.7 : 0,
         }}
       >
         <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-bgcolor-primary p-3 md:p-4">
