@@ -4,6 +4,11 @@ import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
 import { Book } from "./api/books";
 
+const url =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000/api/books"
+    : "https://gramliu.com/api/books";
+
 export default function BookshelfPage({ books }: { books: Book[] }) {
   return (
     <Layout>
@@ -14,9 +19,7 @@ export default function BookshelfPage({ books }: { books: Book[] }) {
 }
 
 export async function getStaticProps() {
-  const { data: books } = await axios.get<Book[]>(
-    "https://gramliu.com/api/books"
-  );
+  const { data: books } = await axios.get<Book[]>(url);
 
   return {
     props: { books },
