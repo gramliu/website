@@ -23,5 +23,6 @@ export async function getStaticProps() {
 
   return {
     props: { books },
+    revalidate: 60, // at most every minute
   };
 }
