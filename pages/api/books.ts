@@ -23,8 +23,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (env.NODE_ENV === "development") {
-    res.json(booksCached);
-  } else {
     const html = await axios.get(url);
     const $ = cheerio.load(html.data);
 
@@ -32,18 +30,23 @@ export default async function handler(
 
     // Construct books array
     const books = booksBody
-      .map((i, tr) => ({
-        title: $(tr).find(".title > .value > a").attr("title")?.trim() ?? "",
-        author: $(tr).find(".author > .value > a").text().trim(),
-        url: `https://www.goodreads.com${
-          $(tr).find(".title > .value > a").attr("href") ?? ""
-        }`,
-        imageUrl:
+      .map((i, tr) => {
+        const imageUrl =
           $(tr)
             .find(".cover > .value a > img")
             .attr("src")
-            ?.replace("._SY75_", "") ?? "",
-      }))
+            ?.replace(/\.((_SX[0-9]{2})?(_SY[0-9]{2})|(_SX[0-9]{2}))_/, "") ??
+          "";
+
+        return {
+          title: $(tr).find(".title > .value > a").attr("title")?.trim() ?? "",
+          author: $(tr).find(".author > .value > a").text().trim(),
+          url: `https://www.goodreads.com${
+            $(tr).find(".title > .value > a").attr("href") ?? ""
+          }`,
+          imageUrl,
+        };
+      })
       .toArray();
 
     // Download images into base64
@@ -70,6 +73,18 @@ export default async function handler(
     }));
 
     res.json(booksWithColors);
+  }
+}
+
+/**
+ * Returns true if the image url is a valid image
+ */
+async function isGoodOpenLibraryImageUrl(imageUrl: string) {
+  try {
+    const response = await axios.get(imageUrl);
+    return response.status === 200;
+  } catch (err) {
+    return false;
   }
 }
 
