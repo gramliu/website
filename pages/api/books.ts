@@ -79,18 +79,6 @@ export default async function handler(
 }
 
 /**
- * Returns true if the image url is a valid image
- */
-async function isGoodOpenLibraryImageUrl(imageUrl: string) {
-  try {
-    const response = await axios.get(imageUrl);
-    return response.status === 200;
-  } catch (err) {
-    return false;
-  }
-}
-
-/**
  * Get the accessible foreground color given a background color
  */
 function getForegroundColor(rgb: [number, number, number]) {
