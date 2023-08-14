@@ -23,7 +23,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (env.NODE_ENV === "development") {
-    return booksCached;
+    res.json(booksCached);
   } else {
     const html = await axios.get(url);
     const $ = cheerio.load(html.data);
