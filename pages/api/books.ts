@@ -37,6 +37,7 @@ export default async function handler(
           $(tr)
             .find(".cover > .value a > img")
             .attr("src")
+            // Remove suffixes of the form ._SX75_, ._SY50_, or ._SX50_SY75_
             ?.replace(/\.((_SX[0-9]{2})?(_SY[0-9]{2})|(_SX[0-9]{2}))_/, "") ??
           "";
 
