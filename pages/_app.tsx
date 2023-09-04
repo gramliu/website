@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import "../styles/fonts.scss";
 import "../styles/shadcn.css";
 import "../styles/global.scss";
 
