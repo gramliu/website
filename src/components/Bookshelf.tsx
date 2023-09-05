@@ -12,7 +12,7 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
   return (
     <div
       role="list"
-      className="md:flex flex-row flex-start gap-4 lg:w-8/12 mx-auto hidden overflow-x-auto"
+      className="md:flex flex-row flex-start gap-4 lg:w-8/12 mx-auto hidden pb-4 overflow-x-auto"
     >
       {books.map((book, index) => (
         <button
