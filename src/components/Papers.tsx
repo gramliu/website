@@ -9,13 +9,13 @@ function ResearchPaperComponent({ paper }: { paper: ResearchPaper }) {
         target="_blank"
         rel="noreferrer"
         className={
-          "cursor-pointer text-2xl no-underline flex items-center text-text-primary hover:translate-y-[-3px] transition-all"
+          "cursor-pointer text-lg md:text-2xl no-underline flex items-center text-text-primary hover:translate-y-[-3px] transition-all"
         }
       >
         {paper.title}
         <LinkIcon className="text-text-primary fill-text-primary h-4 ml-1 opacity-80" />
       </a>
-      <p className="text-sm">
+      <p className="text-sm text-text-faded">
         {paper.authorSummary}, {paper.year}
       </p>
     </div>
