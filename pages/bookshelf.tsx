@@ -35,7 +35,7 @@ export async function getStaticProps() {
   // const { data: papers } = await axios.get<ResearchPaper[]>(papersUrl);
 
   return {
-    props: { books },
+    props: { books, papers: [] },
     revalidate: 60, // at most every minute
   };
 }
