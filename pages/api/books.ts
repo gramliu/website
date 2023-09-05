@@ -18,6 +18,9 @@ export interface Book {
   bgColor: string;
 }
 
+/**
+ * Get GoodReads books
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
