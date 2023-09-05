@@ -8,7 +8,16 @@ export default function About() {
         <div className="flex items-center font-bold text-3xl">About Me</div>
         <div className="w-10/12 md:w-8/12 lg:w-5/12 mt-8 text-lg">
           Hi! I&apos;m Gram and I build things, from web apps to full stack to
-          IoT. I graduated from{" "}
+          IoT. I currently work at Stripe in San Francisco 🌉 building{" "}
+          <a
+            href="https://stripe.com/terminal/tap-to-pay"
+            target="_blank"
+            rel="noreferrer"
+            className="hoverLink text-highlight no-underline"
+          >
+            Tap to Pay
+          </a>
+          . I recently graduated from{" "}
           <a
             href="https://www.cmu.edu/"
             target="_blank"
