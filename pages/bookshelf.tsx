@@ -32,10 +32,10 @@ export default function BookshelfPage({
 
 export async function getStaticProps() {
   const { data: books } = await axios.get<Book[]>(booksUrl);
-  // const { data: papers } = await axios.get<ResearchPaper[]>(papersUrl);
+  const { data: papers } = await axios.get<ResearchPaper[]>(papersUrl);
 
   return {
-    props: { books, papers: [] },
+    props: { books, papers },
     revalidate: 60, // at most every minute
   };
 }
