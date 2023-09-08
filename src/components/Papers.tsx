@@ -25,7 +25,10 @@ function ResearchPaperComponent({ paper }: { paper: ResearchPaper }) {
 export default function Papers({ papers }: { papers: ResearchPaper[] }) {
   return (
     <>
-      <div className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto">
+      <div
+        id="papers"
+        className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
+      >
         Recently Read Papers
       </div>
       <div className="flex flex-row items-center justify-center p-4">

@@ -127,7 +127,10 @@ export default function Bookshelf({
 }): JSX.Element {
   return (
     <div className={className}>
-      <div className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto">
+      <div
+        id="bookshelf"
+        className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
+      >
         Bookshelf
       </div>
       <svg className="invisible absolute inset-0">
