@@ -10,9 +10,6 @@ const baseUrl =
     ? "http://localhost:3000"
     : "https://gramliu.com";
 
-const booksUrl = `${baseUrl}/api/books`;
-const papersUrl = `${baseUrl}/api/papers`;
-
 export default function BookshelfPage({
   books,
   papers,
