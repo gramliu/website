@@ -26,11 +26,14 @@ interface RawPaper {
  * Get research papers under the "Interesting Reads" Zotero collection
  */
 export default async function getPapers() {
+  let start = Date.now();
   const { data } = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${process.env.ZOTERO_API_KEY}`,
     },
   });
+  let end = Date.now();
+  console.log(`Fetch papers: ${end - start}ms`);
 
   const papers: ResearchPaper[] = data.map((paper: RawPaper) => ({
     title: paper.data.title,
