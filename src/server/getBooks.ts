@@ -21,13 +21,9 @@ export interface Book {
 /**
  * Get GoodReads books
  */
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function getBooks() {
   if (env.NODE_ENV === "development") {
-    res.json(booksCached);
-    return;
+    return booksCached;
   }
 
   const html = await axios.get(url);
@@ -80,7 +76,7 @@ export default async function handler(
     bgColor: bgColors[i],
   }));
 
-  res.json(booksWithColors);
+  return booksWithColors;
 }
 
 /**

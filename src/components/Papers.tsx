@@ -1,4 +1,4 @@
-import { ResearchPaper } from "../../pages/api/papers";
+import { ResearchPaper } from "../server/getPapers";
 import LinkIcon from "../icons/link";
 
 function ResearchPaperComponent({ paper }: { paper: ResearchPaper }) {

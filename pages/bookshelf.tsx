@@ -2,9 +2,9 @@ import axios from "axios";
 import Bookshelf from "../src/components/Bookshelf";
 import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
-import { Book } from "./api/books";
 import Papers from "../src/components/Papers";
-import { ResearchPaper } from "./api/papers";
+import getPapers, { ResearchPaper } from "../src/server/getPapers";
+import getBooks, { Book } from "../src/server/getBooks";
 
 const baseUrl =
   process.env.NODE_ENV === "development"
@@ -31,8 +31,8 @@ export default function BookshelfPage({
 }
 
 export async function getStaticProps() {
-  const { data: books } = await axios.get<Book[]>(booksUrl);
-  const { data: papers } = await axios.get<ResearchPaper[]>(papersUrl);
+  const books = await getBooks();
+  const papers = await getPapers();
 
   return {
     props: { books, papers },

@@ -25,10 +25,7 @@ interface RawPaper {
 /**
  * Get research papers under the "Interesting Reads" Zotero collection
  */
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function getPapers() {
   const { data } = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${process.env.ZOTERO_API_KEY}`,
@@ -42,7 +39,7 @@ export default async function handler(
     year: dateStringToYear(paper.meta.parsedDate),
   }));
 
-  res.status(200).json(papers);
+  return papers;
 }
 
 function dateStringToYear(dateString: string): string {
