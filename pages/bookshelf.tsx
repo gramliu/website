@@ -5,11 +5,6 @@ import Papers from "../src/components/Papers";
 import getBooks, { Book } from "../src/server/getBooks";
 import getPapers, { ResearchPaper } from "../src/server/getPapers";
 
-const baseUrl =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : "https://gramliu.com";
-
 export default function BookshelfPage({
   books,
   papers,
@@ -27,8 +22,7 @@ export default function BookshelfPage({
 }
 
 export async function getStaticProps() {
-  const books = await getBooks();
-  const papers = await getPapers();
+  const [books, papers] = await Promise.all([getBooks(), getPapers()]);
 
   return {
     props: { books, papers },

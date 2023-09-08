@@ -33,14 +33,13 @@ export default async function getBooks() {
 
   // Construct books array
   const books = booksBody
-    .map((i, tr) => {
+    .map((_, tr) => {
       const imageUrl =
         $(tr)
           .find(".cover > .value a > img")
           .attr("src")
           // Remove suffixes of the form ._SX75_, ._SY50_, or ._SX50_SY75_
           ?.replace(/\.((_SX[0-9]{2})?(_SY[0-9]{2})|(_SX[0-9]{2}))_/, "") ?? "";
-      console.log(imageUrl);
 
       return {
         title: $(tr).find(".title > .value > a").attr("title")?.trim() ?? "",
