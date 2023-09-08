@@ -1,10 +1,9 @@
-import axios from "axios";
 import Bookshelf from "../src/components/Bookshelf";
 import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
 import Papers from "../src/components/Papers";
-import getPapers, { ResearchPaper } from "../src/server/getPapers";
 import getBooks, { Book } from "../src/server/getBooks";
+import getPapers, { ResearchPaper } from "../src/server/getPapers";
 
 const baseUrl =
   process.env.NODE_ENV === "development"

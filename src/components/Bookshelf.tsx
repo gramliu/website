@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
-import { Book } from "../../pages/api/books";
+import { Book } from "../server/getBooks";
 
 const animationStyle = "transition-all duration-500 ease will-change-auto";
 
