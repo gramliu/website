@@ -82,6 +82,9 @@ export default async function getBooks() {
   // Extract colors from images
   start = Date.now();
   const rgb = await Promise.all(imageData.map((image) => getColor(image)));
+  end = Date.now();
+  console.log(`Extract colors from images: ${end - start}ms`);
+
   const fgColors = rgb.map(getForegroundColor);
   const bgColors = rgb.map((rgb) => `#${rgbHex(rgb[0], rgb[1], rgb[2])}`);
   const booksWithColors: Book[] = books.map((book, i) => ({
@@ -89,8 +92,6 @@ export default async function getBooks() {
     fgColor: fgColors[i],
     bgColor: bgColors[i],
   }));
-  end = Date.now();
-  console.log(`Extract colors from images: ${end - start}ms`);
 
   return booksWithColors;
 }
