@@ -1,3 +1,13 @@
+import nextMdx from "@next/mdx";
+
+const withMdx = nextMdx({
+  // By default only the .mdx extension is supported.
+  extension: /\.mdx?$/,
+  options: {
+    /* providerImportSource: …, otherOptions… */
+  },
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -12,6 +22,7 @@ const nextConfig = {
       },
     ],
   },
+  pageExtensions: ["md", "mdx", "tsx", "ts", "jsx", "js"],
 };
 
-module.exports = nextConfig;
+export default withMdx(nextConfig);
