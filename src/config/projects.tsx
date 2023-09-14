@@ -5,7 +5,7 @@ export interface Project {
   subtitle: string;
   description: ReactNode;
   tags: string[];
-  github: string;
+  github?: string;
   image: string;
   imageHeight: number;
   imageWidth: number;
