@@ -1,5 +1,5 @@
 import axios from "axios";
-import { NextApiRequest, NextApiResponse } from "next";
+import { env } from "../env";
 
 const url =
   "https://api.zotero.org/users/11205826/collections/BDRRTS9S/items/top";
@@ -28,7 +28,7 @@ interface RawPaper {
 export default async function getPapers() {
   const { data } = await axios.get(url, {
     headers: {
-      Authorization: `Bearer ${process.env.ZOTERO_API_KEY}`,
+      Authorization: `Bearer ${env.ZOTERO_API_KEY}`,
     },
   });
 
