@@ -128,7 +128,7 @@ const archive: Project[] = [
   },
   {
     title: "TeleTouch",
-    subtitle: "Backend for the TartanHacks Software Suite",
+    subtitle: "Gesture-based 3D Manipulation Device",
     image: "/projects/teletouch.png",
     imageHeight: 345,
     imageWidth: 247,
