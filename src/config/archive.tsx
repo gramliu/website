@@ -123,7 +123,7 @@ const archive: Project[] = [
     imageHeight: 1280,
     imageWidth: 720,
     tags: ["TensorFlow", "Keras", "Mask R-CNN", "OpenPose"],
-    description: `Designed an exercise video classification model using OpenPose and TensorFlow with a group for my Pattern Recognition Theory class.`,
+    description: `Designed an exercise video classification model using OpenPose and TensorFlow for my Pattern Recognition Theory class.`,
     year: 2022,
   },
   {
@@ -133,7 +133,7 @@ const archive: Project[] = [
     imageHeight: 345,
     imageWidth: 247,
     tags: ["Arduino", "Raspberry Pi", "MQTT", "Accelerometer"],
-    description: `Designed a gesture-based input device for manipulating objects in 3D space with a group for my ECE Capstone class.`,
+    description: `Designed a gesture-based input device for manipulating objects in 3D space for my ECE Capstone class.`,
     year: 2023,
   },
   {
