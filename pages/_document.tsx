@@ -1,5 +1,6 @@
 import { Head, Html, Main, NextScript } from "next/document";
 import Script from "next/script";
+import { env } from "../src/env";
 
 export default function Document() {
   return (
@@ -34,7 +35,7 @@ export default function Document() {
         <Main />
         <NextScript />
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${env.GOOGLE_ANALYTICS_ID}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -43,7 +44,7 @@ export default function Document() {
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
 
-          gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}');
+          gtag('config', '${env.GOOGLE_ANALYTICS_ID}');
         `}
         </Script>
       </body>
