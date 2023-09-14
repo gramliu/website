@@ -26,16 +26,12 @@ export default async function getBooks() {
   //   return booksCached;
   // }
 
-  let start = Date.now();
   const html = await axios.get(url);
-  let end = Date.now();
-  console.log(`Fetch html: ${end - start}ms`);
   const $ = cheerio.load(html.data);
 
   const booksBody = $("#booksBody tr");
 
   // Construct books array
-  start = Date.now();
   const books = booksBody
     .map((_, tr) => {
       const imageUrl =
@@ -55,35 +51,24 @@ export default async function getBooks() {
       };
     })
     .toArray();
-  end = Date.now();
-  console.log(`Construct books array: ${end - start}ms`);
 
   // Download images into base64
-  start = Date.now();
   const images = await Promise.all(
     books.map((book) =>
       axios.get(book.imageUrl, { responseType: "arraybuffer" })
     )
   );
-  end = Date.now();
-  console.log(`Download images: ${end - start}ms`);
 
   // Convert images to base64
-  start = Date.now();
   const imageData = images.map(
     (image) =>
       `data:image/jpeg;base64,${Buffer.from(image.data, "binary").toString(
         "base64"
       )}`
   );
-  end = Date.now();
-  console.log(`Convert images to base64: ${end - start}ms`);
 
   // Extract colors from images
-  start = Date.now();
   const rgb = await Promise.all(imageData.map((image) => getColor(image)));
-  end = Date.now();
-  console.log(`Extract colors from images: ${end - start}ms`);
 
   const fgColors = rgb.map(getForegroundColor);
   const bgColors = rgb.map((rgb) => `#${rgbHex(rgb[0], rgb[1], rgb[2])}`);
