@@ -169,10 +169,10 @@
   dependencies:
     glob "7.1.7"
 
-"@next/mdx@^13.4.19":
-  version "13.4.19"
-  resolved "https://registry.npmjs.org/@next/mdx/-/mdx-13.4.19.tgz"
-  integrity sha512-EaWA30YxAqFcyQYNxCoL9/TCcZP1Nk6pvW0vf1M54qDAkAGiloWQqyttVKVbRz+qOYk92he6mBB4ej/7pmEinQ==
+"@next/mdx@^13.5.6":
+  version "13.5.6"
+  resolved "https://registry.npmjs.org/@next/mdx/-/mdx-13.5.6.tgz"
+  integrity sha512-2AMyCrz1SxSWNUpADyLz3RbPbq0GHrchbO7Msvg7IsH8MrTw3VYaZSI1KNa6JzZIoykwtNVSEL+uBmPZi106Jw==
   dependencies:
     source-map "^0.7.0"
 
@@ -447,10 +447,10 @@
   dependencies:
     "@types/unist" "^2"
 
-"@types/mdx@^2.0.0", "@types/mdx@^2.0.7":
-  version "2.0.7"
-  resolved "https://registry.npmjs.org/@types/mdx/-/mdx-2.0.7.tgz"
-  integrity sha512-BG4tyr+4amr3WsSEmHn/fXPqaCba/AYZ7dsaQTiavihQunHSIxk+uAtqsjvicNpyHN6cm+B9RVrUOtW9VzIKHw==
+"@types/mdx@^2.0.0", "@types/mdx@^2.0.9":
+  version "2.0.9"
+  resolved "https://registry.npmjs.org/@types/mdx/-/mdx-2.0.9.tgz"
+  integrity sha512-OKMdj17y8Cs+k1r0XFyp59ChSOwf8ODGtMQ4mnpfz5eFDk1aO41yN3pSKGuvVzmWAkFp37seubY1tzOVpwfWwg==
 
 "@types/ms@*":
   version "0.7.31"
