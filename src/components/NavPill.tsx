@@ -27,6 +27,10 @@ const links = [
     link: "Gram_Liu_Resume.pdf",
     target: "_blank",
   },
+  {
+    label: "Bookshelf",
+    link: "/bookshelf",
+  },
 ];
 
 const divider = <span className="text-divider text-2xl">|</span>;
@@ -101,7 +105,7 @@ export default function NavPill() {
           delay: isHome ? 0.7 : 0,
         }}
       >
-        <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-bgcolor-primary p-3 md:p-4">
+        <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-bgcolor-primary p-3 pr-4 md:p-4 md:pr-5">
           <div className="flex flex-row items-center gap-2 md:gap-4">
             <Link
               href="/#home"
@@ -111,37 +115,6 @@ export default function NavPill() {
             </Link>
             {divider}
             {navLinksDivided}
-            {divider}
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-text-primary font-sans font-semibold text-base hover:bg-none focus:bg-none">
-                    Other
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid grid-cols-1 gap-3 p-6 w-48 bg-bgcolor-primary text-text-primary drop-shadow">
-                      <li>
-                        <NavigationMenuLink
-                          href="https://instagram.com/gram_cooks"
-                          target="_blank"
-                          className="hover:text-text-highlight font-semibold"
-                        >
-                          Cooking
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink
-                          href="/bookshelf"
-                          className="hover:text-text-highlight font-semibold"
-                        >
-                          Bookshelf
-                        </NavigationMenuLink>
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
           </div>
         </div>
       </motion.div>
