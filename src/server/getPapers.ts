@@ -2,7 +2,7 @@ import axios from "axios";
 import { env } from "../env";
 
 const url =
-  "https://api.zotero.org/users/11205826/collections/BDRRTS9S/items/top";
+  "https://api.zotero.org/users/11205826/collections/BDRRTS9S/items/top?limit=100";
 
 export interface ResearchPaper {
   title: string;
