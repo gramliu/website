@@ -41,7 +41,7 @@ export default function Papers({
   className,
 }: {
   papers: ResearchPaper[];
-  className: string;
+  className?: string;
 }) {
   // Group papers into pages
   const pages = useMemo(() => paginate(papers, PAGE_SIZE), [papers]);
