@@ -53,7 +53,7 @@ export default function NavPill() {
   }, [drawerOpen, scrollTarget]);
 
   const navLinks = links.map((linkTarget, index) => {
-    if (linkTarget.target || !isHome) {
+    if (!linkTarget.link.startsWith("/#") || !isHome) {
       return (
         <a
           href={linkTarget.link}
