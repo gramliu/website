@@ -16,15 +16,15 @@ import { useRouter } from "next/router";
 const links = [
   {
     label: "About",
-    link: "about",
+    link: "/#about",
   },
   {
     label: "Portfolio",
-    link: "portfolio",
+    link: "/#portfolio",
   },
   {
     label: "Resume",
-    link: "Gram_Liu_Resume.pdf",
+    link: "/Gram_Liu_Resume.pdf",
     target: "_blank",
   },
   {
@@ -56,9 +56,7 @@ export default function NavPill() {
     if (linkTarget.target || !isHome) {
       return (
         <a
-          href={
-            linkTarget.target == null ? `/#${linkTarget.link}` : linkTarget.link
-          }
+          href={linkTarget.link}
           className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
           target={linkTarget.target}
           key={index}
