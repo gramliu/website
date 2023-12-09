@@ -1,17 +1,8 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { scroller } from "react-scroll";
-import LogoIcon from "../icons/logo";
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-} from "./ui/navigation-menu";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { scroller } from "react-scroll";
+import LogoIcon from "../icons/logo";
 
 const links = [
   {
@@ -40,18 +31,6 @@ export default function NavPill() {
   const path = router.pathname;
   const isHome = path === "/";
 
-  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    if (!drawerOpen && scrollTarget) {
-      // Drawer was closed. Go to scroll target
-      scroller.scrollTo(scrollTarget, {
-        smooth: true,
-      });
-    }
-  }, [drawerOpen, scrollTarget]);
-
   const navLinks = links.map((linkTarget, index) => {
     if (!linkTarget.link.startsWith("/#") || !isHome) {
       return (
@@ -60,7 +39,6 @@ export default function NavPill() {
           className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
           target={linkTarget.target}
           key={index}
-          onClick={() => setDrawerOpen(false)}
         >
           {linkTarget.label}
         </a>
@@ -70,11 +48,11 @@ export default function NavPill() {
         <div
           className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
           onClick={() => {
-            scroller.scrollTo(linkTarget.link, {
+            const target = linkTarget.link.substring(2);
+            scroller.scrollTo(target, {
               smooth: true,
+              offset: -100
             });
-            setScrollTarget(linkTarget.link);
-            setDrawerOpen(false);
           }}
           key={index}
         >
