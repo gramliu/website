@@ -19,8 +19,8 @@ const links = [
     target: "_blank",
   },
   {
-    label: "Bookshelf",
-    link: "/bookshelf",
+    label: "Library",
+    link: "/library",
   },
 ];
 
