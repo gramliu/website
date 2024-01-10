@@ -30,14 +30,14 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
             focusedIndex !== index &&
               "hover:-translate-y-4 focus-visible:-translate-y-4",
             focusedIndex === index ? "basis-72" : "basis-12",
-            animationStyle
+            animationStyle,
           )}
           style={{ perspective: "1000px", WebkitPerspective: "1000px" }}
         >
           <div
             className={clsx(
               "z-50 h-72 w-[50px] shrink-0 origin-right py-4 brightness-[0.80] contrast-[2.00] drop-shadow-2xl",
-              animationStyle
+              animationStyle,
             )}
             style={{
               backgroundColor: book.bgColor,
@@ -53,7 +53,7 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
               className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full opacity-40 [filter:url(#paper)]"
             />
             <h2
-              className="text-base m-auto text-ellipsis h-64 w-[44px] font-serif font-medium line-clamp-2 align-middle leading-tight text-start"
+              className="text-base m-auto text-ellipsis h-64 w-[44px] font-serif line-clamp-2 align-middle leading-tight text-start"
               style={{ writingMode: "vertical-rl" }}
             >
               {book.title}
@@ -62,7 +62,7 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
           <div
             className={clsx(
               "relative z-10 h-72 shrink-0 origin-left overflow-hidden border-gray-900 brightness-[0.80] contrast-[2.00]",
-              animationStyle
+              animationStyle,
             )}
             style={{
               transformStyle: "preserve-3d",
