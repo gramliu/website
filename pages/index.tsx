@@ -10,6 +10,7 @@ import ProjectArchive from "../src/components/ProjectArchive";
 import { ReactNode } from "react";
 import { MDXComponents } from "mdx/types";
 import { MDXProvider, MergeComponents } from "@mdx-js/react/lib";
+import { TracingBeam } from "../src/components/ui/tracing-beam";
 
 const mdxComponents = {
   a: ({ children, href }: { children: ReactNode; href: string }) => (
@@ -28,13 +29,15 @@ export default function HomePage() {
   return (
     <MDXProvider components={mdxComponents}>
       <Layout>
-        <NavPill />
-        <Hero />
-        <AboutSection />
-        <ActivitiesList />
-        <Portfolio />
-        <ProjectArchive />
-        <Footer />
+        <TracingBeam className="w-screen">
+          <NavPill />
+          <Hero />
+          <AboutSection />
+          <ActivitiesList />
+          <Portfolio />
+          <ProjectArchive />
+          <Footer />
+        </TracingBeam>
       </Layout>
     </MDXProvider>
   );
