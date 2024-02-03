@@ -1,3 +1,4 @@
+import Blogs from "../src/components/Blogs";
 import Bookshelf from "../src/components/Bookshelf";
 import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
@@ -16,6 +17,7 @@ export default function BookshelfPage({
     <Layout>
       <NavPill />
       <Bookshelf books={books} className="py-48" />
+      <Blogs />
       <Papers papers={papers} />
     </Layout>
   );

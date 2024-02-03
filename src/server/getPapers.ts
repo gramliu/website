@@ -34,7 +34,7 @@ export default async function getPapers() {
 
   const papers: ResearchPaper[] = data.map((paper: RawPaper) => ({
     title: paper.data.title,
-    authorSummary: paper.meta.creatorSummary,
+    authorSummary: paper.meta.creatorSummary ?? "",
     url: paper.data.url,
     year: dateStringToYear(paper.meta.parsedDate),
   }));

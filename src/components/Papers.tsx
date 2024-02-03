@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import LinkIcon from "../icons/link";
 import { ResearchPaper } from "../server/getPapers";
+import { LinkIcon } from "lucide-react";
 
 function PaperEntry({ paper }: { paper: ResearchPaper }) {
   return (
@@ -14,7 +14,7 @@ function PaperEntry({ paper }: { paper: ResearchPaper }) {
         }
       >
         {paper.title}
-        <LinkIcon className="text-text-primary fill-text-primary h-4 ml-1 opacity-80" />
+        <LinkIcon className="h-4 ml-1 opacity-80" />
       </a>
       <p className="text-sm text-text-faded">
         {paper.authorSummary}, {paper.year}
@@ -91,10 +91,7 @@ export default function Papers({
         Recently Read Papers
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <PaginationControls
-          page={page}
-          pages={pages}
-          setPage={setPage} />
+        <PaginationControls page={page} pages={pages} setPage={setPage} />
         <div className="flex flex-col gap-4 w-full md:w-8/12 h-128 items-start">
           {pages[page].map((paper) => (
             <PaperEntry paper={paper} key={paper.title} />
