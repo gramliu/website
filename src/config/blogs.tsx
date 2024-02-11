@@ -14,6 +14,10 @@ const blogs: Blog[] = [
     title: "Idea Generation",
     url: "https://blog.samaltman.com/idea-generation",
     author: "Sam Altman"
+  },
+  {
+    title: "How to be Successful",
+    url: "https://blog.samaltman.com/how-to-be-successful"
   }
 ];
 
