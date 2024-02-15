@@ -27,6 +27,7 @@ const projects: Project[] = [
           has context about what has been discussed so far and provides answers
           with references to relevant timestamps in the video.
         </div>
+        <br />
         <div>
           We launched with the largest educational foundation in Sri Lanka. We
           created a DSL and runtime for rapidly prototyping and deploying LLM +
