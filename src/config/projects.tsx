@@ -16,6 +16,56 @@ export interface Project {
 
 const projects: Project[] = [
   {
+    title: "🏫 t-ai",
+    subtitle: "AI Personal Teaching Assistant",
+    description: (
+      <div>
+        <div>
+          A Chrome extension that embeds an AI personal teaching assistant next
+          to educational YouTube videos. You can ask questions about the video
+          in real-time, just like in a classroom. The AI assistant immediately
+          has context about what has been discussed so far and provides answers
+          with references to relevant timestamps in the video.
+        </div>
+        <br />
+        <div>
+          We launched with the largest educational foundation in Sri Lanka. We
+          created a DSL and runtime for rapidly prototyping and deploying LLM +
+          retrieval pipelines and built around refining the ESL learning
+          experience, which was the educational foundation&apos;s largest group
+          of students. We addressed model hallucination for ESL through intent
+          classification and augmentation with the Google Translate API.
+        </div>
+      </div>
+    ),
+    tags: ["OpenAI", "LangChain", "Pinecone", "React"],
+    image: "/projects/t-ai.png",
+    link: "https://t-ai.app/",
+    imageHeight: 1080,
+    imageWidth: 720,
+    year: 2023,
+  },
+  {
+    title: "🕸️ Web Spinner",
+    subtitle: "Web Mockups to React",
+    description: (
+      <div>
+        A tool that enables you to create low-fidelity mockups through a
+        browser-based canvas and convert it into modular React components. It
+        renders interactive previews that you can iterate on until you are
+        satisfied before generating a PR with RSC-compatible components into
+        your own linked GitHub repository.
+      </div>
+    ),
+    tags: ["OpenAI", "GPT-4-Vision", "LangChain", "React", "Next.js"],
+    image: "/projects/web-spinner.png",
+    github: "https://github.com/Web-Spinner-core/web-spinner",
+    video: "https://twitter.com/gramliu/status/1737273439608775088?s=20",
+    imageHeight: 1080,
+    imageWidth: 720,
+    year: 2023,
+  },
+  {
     title: "🧑‍⚖️ Pol.Lit",
     subtitle: "Political Literacy and Transparency Platform",
     github: "https://github.com/gramliu/pollit",
@@ -43,45 +93,6 @@ const projects: Project[] = [
       </div>
     ),
     year: 2022,
-  },
-  {
-    title: "📃 Course API",
-    subtitle: "REST API and Website for CMU Course Data",
-    description:
-      "A RESTful API and website for accessing CMU faculty and course evaulation data. Search your upcoming courses to see the difficulty of the content and the amount of time you can expect to work on each course each week.",
-    tags: ["MongoDB", "Express", "React", "Node.js"],
-    github: "https://github.com/ScottyLabs/course-api-v2",
-    link: "https://course.scottylabs.org/",
-    image: "/projects/course-api.png",
-    imageHeight: 1080,
-    imageWidth: 720,
-  },
-  {
-    title: "🌈 Illuminate Designer",
-    subtitle: "Lighting Sequence Designer",
-    description: (
-      <div>
-        A lighting sequence designer for the
-        <a
-          href="https://upload.wikimedia.org/wikipedia/commons/3/33/Carnegie_Mellon_University_Pausch_Bridge_rainbow.jpg"
-          target="_blank"
-          rel="noreferrer"
-          className="hoverLink mx-1"
-        >
-          Randy Pausch Bridge
-        </a>
-        at CMU. In Spring 2021, I helped organize an event in collaboration with
-        ScottyLabs and CMU SCS to create a space where students used this tool
-        to design lighting sequences which were displayed on the bridge.
-      </div>
-    ),
-    tags: ["React", "Redux", "Express", "Jimp"],
-    github: "https://github.com/ScottyLabs/pausch-ui",
-    video: "https://youtu.be/5LwwyFJoPSw",
-    image: "/projects/illuminate.png",
-    link: "https://illuminate.scottylabs.org/",
-    imageHeight: 1080,
-    imageWidth: 720,
   },
 ];
 

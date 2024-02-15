@@ -137,6 +137,47 @@ const archive: Project[] = [
     year: 2023,
   },
   {
+    title: "🌈 Illuminate Designer",
+    subtitle: "Lighting Sequence Designer",
+    description: (
+      <div>
+        A lighting sequence designer for the
+        <a
+          href="https://upload.wikimedia.org/wikipedia/commons/3/33/Carnegie_Mellon_University_Pausch_Bridge_rainbow.jpg"
+          target="_blank"
+          rel="noreferrer"
+          className="hoverLink mx-1"
+        >
+          Randy Pausch Bridge
+        </a>
+        at CMU. In Spring 2021, I helped organize an event in collaboration with
+        ScottyLabs and CMU SCS to create a space where students used this tool
+        to design lighting sequences which were displayed on the bridge.
+      </div>
+    ),
+    tags: ["React", "Redux", "Express", "Jimp"],
+    github: "https://github.com/ScottyLabs/pausch-ui",
+    video: "https://youtu.be/5LwwyFJoPSw",
+    image: "/projects/illuminate.png",
+    link: "https://illuminate.scottylabs.org/",
+    imageHeight: 1080,
+    imageWidth: 720,
+    year: 2021,
+  },
+  {
+    title: "Course API",
+    subtitle: "REST API and Website for CMU Course Data",
+    description:
+      "A RESTful API and website for accessing CMU faculty and course evaulation data. Search your upcoming courses to see the difficulty of the content and the amount of time you can expect to work on each course each week.",
+    tags: ["MongoDB", "Express", "React", "Node.js"],
+    github: "https://github.com/ScottyLabs/course-api-v2",
+    link: "https://course.scottylabs.org/",
+    image: "/projects/course-api.png",
+    imageHeight: 1080,
+    imageWidth: 720,
+    year: 2020,
+  },
+  {
     title: "Craft112",
     subtitle: "Python Adventure Game",
     github: "https://github.com/gramliu/Craft112",
