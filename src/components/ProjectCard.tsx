@@ -75,6 +75,7 @@ export default function ProjectCard({
         width={imageWidth * scaleFactor}
         className="object-cover aspect-[2/1] w-full h-auto"
         sizes="(min-height: 256) 256"
+        loading="lazy"
       />
       <span className="text-center text-2xl mt-4 px-4">{title}</span>
       <span className="text-center text-text-faded px-4">{subtitle}</span>

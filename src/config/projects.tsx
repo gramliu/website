@@ -27,7 +27,6 @@ const projects: Project[] = [
           has context about what has been discussed so far and provides answers
           with references to relevant timestamps in the video.
         </div>
-        <br />
         <div>
           We launched with the largest educational foundation in Sri Lanka. We
           created a DSL and runtime for rapidly prototyping and deploying LLM +
@@ -41,8 +40,8 @@ const projects: Project[] = [
     tags: ["OpenAI", "LangChain", "Pinecone", "React"],
     image: "/projects/t-ai.png",
     link: "https://t-ai.app/",
-    imageHeight: 1080,
-    imageWidth: 720,
+    imageHeight: 1859,
+    imageWidth: 3662,
     year: 2023,
   },
   {
@@ -61,8 +60,8 @@ const projects: Project[] = [
     image: "/projects/web-spinner.png",
     github: "https://github.com/Web-Spinner-core/web-spinner",
     video: "https://twitter.com/gramliu/status/1737273439608775088?s=20",
-    imageHeight: 1080,
-    imageWidth: 720,
+    imageHeight: 1920,
+    imageWidth: 1035,
     year: 2023,
   },
   {
