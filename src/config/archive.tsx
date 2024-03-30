@@ -110,7 +110,7 @@ const archive: Project[] = [
     imageHeight: 345,
     imageWidth: 247,
     tags: ["TypeScript", "Express", "MongoDB"],
-    description: `Spearheaded planning, design, and development of the backend for the TartanHacks Software Suite, 
+    description: `Designed and built the backend for the TartanHacks software suite,
     encompassing registration, scheduling, project submission, 
     and live event logistics. Worked across five different teams to scope out requirements and design for the
     cross-platform API`,
