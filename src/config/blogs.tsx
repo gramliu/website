@@ -24,6 +24,11 @@ const blogs: Blog[] = [
     title: "Economic Inequality",
     url: "https://paulgraham.com/ineq.html",
     author: "Paul Graham"
+  },
+  {
+    title: "How to do Great Work",
+    url: "https://paulgraham.com/greatwork.html",
+    author: "Paul Graham"
   }
 ];
 
