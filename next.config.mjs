@@ -23,6 +23,13 @@ const nextConfig = {
     ],
   },
   pageExtensions: ["md", "mdx", "tsx", "ts", "jsx", "js"],
+  webpack: (config, { dev }) => {
+    config.module.rules.push({
+      test: /\.txt$/,
+      use: "raw-loader",
+    });
+    return config;
+  },
 };
 
 export default withMdx(nextConfig);
