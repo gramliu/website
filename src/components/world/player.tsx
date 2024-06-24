@@ -160,6 +160,17 @@ const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
         );
       }
 
+      // If player is out of bounds, set to closest bound
+      if (currentPosition.z < start - diff) {
+        currentPosition.z = start;
+        currentPosition.y = 5;
+        currentPosition.x = 9;
+      } else if (currentPosition.z > end + diff) {
+        currentPosition.z = end;
+        currentPosition.y = 5;
+        currentPosition.x = 9;
+      }
+
       // Reverse direction
       if (currentPosition.z < start) {
         velocityRef.current.setZ(Math.abs(velocityRef.current.z));
@@ -211,11 +222,11 @@ const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
         currentPosition.y = Math.round(currentPosition.y);
       }
 
-      // console.group("Player");
-      // console.table({
-      //   rotation: currentRotation,
-      // });
-      // console.groupEnd();
+      console.group("Player");
+      console.table({
+        position: currentPosition
+      });
+      console.groupEnd();
     }
   });
 
