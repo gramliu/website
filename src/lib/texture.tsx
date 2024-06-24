@@ -1,4 +1,4 @@
-import { EntityTexture, EntityTextureProps } from "@/components/world/entities";
+import { EntityTexture, EntityTextureProps } from "../components/world/entities";
 import { useTexture } from "@react-three/drei";
 import { Material, MeshPhysicalMaterial, MeshPhysicalMaterialParameters, RepeatWrapping, Texture } from "three";
 
