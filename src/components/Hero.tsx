@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import ProfilePhoto from "../../public/images/profilePhoto.jpg";
 import social from "../config/social";
+import World from "./world";
+import clsx from "clsx";
 
 function HeroContent() {
   return (
@@ -49,8 +51,14 @@ function SocialIcons() {
 export default function Hero() {
   return (
     <>
-      <div className="flex items-center justify-center h-screen" id="home">
-        <div className="flex flex-col mb-[5%] justify-between">
+      <div
+        className={clsx(
+          "items-center justify-center h-auto",
+          "xl:flex xl:justify-center xl:items-center",
+        )}
+        id="home"
+      >
+        <div className="flex flex-col xl:w-1/2 mb-[5%] h-screen items-center justify-center">
           <motion.div
             initial={{ opacity: 0, translateY: 100 }}
             animate={{ opacity: 1, translateY: 0 }}
@@ -76,6 +84,9 @@ export default function Hero() {
           >
             <SocialIcons />
           </motion.div>
+        </div>
+        <div className="mt-[10%] xl:w-1/2 h-screen" id="world">
+          <World size={0.8} />
         </div>
       </div>
     </>

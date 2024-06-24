@@ -222,11 +222,11 @@ const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
         currentPosition.y = Math.round(currentPosition.y);
       }
 
-      console.group("Player");
-      console.table({
-        position: currentPosition
-      });
-      console.groupEnd();
+      // console.group("Player");
+      // console.table({
+      //   position: currentPosition
+      // });
+      // console.groupEnd();
     }
   });
 
