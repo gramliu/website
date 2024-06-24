@@ -6,12 +6,16 @@ import { World } from "./world";
 
 const world = new World();
 const ROTATION_SPEED = 0.3;
-const ROTATE_WORLD = false;
+const ROTATE_WORLD = true;
+
+interface Props {
+  size?: number;
+}
 
 /**
  * World map
  */
-export default function Map() {
+export default function Map({ size = 1 }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
 
@@ -41,7 +45,7 @@ export default function Map() {
   });
 
   return (
-    <group ref={worldRef}>
+    <group ref={worldRef} scale={[size, size, size]}>
       <group position={[-4.5, 0, -4.5]}>
         {...world.blocks}
         <Player

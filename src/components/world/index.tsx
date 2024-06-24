@@ -1,16 +1,11 @@
-import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import Map from "./map";
 
-// Dimensions
-const h = 7;
-const l = 10;
-const w = 0.5;
+interface Props {
+  size?: number;
+}
 
-const ml = l / 2;
-const mw = w / 2;
-
-function World() {
+function World({ size = 1 }: Props) {
   return (
     <Canvas camera={{ position: [15, 10, 15], fov: 60 }} shadows>
       <ambientLight intensity={0.5} />
@@ -27,14 +22,7 @@ function World() {
         shadow-camera-top={10}
         shadow-camera-bottom={-10}
       />
-      <OrbitControls />
-      <axesHelper args={[30]} />
-      <Map />
-      {/* Outside */}
-      <mesh position={[ml, -mw, ml]} receiveShadow>
-        <boxGeometry args={[100, w, 100]} />
-        <meshStandardMaterial color="#FFFFFF" />
-      </mesh>
+      <Map size={size} />
     </Canvas>
   );
 }
