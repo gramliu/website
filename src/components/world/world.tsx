@@ -18,6 +18,15 @@ interface Position {
   z: number;
 }
 
+export interface WaterBlockAdjacency {
+  top: boolean;
+  bottom: boolean;
+  north: boolean;
+  south: boolean;
+  east: boolean;
+  west: boolean;
+}
+
 function loadWorldData(): BlockRenderData[] {
   const lines: string[] = worldData.split("\n");
   const blocks: BlockRenderData[] = [];
@@ -65,16 +74,26 @@ export class World {
 
   constructor() {
     const worldData = loadWorldData();
-    this.blocks = worldData.map((block, index) => (
-      <Block key={index} {...block} />
-    ));
     this.worldBlocks = new Map();
-
-    // console.log(worldData.length);
     for (const block of worldData) {
       const [x, y, z] = block.position;
       this.worldBlocks.set(positionToString({ x, y, z }), block.id);
     }
+
+    this.blocks = worldData.map((block, index) => {
+      const adjacentBlocks = this.getAdjacentBlocks({
+        x: block.position[0],
+        y: block.position[1],
+        z: block.position[2],
+      });
+      return (
+        <Block
+          key={index}
+          {...block}
+          adjacentBlocks={adjacentBlocks}
+        />
+      );
+    });
   }
 
   private getBlockPosition(position: Position): Position {
@@ -99,5 +118,23 @@ export class World {
       y++;
     }
     return y;
+  }
+
+  // New method to check adjacent blocks
+  public getAdjacentBlocks(position: Position): WaterBlockAdjacency {
+    const { x, y, z } = position;
+    return {
+      top: this.isWater({ x, y: y + 1, z }),
+      bottom: this.isWater({ x, y: y - 1, z }),
+      north: this.isWater({ x, y, z: z - 1 }),
+      south: this.isWater({ x, y, z: z + 1 }),
+      east: this.isWater({ x: x + 1, y, z }),
+      west: this.isWater({ x: x - 1, y, z }),
+    };
+  }
+
+  public isWater(position: Position): boolean {
+    const blockId = this.getBlockAtPosition(position);
+    return blockId === 9; // Assuming 9 is the ID for water blocks
   }
 }

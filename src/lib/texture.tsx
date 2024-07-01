@@ -1,12 +1,19 @@
 import { EntityTexture, EntityTextureProps } from "../components/world/entities";
 import { useTexture } from "@react-three/drei";
-import { Material, MeshPhysicalMaterial, MeshPhysicalMaterialParameters, RepeatWrapping, Texture } from "three";
+import {
+  Material,
+  MeshStandardMaterial,
+  MeshStandardMaterialParameters,
+  RepeatWrapping,
+  Texture
+} from "three";
 
 export interface MaterialTextureProps {
   path: string;
   repeat?: number;
   offset?: [number, number];
   translucent?: boolean;
+  opacity?: number;
 }
 
 const fallbackTexture = "textures/water_still.png";
@@ -31,8 +38,10 @@ export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
 export function useTextureMaterial(texture: MaterialTextureProps): Material {
   const textureMap = useRepeatedTexture(texture);
 
-  const materialProps: MeshPhysicalMaterialParameters = {
+  const materialProps: MeshStandardMaterialParameters = {
     map: textureMap,
+    roughness: 1,
+    metalness: 0,
   };
 
   if (texture.translucent) {
@@ -40,10 +49,15 @@ export function useTextureMaterial(texture: MaterialTextureProps): Material {
     materialProps.alphaTest = 0.2;
   }
 
-  return new MeshPhysicalMaterial(materialProps);
+  if (texture.opacity) {
+    materialProps.opacity = texture.opacity;
+  }
+  return new MeshStandardMaterial(materialProps);
 }
 
-export function useEntityTexture(entityTexture: EntityTextureProps): EntityTexture {
+export function useEntityTexture(
+  entityTexture: EntityTextureProps
+): EntityTexture {
   return {
     left: useTextureMaterial(entityTexture.left),
     right: useTextureMaterial(entityTexture.right),
@@ -51,5 +65,5 @@ export function useEntityTexture(entityTexture: EntityTextureProps): EntityTextu
     bottom: useTextureMaterial(entityTexture.bottom),
     front: useTextureMaterial(entityTexture.front),
     back: useTextureMaterial(entityTexture.back),
-  }
+  };
 }

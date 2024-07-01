@@ -21,6 +21,8 @@ function World({ size = 1 }: Props) {
         shadow-camera-right={10}
         shadow-camera-top={10}
         shadow-camera-bottom={-10}
+        shadow-bias={-0.0005}
+        shadow-normalBias={0.02}
       />
       <Map size={size} />
     </Canvas>
