@@ -1,4 +1,4 @@
-import { MaterialTextureProps } from "@/lib/texture";
+import { MaterialTextureProps } from "../../lib/texture";
 
 export interface BlockType {
   top: MaterialTextureProps;
