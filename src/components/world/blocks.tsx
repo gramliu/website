@@ -42,6 +42,8 @@ const waterFlowTexture = textureFromPath("textures/water_flow.png", {
   translucent: true,
   opacity: 0.7,
 });
+
+const stoneTexture = textureFromPath("textures/stone.png");
 const sandTexture = textureFromPath("textures/sand.png");
 const dirtTexture = textureFromPath("textures/dirt.png");
 const grassTextureTop = textureFromPath("textures/grass_top.png");
@@ -62,6 +64,7 @@ export const waterBlock = blockTypeFromTexture(
   waterStillTexture,
   waterFlowTexture
 );
+export const stoneBlock = blockTypeFromTexture(stoneTexture);
 export const sandBlock = blockTypeFromTexture(sandTexture);
 export const dirtBlock = blockTypeFromTexture(dirtTexture);
 export const grassBlock = blockTypeFromTexture(
@@ -76,6 +79,7 @@ export const craftingTableBlock = blockTypeFromTexture(
 );
 
 export const blockMap: Record<string, BlockType | null> = {
+  "1": stoneBlock,
   "2": grassBlock,
   "3": dirtBlock,
   "9": waterBlock,
