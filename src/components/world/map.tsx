@@ -6,16 +6,16 @@ import { World } from "./world";
 
 const world = new World();
 const ROTATION_SPEED = 0.3;
-const ROTATE_WORLD = true;
 
 interface Props {
   size?: number;
+  rotateWorld?: boolean;
 }
 
 /**
  * World map
  */
-export default function Map({ size = 1 }: Props) {
+export default function Map({ size = 1, rotateWorld }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
 
@@ -39,7 +39,7 @@ export default function Map({ size = 1 }: Props) {
 
   useFrame((_, delta) => {
     // Rotate the world
-    if (worldRef.current && ROTATE_WORLD) {
+    if (worldRef.current && rotateWorld) {
       worldRef.current.rotation.y += delta * ROTATION_SPEED;
     }
   });

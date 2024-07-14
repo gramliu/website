@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   return (
     <main className={`flex h-screen w-screen ${inter.className}`}>
-      <World />
+      <World rotateWorld={false} />
     </main>
   );
 }
