@@ -8,7 +8,7 @@ function SmartphoneOutline({
   drawProgress: MotionValue<number>;
   opacityProgress: MotionValue<number>;
 }) {
-  const opacityOut = useTransform(opacityProgress, [0, 0.1, 1], [1, 0, 0]);
+  const opacityOut = useTransform(drawProgress, [0, 0.3, 1], [1, 0, 0]);
 
   return (
     <svg
