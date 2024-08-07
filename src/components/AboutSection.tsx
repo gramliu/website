@@ -10,7 +10,7 @@ export default function About() {
         id="about"
       >
         {/* TODO: Add animation for mobile */}
-        <div className="flex-col items-center justify-center hidden md:flex">
+        <div className="flex-col items-center justify-center ml-20 hidden md:flex">
           <a href="https://stripe.com/terminal/tap-to-pay" target="_blank" rel="noreferrer">
             <TapToPayAnimation />
           </a>
