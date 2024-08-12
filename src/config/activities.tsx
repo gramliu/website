@@ -18,7 +18,7 @@ const activities: Activity[] = [
     role: "Software Engineer I, II",
     description: [
       "Main engineer for Tap to Pay on iPhone, powering expansion into 5 new countries, adding support for Interac in Canada, and driving the work across 6 cross-functional teams",
-      "Built infrastructure to deploy Tap to Pay instrumented tests to a fleet of physical devices, enabling us to catch incompatibilities across different device form factors and Android OS versions. " +
+      "Built infrastructure to deploy instrumented tests for Tap to Pay on Android to a fleet of physical devices, enabling us to catch incompatibilities across different device form factors and Android OS versions. " +
         "Figured out a way to replay contactless EMV transactions in a testing environment to enable deterministic testing.",
       "Built automatic Tap to Pay reader reconnection across the Android and iOS SDKs, improving performance in high-latency environments.",
       "Rolled out infrastructure to support dynamically configuring and serving EMV configurations for Tap to Pay on Android, enabling support for improved global authorization rates",
