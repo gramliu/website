@@ -14,6 +14,22 @@ const activities: Activity[] = [
   {
     title: "Stripe",
     url: "https://stripe.com/",
+    dates: "July 2023 - Present",
+    role: "Software Engineer I, II",
+    description: [
+      "Main engineer for Tap to Pay on iPhone, powering expansion into 5 new countries, adding support for Interac in Canada, and driving the work across 6 cross-functional teams",
+      "Built infrastructure to deploy Tap to Pay instrumented tests to a fleet of physical devices, enabling us to catch incompatibilities across different device form factors and Android OS versions. " +
+        "Figured out a way to replay contactless EMV transactions in a testing environment to enable deterministic testing.",
+      "Built automatic Tap to Pay reader reconnection across the Android and iOS SDKs, improving performance in high-latency environments.",
+      "Rolled out infrastructure to support dynamically configuring and serving EMV configurations for Tap to Pay on Android, enabling support for improved global authorization rates",
+      "Ran extensive SQL data analysis of our global payment authorization rates, identifying and resolving launch-blocking issues in 3 major countries.",
+      "Met with one of our major strategic users to understand their unique use case, designed and delivered a solution for them that drove down critical latency issues for them in the field",
+      "Built a latency dashboard to measure and track performance metrics across all our readers, countries, payment networks, and other axes.",
+    ],
+  },
+  {
+    title: "Stripe (intern)",
+    url: "https://stripe.com/",
     dates: "May - Aug 2022",
     role: "Software Engineering Intern",
     description: [
