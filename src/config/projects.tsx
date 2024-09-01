@@ -57,7 +57,7 @@ const projects: Project[] = [
         your own linked GitHub repository.
       </div>
     ),
-    tags: ["OpenAI", "GPT-4-Vision", "LangChain", "React", "Next.js"],
+    tags: ["GPT-4V", "GPT-4", "LangChain", "React", "Next.js"],
     image: "/projects/web-spinner.png",
     github: "https://github.com/Web-Spinner-core/web-spinner",
     video: "https://twitter.com/gramliu/status/1737273439608775088?s=20",
@@ -66,30 +66,19 @@ const projects: Project[] = [
     year: 2023,
   },
   {
-    title: "🧑‍⚖️ Pol.Lit",
-    subtitle: "Political Literacy and Transparency Platform",
-    github: "https://github.com/gramliu/pollit",
-    image: "/projects/pollit.jpg",
+    title: "🧠 Synapse",
+    subtitle: "AI Journaling App",
+    image: "/projects/synapse.png",
     imageHeight: 1897,
     imageWidth: 1008,
-    tags: ["Next.JS", "MongoDB", "Express", "BERT", "Pegasus", "GCP"],
+    tags: ["GPT-4", "Claude", "Whisper", "Neo4J", "React Native"],
     description: (
       <div>
-        🏆 Best NLP Hack
-        <a
-          href="https://hackmit.org/"
-          target="_blank"
-          rel="noreferrer"
-          className="hoverLink mx-1"
-        >
-          @HackMIT 2022.
-        </a>
-        <br />
-        We built a platform to improve political literacy and accountability in
-        the Philippines. We used the Google Cloud Vision SDK, Pegasus, and BERT
-        to scan and summarize PDF bills from the Philippine Congress. We also
-        scraped members of legislation and built profiles based on activity and
-        semantic tags of authored bills.
+        Journaling app where you take short audio notes throughout the day. It
+        integrates with papers you&apos;ve read and past notes to provide
+        AI-generated daily and weekly reflections. It additionally generates
+        a knowledge graph to determine connections between entities you frequently
+        talk about.
       </div>
     ),
     year: 2022,

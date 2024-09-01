@@ -2,6 +2,35 @@ import type { Project } from "./projects";
 
 const archive: Project[] = [
   {
+    title: "🧑‍⚖️ Pol.Lit",
+    subtitle: "Political Literacy and Transparency Platform",
+    github: "https://github.com/gramliu/pollit",
+    image: "/projects/pollit.jpg",
+    imageHeight: 1897,
+    imageWidth: 1008,
+    tags: ["Next.JS", "MongoDB", "Express", "BERT", "Pegasus", "GCP"],
+    description: (
+      <div>
+        🏆 Best NLP Hack
+        <a
+          href="https://hackmit.org/"
+          target="_blank"
+          rel="noreferrer"
+          className="hoverLink mx-1"
+        >
+          @HackMIT 2022.
+        </a>
+        <br />
+        We built a platform to improve political literacy and accountability in
+        the Philippines. We used the Google Cloud Vision SDK, Pegasus, and BERT
+        to scan and summarize PDF bills from the Philippine Congress. We also
+        scraped members of legislation and built profiles based on activity and
+        semantic tags of authored bills.
+      </div>
+    ),
+    year: 2022,
+  },
+  {
     title: "Medisure.ai",
     subtitle: "Personalized assistant for medical insurance",
     tags: ["GPT-3", "Flask", "React", "Google Cloud"],
