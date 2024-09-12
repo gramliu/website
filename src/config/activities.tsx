@@ -17,13 +17,12 @@ const activities: Activity[] = [
     dates: "July 2023 - Present",
     role: "Software Engineer I, II",
     description: [
-      "Main engineer for Tap to Pay on iPhone, powering expansion into 5 new countries, adding support for Interac in Canada, and driving the work across 6 cross-functional teams",
-      "Built infrastructure to deploy instrumented tests for Tap to Pay on Android to a fleet of physical devices, enabling us to catch incompatibilities across different device form factors and Android OS versions. " +
-        "Figured out a way to replay contactless EMV transactions in a testing environment to enable deterministic testing.",
+      "Lead engineer for Tap to Pay on iPhone, enabling merchants to accept card payments using just their phones",
+      "Grew Tap to Pay on iPhone domestically and into 5 new international markets, including adding support for the Interac network in Canada",
+      "Built first-of-its-kind anomaly detection and on-device testing infrastructure for Stripe Terminal, automatically improving reliability across all our product surfaces",
+      "Developed new features across our Android and iOS SDKs, improving performance in high-latency environments",
+      "Supported networks, partners, and strategic users in identifying various integration and launch-blocking issues. Independently scoped and rolled out fixes generalized to the rest of our users",
       "Increased Tap to Pay on Android connection speed by 60% by identifying and resolving key concurrency issues",
-      "Built automatic Tap to Pay reader reconnection across the Android and iOS SDKs, improving performance in high-latency environments.",
-      "Ran extensive SQL data analysis of our global payment authorization rates, identifying and resolving launch-blocking issues in 3 major countries.",
-      "Drove user calls with major strategic users and partners to identify issues with specific user integrations and develop solutions that would generalize to the rest of our users.",
     ],
   },
   {
