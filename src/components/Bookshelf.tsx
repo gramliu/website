@@ -30,14 +30,14 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
             focusedIndex !== index &&
               "hover:-translate-y-4 focus-visible:-translate-y-4",
             focusedIndex === index ? "basis-72" : "basis-12",
-            animationStyle,
+            animationStyle
           )}
           style={{ perspective: "1000px", WebkitPerspective: "1000px" }}
         >
           <div
             className={clsx(
               "z-50 h-72 w-[50px] shrink-0 origin-right py-4 brightness-[0.80] contrast-[2.00] drop-shadow-2xl",
-              animationStyle,
+              animationStyle
             )}
             style={{
               backgroundColor: book.bgColor,
@@ -62,7 +62,7 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
           <div
             className={clsx(
               "relative z-10 h-72 shrink-0 origin-left overflow-hidden border-gray-900 brightness-[0.80] contrast-[2.00]",
-              animationStyle,
+              animationStyle
             )}
             style={{
               transformStyle: "preserve-3d",
@@ -82,13 +82,17 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
                 background: `linear-gradient(to right, rgba(255, 255, 255, 0) 2px, rgba(255, 255, 255, 0.5) 3px, rgba(255, 255, 255, 0.25) 4px, rgba(255, 255, 255, 0.25) 6px, transparent 7px, transparent 9px, rgba(255, 255, 255, 0.25) 9px, transparent 12px)`,
               }}
             />
-            <Image
-              src={book.imageUrl}
-              alt={book.title}
-              width={128}
-              height={128}
-              className={clsx("h-full w-48 bg-cover", animationStyle)}
-            />
+            {book.hasValidImage ? (
+              <Image
+                src={book.imageUrl}
+                alt={book.title}
+                width={128}
+                height={128}
+                className={clsx("h-full w-48 bg-cover", animationStyle)}
+              />
+            ) : (
+              <div className="h-full w-48 bg-cover" />
+            )}
           </div>
         </button>
       ))}
@@ -105,13 +109,17 @@ function StaticBookshelf({ books }: { books: Book[] }) {
           key={book.title}
           className="flex flex-col items-center justify-center gap-2 full h-72"
         >
-          <Image
-            src={book.imageUrl}
-            alt={book.title}
-            width={128}
-            height={128}
-            className="h-full w-auto bg-cover"
-          />
+          {book.hasValidImage ? (
+            <Image
+              src={book.imageUrl}
+              alt={book.title}
+              width={128}
+              height={128}
+              className="h-full w-auto bg-cover"
+            />
+          ) : (
+            <div className="h-full w-auto bg-cover" />
+          )}
         </div>
       ))}
     </div>

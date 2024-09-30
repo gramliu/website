@@ -26,6 +26,7 @@ export default function BookshelfPage({
 export async function getStaticProps() {
   let start = Date.now();
   const [books, papers] = await Promise.all([getBooks(), getPapers()]);
+  console.log(books);
   let end = Date.now();
   console.log(`getStaticProps took ${end - start}ms`);
 

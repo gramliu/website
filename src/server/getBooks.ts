@@ -2,9 +2,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { getColor } from "colorthief";
 import rgbHex from "rgb-hex";
-import { Redis } from "@upstash/redis";
 import { redisClient } from "../lib/redis";
-import { string } from "zod";
 
 const url =
   "https://www.goodreads.com/review/list/153517339?shelf=read&sort=date_read";
@@ -16,12 +14,13 @@ export interface Book {
   imageUrl: string;
   fgColor: string;
   bgColor: string;
+  hasValidImage: boolean;
 }
 
 /**
  * Get GoodReads books
  */
-export default async function getBooks() {
+export default async function getBooks(): Promise<Book[]> {
   // if (env.NODE_ENV === "development") {
   //   return booksCached;
   // }
@@ -55,11 +54,14 @@ export default async function getBooks() {
   // Get image colors
   const booksWithColors = await Promise.all(
     books.map(async (book) => {
-      const { fgColor, bgColor } = await getImageColors(book.imageUrl);
+      const { fgColor, bgColor, hasValidImage } = await getImageColors(
+        book.imageUrl
+      );
       return {
         ...book,
         fgColor,
         bgColor,
+        hasValidImage,
       };
     })
   );
@@ -70,6 +72,7 @@ export default async function getBooks() {
 interface BookColor {
   fgColor: string;
   bgColor: string;
+  hasValidImage: boolean;
 }
 
 interface HashBookColor extends BookColor, Record<string, unknown> {}
@@ -80,37 +83,53 @@ interface HashBookColor extends BookColor, Record<string, unknown> {}
 async function getImageColors(imageUrl: string): Promise<BookColor> {
   const cachedResponse = await redisClient.hgetall<HashBookColor>(imageUrl);
   if (cachedResponse) {
-    const { fgColor, bgColor } = cachedResponse;
+    const { fgColor, bgColor, hasValidImage } = cachedResponse;
     return {
       fgColor,
       bgColor,
+      hasValidImage,
     };
   }
-  console.log("Recomputing");
 
-  const { data } = await axios.get(imageUrl, {
-    responseType: "arraybuffer",
-  });
+  try {
+    const { data } = await axios.get(imageUrl, {
+      responseType: "arraybuffer",
+    });
 
-  // Convert image to base64
-  const imageData = `data:image/jpeg;base64,${Buffer.from(
-    data,
-    "binary"
-  ).toString("base64")}`;
+    // Convert image to base64
+    const imageData = `data:image/jpeg;base64,${Buffer.from(
+      data,
+      "binary"
+    ).toString("base64")}`;
 
-  // Extract color from image
-  const rgb = await getColor(imageData);
+    // Extract color from image
+    const rgb = await getColor(imageData);
 
-  const fgColor = getForegroundColor(rgb);
-  const bgColor = `#${rgbHex(rgb[0], rgb[1], rgb[2])}`;
+    const fgColor = getForegroundColor(rgb);
+    const bgColor = `#${rgbHex(rgb[0], rgb[1], rgb[2])}`;
 
-  // Cache response
-  await redisClient.hset(imageUrl, { fgColor, bgColor });
+    // Cache response
+    await redisClient.hset(imageUrl, { fgColor, bgColor, hasValidImage: true });
 
-  return {
-    fgColor,
-    bgColor,
-  };
+    return {
+      fgColor,
+      bgColor,
+      hasValidImage: true,
+    };
+  } catch (e) {
+    console.error(`Failed to download image for ${imageUrl}`);
+
+    await redisClient.hset(imageUrl, {
+      fgColor: "#000",
+      bgColor: "#fff",
+      hasValidImage: false,
+    });
+    return {
+      fgColor: "#000",
+      bgColor: "#fff",
+      hasValidImage: false,
+    };
+  }
 }
 
 /**
