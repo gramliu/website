@@ -34,6 +34,11 @@ const blogs: Blog[] = [
     title: "When to do What You Love",
     url: "https://paulgraham.com/when.html",
     author: "Paul Graham"
+  },
+  {
+    title: "The Friendship That Made Google Huge",
+    url: "https://www.newyorker.com/magazine/2018/12/10/the-friendship-that-made-google-huge",
+    author: "James Somers"
   }
 ];
 
