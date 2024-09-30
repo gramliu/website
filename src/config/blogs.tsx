@@ -29,6 +29,11 @@ const blogs: Blog[] = [
     title: "How to do Great Work",
     url: "https://paulgraham.com/greatwork.html",
     author: "Paul Graham"
+  },
+  {
+    title: "When to do What You Love",
+    url: "https://paulgraham.com/when.html",
+    author: "Paul Graham"
   }
 ];
 
