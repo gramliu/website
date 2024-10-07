@@ -87,7 +87,7 @@ async function getImageColors(imageUrl: string): Promise<BookColor> {
     return {
       fgColor,
       bgColor,
-      hasValidImage,
+      hasValidImage: hasValidImage ?? false,
     };
   }
 
