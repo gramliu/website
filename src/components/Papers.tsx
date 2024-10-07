@@ -17,7 +17,9 @@ function PaperEntry({ paper }: { paper: ResearchPaper }) {
         <LinkIcon className="h-4 ml-1 opacity-80" />
       </a>
       <p className="text-sm text-text-faded">
-        {paper.authorSummary}, {paper.year}
+        {(paper.authorSummary == null || paper.authorSummary.trim() === "")
+          ? paper.year
+          : `${paper.authorSummary}, ${paper.year}`}
       </p>
     </div>
   );
