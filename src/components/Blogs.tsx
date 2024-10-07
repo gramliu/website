@@ -31,7 +31,7 @@ export default function Blogs({ className }: { className?: string }) {
         id="papers"
         className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
       >
-        Blogs to Remember
+        Blogs
       </div>
       <div className="flex flex-col items-center justify-center p-4">
         <div className="flex flex-col gap-4 w-full md:w-8/12 h-128 items-start">

@@ -90,7 +90,7 @@ export default function Papers({
         id="papers"
         className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
       >
-        Recently Read Papers
+        Papers
       </div>
       <div className="flex flex-col items-center justify-center p-4">
         <PaginationControls page={page} pages={pages} setPage={setPage} />
