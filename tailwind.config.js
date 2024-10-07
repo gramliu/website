@@ -88,8 +88,8 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: ['var(--font-red-hat-display)', "sans-serif"],
-      mono: ['var(--font-source-code-pro)', "monospace"],
+      sans: ['var(--font-open-sans)', "sans-serif"],
+      mono: ['var(--font-noto-sans-mono)', "monospace"],
       serif: ['var(--font-roboto-slab)', "serif"],
     },
   },

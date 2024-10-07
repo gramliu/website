@@ -3,19 +3,19 @@ import Head from "next/head";
 import "../styles/shadcn.css";
 import "../styles/global.scss";
 import {
-  Red_Hat_Display,
-  Source_Code_Pro,
-  Roboto_Slab,
+  Noto_Sans_Mono,
+  Open_Sans,
+  Roboto_Slab
 } from "next/font/google";
 import clsx from "clsx";
 
-const redHatDisplay = Red_Hat_Display({
+const openSans = Open_Sans({
   subsets: ["latin"],
-  variable: "--font-red-hat-display",
+  variable: "--font-open-sans",
 });
-const sourceCodePro = Source_Code_Pro({
+const notoSansMono = Noto_Sans_Mono({
   subsets: ["latin"],
-  variable: "--font-source-code-pro",
+  variable: "--font-noto-sans-mono",
 });
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
@@ -30,9 +30,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <main
         className={clsx(
-          redHatDisplay.variable,
-          sourceCodePro.variable,
+          openSans.variable,
+          notoSansMono.variable,
           robotoSlab.variable,
+          "font-sans"
         )}
       >
         <Component {...pageProps} />
