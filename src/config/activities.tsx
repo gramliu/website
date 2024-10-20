@@ -14,7 +14,7 @@ const activities: Activity[] = [
   {
     title: "Stripe",
     url: "https://stripe.com/",
-    dates: "July 2023 - Present",
+    dates: "July 2023 - Oct 2024",
     role: "Software Engineer I, II",
     description: [
       "Lead engineer for Tap to Pay on iPhone, enabling merchants to accept card payments using just their phones",
