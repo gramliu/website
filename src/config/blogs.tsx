@@ -39,7 +39,12 @@ const blogs: Blog[] = [
     title: "The Friendship That Made Google Huge",
     url: "https://www.newyorker.com/magazine/2018/12/10/the-friendship-that-made-google-huge",
     author: "James Somers"
-  }
+  },
+  {
+    title: "You and Your Research",
+    url: "https://d37ugbyn3rpeym.cloudfront.net/stripe-press/TAODSAE_zine_press.pdf",
+    author: "Richard Hamming"
+  },
 ];
 
 export default blogs;
