@@ -1,9 +1,9 @@
 import { useFrame } from "@react-three/fiber";
 import { forwardRef, useRef } from "react";
-import { MathUtils, Vector3 } from "three";
-import { getMovementVector } from "../keycontrols";
+import { Vector3 } from "three";
+import { getMovementVector, KeyState } from "../keycontrols";
 import { World } from "../world";
-import { PlayerHelperProps, PlayerMotionHelperProps } from "./types";
+import { PlayerMotionHelperProps } from "./types";
 
 // Map boundaries
 const MAP_MIN_X = 0;
@@ -11,6 +11,151 @@ const MAP_MAX_X = 10;
 const MAP_MIN_Z = 0;
 const MAP_MAX_Z = 10;
 const MAX_Z_ANIMATION = 7;
+
+// Physics constants
+const MOVEMENT_SPEED = 2;
+const GRAVITY = -15;
+const JUMP_VELOCITY = 8;
+
+/**
+ * Calculate horizontal movement based on input and boundaries
+ */
+function calculateHorizontalMovement(
+  currentPosition: Vector3,
+  interactiveMode: boolean,
+  speed: number,
+  delta: number,
+  keyState: KeyState
+): Vector3 {
+  const movement = new Vector3();
+
+  if (interactiveMode) {
+    // Get input-based movement
+    const input = getMovementVector(keyState);
+    movement.x = input.x * speed;
+    movement.z = input.z * speed;
+
+    // Calculate next position
+    const nextPosition = currentPosition.clone().add(movement.clone().multiplyScalar(delta));
+
+    // Clamp to boundaries
+    movement.x = nextPosition.x >= MAP_MIN_X && nextPosition.x <= MAP_MAX_X ? movement.x : 0;
+    movement.z = nextPosition.z >= MAP_MIN_Z && nextPosition.z <= MAP_MAX_Z ? movement.z : 0;
+  } else {
+    // Auto-movement logic
+    if (currentPosition.z < MAP_MIN_Z) {
+      movement.z = Math.abs(speed);
+    } else if (currentPosition.z > MAX_Z_ANIMATION) {
+      movement.z = -Math.abs(speed);
+    } else {
+      movement.z = currentPosition.z < MAX_Z_ANIMATION / 2 ? speed : -speed;
+    }
+  }
+
+  return movement;
+}
+
+/**
+ * Calculate vertical movement based on gravity and jumping
+ */
+function calculateVerticalMovement(
+  currentPosition: Vector3,
+  currentVelocity: Vector3,
+  world: World,
+  interactiveMode: boolean,
+  keyState: KeyState,
+  delta: number
+): Vector3 {
+  const movement = new Vector3(0, currentVelocity.y, 0);
+  
+  // Check ground state
+  const blockBelow = world.getBlockAtPosition(
+    currentPosition.clone().add(new Vector3(0, -1, 0))
+  );
+  const onGround = currentPosition.y % 1 === 0 && blockBelow !== 0;
+
+  // Apply gravity when not on ground
+  if (!onGround) {
+    movement.y += GRAVITY * delta;
+  } else {
+    // Reset downward velocity on ground
+    if (movement.y < 0) {
+      movement.y = 0;
+    }
+    
+    // Handle jumping in interactive mode
+    if (interactiveMode && keyState.jump) {
+      movement.y = JUMP_VELOCITY;
+    }
+  }
+
+  return movement;
+}
+
+/**
+ * Check for collisions and adjust position/velocity
+ */
+function handleCollisions(
+  currentPosition: Vector3,
+  velocity: Vector3,
+  world: World,
+  delta: number
+): Vector3 {
+  const movement = velocity.clone().multiplyScalar(delta);
+  const nextPosition = currentPosition.clone().add(movement);
+
+  // Check vertical collision
+  const nextBlock = world.getBlockAtPosition(nextPosition);
+  const blockBelow = world.getBlockAtPosition(
+    currentPosition.clone().add(new Vector3(0, -1, 0))
+  );
+  const onGround = currentPosition.y % 1 === 0 && blockBelow !== 0;
+
+  if (nextBlock !== 0) {
+    if (velocity.y > 0) {
+      // Hit ceiling
+      movement.y = 0;
+    } else if (velocity.y < 0) {
+      // Hit ground
+      movement.y = Math.ceil(currentPosition.y) - currentPosition.y;
+    }
+  }
+
+  // If not falling and on ground, snap to highest block
+  if (velocity.y >= 0 && onGround) {
+    const topBlock = world.getHighestBlockPosition(
+      nextPosition.x,
+      nextPosition.z
+    );
+    movement.y = topBlock - currentPosition.y;
+  }
+
+  return movement;
+}
+
+/**
+ * Calculate rotation based on movement
+ */
+function calculateRotation(
+  currentRotation: { y: number },
+  velocity: Vector3,
+  interactiveMode: boolean,
+  rotating: { current: boolean },
+  targetRotation: { current: Vector3 }
+): void {
+  if (interactiveMode) {
+    // Rotate based on movement direction
+    if (velocity.length() > 0) {
+      currentRotation.y = Math.atan2(velocity.x, velocity.z);
+    }
+  } else {
+    // Auto-movement rotation
+    const diff = 0.5;
+    if (rotating.current) {
+      currentRotation.y = targetRotation.current.y;
+    }
+  }
+}
 
 /**
  * Helper for player motion
@@ -21,17 +166,13 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
     playerRef,
     interactiveMode = false,
     isMovingRef,
+    keyControlsRef,
   }: PlayerMotionHelperProps,
   ref
 ) {
-  // Constants
-  const speed = new Vector3(0, 0, 2);
-  const gravity = new Vector3(0, -15, 0);
-  const jump = new Vector3(0, 8, 0);
-
   // Refs
-  const velocityRef = useRef(speed.clone());
-  const targetRotationRef = useRef(new Vector3(0, 0, 0));
+  const velocityRef = useRef(new Vector3());
+  const targetRotationRef = useRef(new Vector3());
   const rotating = useRef(false);
 
   useFrame((state, delta) => {
@@ -39,140 +180,49 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
     const currentRotation = playerRef.current?.rotation;
 
     if (currentPosition && currentRotation) {
-      if (interactiveMode) {
-        // Handle interactive movement
-        const movement = getMovementVector();
-        velocityRef.current.x = movement.x * speed.z;
-        velocityRef.current.z = movement.z * speed.z;
+      // Calculate movement components
+      const horizontalVelocity = calculateHorizontalMovement(
+        currentPosition,
+        interactiveMode,
+        MOVEMENT_SPEED,
+        delta,
+        keyControlsRef.current
+      );
+      
+      velocityRef.current.setX(horizontalVelocity.x);
+      velocityRef.current.setZ(horizontalVelocity.z);
 
-        // Update rotation based on movement direction
-        if (movement.length() > 0) {
-          const angle = Math.atan2(movement.x, movement.z);
-          currentRotation.y = angle;
-        }
+      const verticalVelocity = calculateVerticalMovement(
+        currentPosition,
+        velocityRef.current,
+        world,
+        interactiveMode,
+        keyControlsRef.current,
+        delta
+      );
+      velocityRef.current.setY(verticalVelocity.y);
 
-        // Calculate next position with just the horizontal movement
-        const horizontalVelocity = velocityRef.current.clone();
-        horizontalVelocity.y = 0;
-        const nextPosition = currentPosition
-          .clone()
-          .add(horizontalVelocity.clone().multiplyScalar(delta));
-
-        // Check boundaries before applying movement
-        if (nextPosition.x >= MAP_MIN_X && nextPosition.x <= MAP_MAX_X) {
-          currentPosition.x = nextPosition.x;
-        }
-        if (nextPosition.z >= MAP_MIN_Z && nextPosition.z <= MAP_MAX_Z) {
-          currentPosition.z = nextPosition.z;
-        }
-      } else {
-        // Original auto-movement logic
-        const diff = 0.5;
-
-        // Start rotating player near edge
-        if (
-          currentPosition.z < MAP_MIN_Z + diff ||
-          currentPosition.z > MAX_Z_ANIMATION - diff
-        ) {
-          if (!rotating.current) {
-            rotating.current = true;
-            targetRotationRef.current = new Vector3(
-              0,
-              Math.sign(velocityRef.current.z),
-              0
-            )
-              .multiplyScalar(Math.PI / 2)
-              .addScalar(Math.PI / 2);
-          }
-        } else {
-          currentRotation.y = targetRotationRef.current.y;
-          rotating.current = false;
-        }
-
-        if (rotating.current) {
-          const d = Math.min(
-            Math.abs(currentPosition.z - MAP_MIN_Z),
-            Math.abs(currentPosition.z - MAX_Z_ANIMATION)
-          );
-          const t = MathUtils.mapLinear(d, 0, diff, -0.9, 0);
-          currentRotation.y = MathUtils.lerp(
-            currentRotation.y,
-            targetRotationRef.current.y,
-            -t
-          );
-        }
-
-        // If player is out of bounds, set to closest bound
-        if (currentPosition.z < MAP_MIN_Z - diff) {
-          currentPosition.z = MAP_MIN_Z;
-          currentPosition.y = 5;
-          currentPosition.x = MAP_MAX_X;
-        } else if (currentPosition.z > MAP_MAX_Z + diff) {
-          currentPosition.z = MAP_MAX_Z;
-          currentPosition.y = 5;
-          currentPosition.x = MAP_MIN_X;
-        }
-
-        // Reverse direction
-        if (currentPosition.z < MAP_MIN_Z) {
-          velocityRef.current.setZ(Math.abs(velocityRef.current.z));
-        } else if (currentPosition.z > MAX_Z_ANIMATION) {
-          velocityRef.current.setZ(-Math.abs(velocityRef.current.z));
-        }
-      }
-
-      // Check for ground
-      const currentBlock = world.getBlockAtPosition(currentPosition);
-      const blockBelow = world.getBlockAtPosition(
-        currentPosition.clone().add(new Vector3(0, -1, 0))
+      // Handle collisions and get final movement
+      const movement = handleCollisions(
+        currentPosition,
+        velocityRef.current,
+        world,
+        delta
       );
 
-      const falling = currentPosition.y % 1 !== 0 || currentBlock === 0;
-      const onGround = currentPosition.y % 1 === 0 && blockBelow !== 0;
+      // Apply movement
+      currentPosition.add(movement);
 
-      if (currentPosition.y > 0 && !onGround && falling) {
-        // Apply gravity
-        velocityRef.current.add(gravity.clone().multiplyScalar(delta));
-      } else {
-        // Stop falling
-        velocityRef.current.setY(0);
-
-        if (currentBlock !== 0) {
-          const topBlock = world.getHighestBlockPosition(
-            currentPosition.x,
-            currentPosition.z
-          );
-          // Snap to ground
-          currentPosition.y = topBlock;
-        }
-      }
-
-      // If moving towards block, jump so that player cross block on zenith
-      const blockInPath = world.getBlockAtPosition(
-        currentPosition
-          .clone()
-          .add(new Vector3(0, 0, velocityRef.current.z / 2))
+      // Update rotation
+      calculateRotation(
+        currentRotation,
+        velocityRef.current,
+        interactiveMode,
+        rotating,
+        targetRotationRef
       );
-      if (blockInPath !== 0 && onGround) {
-        velocityRef.current.add(jump);
-      }
 
-      // Only apply the final displacement in auto mode or for vertical movement in interactive mode
-      if (!interactiveMode) {
-        const displacement = velocityRef.current.clone().multiplyScalar(delta);
-        currentPosition.add(displacement);
-      } else {
-        // In interactive mode, only apply vertical movement (gravity/jumping)
-        const verticalDisplacement = new Vector3(0, velocityRef.current.y * delta, 0);
-        currentPosition.add(verticalDisplacement);
-      }
-
-      const newBlock = world.getBlockAtPosition(currentPosition);
-      // If falling into block, round to block height
-      if (velocityRef.current.y < 0 && newBlock !== 0) {
-        currentPosition.y = Math.round(currentPosition.y);
-      }
-
+      // Update movement state for animation
       isMovingRef.current = velocityRef.current.length() > 0.01;
     }
   });

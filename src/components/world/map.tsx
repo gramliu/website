@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { Group } from "three";
 import Player from "./player";
 import { World } from "./world";
+import { useKeyControls } from "./keycontrols";
 
 const world = new World();
 const ROTATION_SPEED = 0.3;
@@ -19,6 +20,7 @@ interface Props {
 export default function Map({ size = 1, rotateWorld, interactiveMode = false }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
+  const keyControlsRef = useKeyControls();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -36,6 +38,7 @@ export default function Map({ size = 1, rotateWorld, interactiveMode = false }: 
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useFrame((_, delta) => {
@@ -55,6 +58,7 @@ export default function Map({ size = 1, rotateWorld, interactiveMode = false }: 
           world={world}
           ref={playerRef}
           interactiveMode={interactiveMode}
+          keyControlsRef={keyControlsRef}
         />
       </group>
     </group>

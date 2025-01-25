@@ -28,6 +28,7 @@ const Player = forwardRef(function Player(
     animate = false,
     world,
     interactiveMode = false,
+    keyControlsRef,
   }: PlayerProps,
   ref: React.Ref<Group>
 ) {
@@ -68,6 +69,7 @@ const Player = forwardRef(function Player(
         playerRef={playerRef}
         interactiveMode={interactiveMode}
         isMovingRef={isMovingRef}
+        keyControlsRef={keyControlsRef}
       />
       {/* Head */}
       <EntityPart
