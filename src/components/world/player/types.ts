@@ -20,6 +20,6 @@ export interface PlayerHelperProps {
 export interface PlayerMotionHelperProps extends PlayerHelperProps {
   world: World;
   interactiveMode?: boolean;
-  isMovingRef?: React.RefObject<boolean>;
+  isMovingRef: React.MutableRefObject<boolean>;
 }
 

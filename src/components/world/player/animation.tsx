@@ -5,7 +5,7 @@ import { PlayerHelperProps } from "./types";
 
 export interface PlayerAnimationHelper extends PlayerHelperProps {
   animate: boolean;
-  isMovingRef: React.RefObject<boolean>;
+  isMovingRef: React.MutableRefObject<boolean>;
 }
 
 /**
