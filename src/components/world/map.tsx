@@ -10,12 +10,13 @@ const ROTATION_SPEED = 0.3;
 interface Props {
   size?: number;
   rotateWorld?: boolean;
+  interactiveMode?: boolean;
 }
 
 /**
  * World map
  */
-export default function Map({ size = 1, rotateWorld }: Props) {
+export default function Map({ size = 1, rotateWorld, interactiveMode = false }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
 
@@ -50,9 +51,10 @@ export default function Map({ size = 1, rotateWorld }: Props) {
         {...world.blocks}
         <Player
           position={[9, 2, 1]}
-          animate={true}
+          animate={!interactiveMode}
           world={world}
           ref={playerRef}
+          interactiveMode={interactiveMode}
         />
       </group>
     </group>

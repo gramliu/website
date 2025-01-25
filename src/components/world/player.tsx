@@ -12,6 +12,14 @@ import {
 } from "./entities";
 import { EntityPart } from "./entity";
 import { World } from "./world";
+import { getMovementVector } from "./keycontrols";
+
+// Map boundaries
+const MAP_MIN_X = 0;
+const MAP_MAX_X = 10;
+const MAP_MIN_Z = 0;
+const MAP_MAX_Z = 10;
+const MAX_Z_ANIMATION = 7;
 
 // Base dimensions
 const headSize: [number, number, number] = [8, 8, 8];
@@ -23,6 +31,7 @@ interface PlayerProps extends CommonProps {
   animate?: boolean;
   playerRef?: React.RefObject<Group>;
   world: World;
+  interactiveMode?: boolean;
 }
 
 interface PlayerHelperProps {
@@ -39,6 +48,7 @@ interface PlayerAnimationHelper extends PlayerHelperProps {
 
 interface PlayerMotionHelper extends PlayerHelperProps {
   world: World;
+  interactiveMode?: boolean;
 }
 
 /**
@@ -51,17 +61,29 @@ const PlayerAnimationHelper = forwardRef(function PlayerAnimationHelper(
     rightArmRef,
     leftLegRef,
     rightLegRef,
+    playerRef,
   }: PlayerAnimationHelper,
   ref
 ) {
   const limbDirection = useRef(1);
   const limbAngle = useRef(1);
+  const lastPosition = useRef(new Vector3());
+  const isMoving = useRef(false);
 
   useFrame((state, delta) => {
     const maxArmAngle = Math.PI / 4;
     const maxLegAngle = Math.PI / 6;
 
-    if (animate) {
+    // Check if player is moving by comparing current position to last position
+    if (playerRef.current) {
+      const currentPos = playerRef.current.position;
+      const movement = currentPos.clone().sub(lastPosition.current);
+      isMoving.current = movement.length() > 0.01; // Small threshold to detect movement
+      lastPosition.current.copy(currentPos);
+    }
+
+    // Animate if explicitly set to animate OR if player is moving
+    if (animate || isMoving.current) {
       limbAngle.current += delta * limbDirection.current * 3;
       if (Math.abs(limbAngle.current) > Math.PI) {
         limbAngle.current = 0;
@@ -106,7 +128,8 @@ const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
     leftLegRef,
     rightLegRef,
     playerRef,
-  }: PlayerMotionHelper,
+    interactiveMode = false,
+  }: PlayerMotionHelper & { interactiveMode?: boolean },
   ref
 ) {
   // Constants
@@ -120,62 +143,90 @@ const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
   const rotating = useRef(false);
 
   useFrame((state, delta) => {
-    const start = 0;
-    const end = 7;
-
     const currentPosition = playerRef.current?.position;
     const currentRotation = playerRef.current?.rotation;
 
     if (currentPosition && currentRotation) {
-      const diff = 0.5;
+      if (interactiveMode) {
+        // Handle interactive movement
+        const movement = getMovementVector();
+        velocityRef.current.x = movement.x * speed.z;
+        velocityRef.current.z = movement.z * speed.z;
 
-      // Start rotating player near edge
-      if (currentPosition.z < start + diff || currentPosition.z > end - diff) {
-        if (!rotating.current) {
-          rotating.current = true;
-          // [0, pi]
-          targetRotationRef.current = new Vector3(
-            0,
-            Math.sign(velocityRef.current.z),
-            0
-          )
-            .multiplyScalar(Math.PI / 2)
-            .addScalar(Math.PI / 2);
+        // Update rotation based on movement direction
+        if (movement.length() > 0) {
+          const angle = Math.atan2(movement.x, -movement.z);
+          currentRotation.y = angle;
+        }
+
+        // Calculate next position with just the horizontal movement
+        const horizontalVelocity = velocityRef.current.clone();
+        horizontalVelocity.y = 0;
+        const nextPosition = currentPosition
+          .clone()
+          .add(horizontalVelocity.clone().multiplyScalar(delta));
+
+        // Check boundaries before applying movement
+        if (nextPosition.x >= MAP_MIN_X && nextPosition.x <= MAP_MAX_X) {
+          currentPosition.x = nextPosition.x;
+        }
+        if (nextPosition.z >= MAP_MIN_Z && nextPosition.z <= MAP_MAX_Z) {
+          currentPosition.z = nextPosition.z;
         }
       } else {
-        currentRotation.y = targetRotationRef.current.y;
-        rotating.current = false;
-      }
+        // Original auto-movement logic
+        const diff = 0.5;
 
-      if (rotating.current) {
-        const d = Math.min(
-          Math.abs(currentPosition.z - start),
-          Math.abs(currentPosition.z - end)
-        );
-        const t = MathUtils.mapLinear(d, 0, diff, -0.9, 0);
-        currentRotation.y = MathUtils.lerp(
-          currentRotation.y,
-          targetRotationRef.current.y,
-          -t
-        );
-      }
+        // Start rotating player near edge
+        if (
+          currentPosition.z < MAP_MIN_Z + diff ||
+          currentPosition.z > MAX_Z_ANIMATION - diff
+        ) {
+          if (!rotating.current) {
+            rotating.current = true;
+            targetRotationRef.current = new Vector3(
+              0,
+              Math.sign(velocityRef.current.z),
+              0
+            )
+              .multiplyScalar(Math.PI / 2)
+              .addScalar(Math.PI / 2);
+          }
+        } else {
+          currentRotation.y = targetRotationRef.current.y;
+          rotating.current = false;
+        }
 
-      // If player is out of bounds, set to closest bound
-      if (currentPosition.z < start - diff) {
-        currentPosition.z = start;
-        currentPosition.y = 5;
-        currentPosition.x = 9;
-      } else if (currentPosition.z > end + diff) {
-        currentPosition.z = end;
-        currentPosition.y = 5;
-        currentPosition.x = 9;
-      }
+        if (rotating.current) {
+          const d = Math.min(
+            Math.abs(currentPosition.z - MAP_MIN_Z),
+            Math.abs(currentPosition.z - MAX_Z_ANIMATION)
+          );
+          const t = MathUtils.mapLinear(d, 0, diff, -0.9, 0);
+          currentRotation.y = MathUtils.lerp(
+            currentRotation.y,
+            targetRotationRef.current.y,
+            -t
+          );
+        }
 
-      // Reverse direction
-      if (currentPosition.z < start) {
-        velocityRef.current.setZ(Math.abs(velocityRef.current.z));
-      } else if (currentPosition.z > end) {
-        velocityRef.current.setZ(-Math.abs(velocityRef.current.z));
+        // If player is out of bounds, set to closest bound
+        if (currentPosition.z < MAP_MIN_Z - diff) {
+          currentPosition.z = MAP_MIN_Z;
+          currentPosition.y = 5;
+          currentPosition.x = MAP_MAX_X;
+        } else if (currentPosition.z > MAP_MAX_Z + diff) {
+          currentPosition.z = MAP_MAX_Z;
+          currentPosition.y = 5;
+          currentPosition.x = MAP_MIN_X;
+        }
+
+        // Reverse direction
+        if (currentPosition.z < MAP_MIN_Z) {
+          velocityRef.current.setZ(Math.abs(velocityRef.current.z));
+        } else if (currentPosition.z > MAX_Z_ANIMATION) {
+          velocityRef.current.setZ(-Math.abs(velocityRef.current.z));
+        }
       }
 
       // Check for ground
@@ -206,27 +257,29 @@ const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
 
       // If moving towards block, jump so that player cross block on zenith
       const blockInPath = world.getBlockAtPosition(
-        currentPosition.clone().add(new Vector3(0, 0, velocityRef.current.z / 2))
+        currentPosition
+          .clone()
+          .add(new Vector3(0, 0, velocityRef.current.z / 2))
       );
       if (blockInPath !== 0 && onGround) {
         velocityRef.current.add(jump);
       }
 
-      const displacement = velocityRef.current.clone().multiplyScalar(delta);
-
-      currentPosition.add(displacement);
+      // Only apply the final displacement in auto mode or for vertical movement in interactive mode
+      if (!interactiveMode) {
+        const displacement = velocityRef.current.clone().multiplyScalar(delta);
+        currentPosition.add(displacement);
+      } else {
+        // In interactive mode, only apply vertical movement (gravity/jumping)
+        const verticalDisplacement = new Vector3(0, velocityRef.current.y * delta, 0);
+        currentPosition.add(verticalDisplacement);
+      }
 
       const newBlock = world.getBlockAtPosition(currentPosition);
       // If falling into block, round to block height
-      if (displacement.y < 0 && newBlock !== 0) {
+      if (velocityRef.current.y < 0 && newBlock !== 0) {
         currentPosition.y = Math.round(currentPosition.y);
       }
-
-      // console.group("Player");
-      // console.table({
-      //   position: currentPosition
-      // });
-      // console.groupEnd();
     }
   });
 
@@ -240,6 +293,7 @@ const Player = forwardRef(function Player(
     size = 1,
     animate = false,
     world,
+    interactiveMode = false,
   }: PlayerProps,
   ref: React.Ref<Group>
 ) {
@@ -276,6 +330,7 @@ const Player = forwardRef(function Player(
         leftLegRef={leftLegRef}
         rightLegRef={rightLegRef}
         playerRef={playerRef}
+        interactiveMode={interactiveMode}
       />
       {/* Head */}
       <EntityPart
