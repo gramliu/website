@@ -15,4 +15,11 @@ export interface PlayerHelperProps {
   leftLegRef: React.RefObject<Group>;
   rightLegRef: React.RefObject<Group>;
   playerRef: React.RefObject<Group>;
-} 
+}
+
+export interface PlayerMotionHelperProps extends PlayerHelperProps {
+  world: World;
+  interactiveMode?: boolean;
+  isMovingRef?: React.RefObject<boolean>;
+}
+

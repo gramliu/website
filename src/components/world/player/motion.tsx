@@ -3,7 +3,7 @@ import { forwardRef, useRef } from "react";
 import { MathUtils, Vector3 } from "three";
 import { getMovementVector } from "../keycontrols";
 import { World } from "../world";
-import { PlayerHelperProps } from "./types";
+import { PlayerHelperProps, PlayerMotionHelperProps } from "./types";
 
 // Map boundaries
 const MAP_MIN_X = 0;
@@ -12,24 +12,16 @@ const MAP_MIN_Z = 0;
 const MAP_MAX_Z = 10;
 const MAX_Z_ANIMATION = 7;
 
-export interface PlayerMotionHelper extends PlayerHelperProps {
-  world: World;
-  interactiveMode?: boolean;
-}
-
 /**
  * Helper for player motion
  */
 export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
   {
     world,
-    leftArmRef,
-    rightArmRef,
-    leftLegRef,
-    rightLegRef,
     playerRef,
     interactiveMode = false,
-  }: PlayerMotionHelper,
+    isMovingRef,
+  }: PlayerMotionHelperProps,
   ref
 ) {
   // Constants
@@ -180,6 +172,8 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
       if (velocityRef.current.y < 0 && newBlock !== 0) {
         currentPosition.y = Math.round(currentPosition.y);
       }
+
+      isMovingRef.current = velocityRef.current.length() > 0.01;
     }
   });
 

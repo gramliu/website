@@ -36,6 +36,7 @@ const Player = forwardRef(function Player(
   const leftLegRef = useRef<Group>(null);
   const rightLegRef = useRef<Group>(null);
   const playerRef = ref as React.RefObject<Group>;
+  const isMovingRef = useRef(false);
 
   const trueSize = size / 16;
 
@@ -56,6 +57,7 @@ const Player = forwardRef(function Player(
         leftLegRef={leftLegRef}
         rightLegRef={rightLegRef}
         playerRef={playerRef}
+        isMovingRef={isMovingRef}
       />
       <PlayerMotionHelper
         world={world}
@@ -65,6 +67,7 @@ const Player = forwardRef(function Player(
         rightLegRef={rightLegRef}
         playerRef={playerRef}
         interactiveMode={interactiveMode}
+        isMovingRef={isMovingRef}
       />
       {/* Head */}
       <EntityPart
