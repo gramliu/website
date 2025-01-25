@@ -47,7 +47,7 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
 
         // Update rotation based on movement direction
         if (movement.length() > 0) {
-          const angle = Math.atan2(movement.x, -movement.z);
+          const angle = Math.atan2(movement.x, movement.z);
           currentRotation.y = angle;
         }
 
