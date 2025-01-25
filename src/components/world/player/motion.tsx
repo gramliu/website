@@ -15,7 +15,7 @@ const MAX_Z_ANIMATION = 7;
 // Physics constants
 const MOVEMENT_SPEED = 2;
 const GRAVITY = -15;
-const JUMP_VELOCITY = 8;
+const JUMP_VELOCITY = 20;
 
 /**
  * Calculate horizontal movement based on input and boundaries
@@ -86,6 +86,8 @@ function calculateVerticalMovement(
     // Handle jumping in interactive mode
     if (interactiveMode && keyState.jump) {
       movement.y = JUMP_VELOCITY;
+    } else {
+      movement.y = 0;
     }
   }
 
