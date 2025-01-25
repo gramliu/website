@@ -1,4 +1,4 @@
-// Key listeners
+import { useEffect, useRef } from "react";
 import { Vector3 } from "three";
 
 export interface KeyState {
@@ -9,63 +9,77 @@ export interface KeyState {
   jump: boolean;
 }
 
-export const keyState: KeyState = {
-  forward: false,
-  backward: false,
-  left: false,
-  right: false,
-  jump: false,
-};
+export function useKeyControls() {
+  const keyState = useRef<KeyState>({
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    jump: false,
+  });
 
-export function onKeyDown(event: KeyboardEvent) {
-  switch (event.code) {
-    case "KeyW":
-    case "ArrowUp":
-      keyState.forward = true;
-      break;
-    case "KeyS":
-    case "ArrowDown":
-      keyState.backward = true;
-      break;
-    case "KeyA":
-    case "ArrowLeft":
-      keyState.left = true;
-      break;
-    case "KeyD":
-    case "ArrowRight":
-      keyState.right = true;
-      break;
-    case "Space":
-      keyState.jump = true;
-      break;
-  }
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.code) {
+        case "KeyW":
+        case "ArrowUp":
+          keyState.current.forward = true;
+          break;
+        case "KeyS":
+        case "ArrowDown":
+          keyState.current.backward = true;
+          break;
+        case "KeyA":
+        case "ArrowLeft":
+          keyState.current.left = true;
+          break;
+        case "KeyD":
+        case "ArrowRight":
+          keyState.current.right = true;
+          break;
+        case "Space":
+          keyState.current.jump = true;
+          break;
+      }
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      switch (event.code) {
+        case "KeyW":
+        case "ArrowUp":
+          keyState.current.forward = false;
+          break;
+        case "KeyS":
+        case "ArrowDown":
+          keyState.current.backward = false;
+          break;
+        case "KeyA":
+        case "ArrowLeft":
+          keyState.current.left = false;
+          break;
+        case "KeyD":
+        case "ArrowRight":
+          keyState.current.right = false;
+          break;
+        case "Space":
+          keyState.current.jump = false;
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  return keyState;
 }
 
-export function onKeyUp(event: KeyboardEvent) {
-  switch (event.code) {
-    case "KeyW":
-    case "ArrowUp":
-      keyState.forward = false;
-      break;
-    case "KeyS":
-    case "ArrowDown":
-      keyState.backward = false;
-      break;
-    case "KeyA":
-    case "ArrowLeft":
-      keyState.left = false;
-      break;
-    case "KeyD":
-    case "ArrowRight":
-      keyState.right = false;
-      break;
-    case "Space":
-      keyState.jump = false;
-      break;
-  }
-}
-
-export function getMovementVector(): Vector3 {
+export function getMovementVector(keyState: KeyState): Vector3 {
   const movement = new Vector3();
   
   if (keyState.forward) movement.z -= 1;

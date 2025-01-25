@@ -5,7 +5,7 @@ import { useState } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function WorldPage() {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   return (
     <main className={`flex h-screen w-screen ${inter.className} relative`}>
