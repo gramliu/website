@@ -308,8 +308,9 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
   });
 
   useEffect(() => {
-    if (interactiveMode) {
+    if (!interactiveMode) {
       velocityRef.current.set(0, 0, MOVEMENT_SPEED);
+      targetRotationRef.current.set(0, 0, 0);
     }
   }, [interactiveMode]);
 
