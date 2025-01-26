@@ -21,17 +21,28 @@ const MOVEMENT_SPEED = 2;
 const GRAVITY = -15;
 const JUMP_VELOCITY = 8;
 
+interface MovementFunctionProps {
+  world: World;
+  interactiveMode: boolean;
+  keyState: KeyState;
+  delta: number;
+  currentPosition: Vector3;
+  currentVelocity: Vector3;
+  isJumpingRef: React.MutableRefObject<boolean>;
+}
+
 /**
  * Calculate horizontal movement based on input and boundaries
  */
-function calculateHorizontalMovement(
-  currentPosition: Vector3,
-  currentVelocity: Vector3,
-  interactiveMode: boolean,
-  delta: number,
-  keyState: KeyState
-): Vector3 {
-  const velocity = currentVelocity.clone();
+function calculateHorizontalMovement({
+  interactiveMode,
+  keyState,
+  delta,
+  currentPosition,
+  currentVelocity,
+}: MovementFunctionProps): Vector3 {
+  // Clone only the x and z components
+  const velocity = currentVelocity.clone().setY(0);
   if (interactiveMode) {
     // Get input-based movement
     const input = getMovementVector(keyState);
@@ -63,15 +74,16 @@ function calculateHorizontalMovement(
 /**
  * Calculate vertical movement based on gravity and jumping
  */
-function calculateVerticalMovement(
-  currentPosition: Vector3,
-  currentVelocity: Vector3,
-  world: World,
-  interactiveMode: boolean,
-  keyState: KeyState,
-  delta: number
-): Vector3 {
-  const movement = new Vector3(0, currentVelocity.y, 0);
+function calculateVerticalMovement({
+  currentPosition,
+  currentVelocity,
+  world,
+  interactiveMode,
+  keyState,
+  delta,
+  isJumpingRef,
+}: MovementFunctionProps): Vector3 {
+  const velocity = new Vector3(0, currentVelocity.y, 0);
 
   // Check ground state
   const blockBelow = world.getBlockAtPosition(
@@ -81,22 +93,37 @@ function calculateVerticalMovement(
 
   // Apply gravity when not on ground
   if (!onGround) {
-    movement.y += GRAVITY * delta;
+    velocity.y += GRAVITY * delta;
   } else {
     // Reset downward velocity on ground
-    if (movement.y < 0) {
-      movement.y = 0;
+    if (velocity.y < 0) {
+      velocity.y = 0;
     }
 
     // Handle jumping in interactive mode
-    if (interactiveMode && keyState.jump) {
-      movement.y = JUMP_VELOCITY;
-    } else {
-      movement.y = 0;
+    if (interactiveMode && !isJumpingRef.current) {
+      velocity.y = keyState.jump ? JUMP_VELOCITY : 0;
+      isJumpingRef.current = keyState.jump;
+    }
+
+    // If moving towards block, jump
+    const blockInPath = world.getBlockAtPosition(
+      currentPosition
+        .clone()
+        .add(new Vector3(currentVelocity.x / 4, 0, currentVelocity.z / 4))
+    );
+    if (
+      blockInPath !== 0 &&
+      onGround &&
+      !isJumpingRef.current &&
+      (Math.abs(currentVelocity.x) > 0.01 || Math.abs(currentVelocity.z) > 0.01)
+    ) {
+      velocity.y = JUMP_VELOCITY;
+      isJumpingRef.current = true;
     }
   }
 
-  return movement;
+  return velocity;
 }
 
 /**
@@ -107,7 +134,7 @@ function handleCollisions(
   velocity: Vector3,
   world: World,
   delta: number,
-  keyState: KeyState
+  isJumpingRef: React.MutableRefObject<boolean>
 ): Vector3 {
   const movement = velocity.clone().multiplyScalar(delta);
   const nextPosition = currentPosition.clone().add(movement);
@@ -121,6 +148,10 @@ function handleCollisions(
     currentPosition.clone().add(new Vector3(0, -1, 0))
   );
   const onGround = currentPosition.y % 1 === 0 && blockBelow !== 0;
+  const topBlock = world.getHighestBlockPosition(
+    nextPosition.x,
+    nextPosition.z
+  );
 
   // Check for vertical collisions
   if (nextBlock !== 0) {
@@ -129,21 +160,25 @@ function handleCollisions(
       movement.y = 0;
     } else if (velocity.y < 0) {
       // Hit ground
-      movement.y = Math.ceil(currentPosition.y) - currentPosition.y - 1;
+      movement.y = Math.ceil(currentPosition.y) - currentPosition.y;
+      isJumpingRef.current = false;
     }
   } else if (nextHeadBlock !== 0) {
     // Hit ceiling
     movement.y = 0;
   }
 
-  // // If not falling and on ground, snap to highest block
-  // if (velocity.y >= 0 && onGround && !keyState.jump) {
-  //   const topBlock = world.getHighestBlockPosition(
-  //     nextPosition.x,
-  //     nextPosition.z
-  //   );
-  //   movement.y = topBlock - currentPosition.y;
-  // }
+  // If not falling and on ground, snap to highest block
+  if (
+    velocity.y >= 0 &&
+    !isJumpingRef.current &&
+    Math.abs(topBlock - currentPosition.y) < 1
+  ) {
+    movement.y = topBlock - currentPosition.y;
+    velocity.y = 0;
+  } else if (velocity.y < 0 && nextPosition.y < topBlock) {
+    movement.y = topBlock - currentPosition.y;
+  }
 
   return movement;
 }
@@ -212,9 +247,12 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
   ref
 ) {
   // Refs
-  const velocityRef = useRef(interactiveMode ? new Vector3() : new Vector3(0, 0, MOVEMENT_SPEED));
+  const velocityRef = useRef(
+    interactiveMode ? new Vector3() : new Vector3(0, 0, MOVEMENT_SPEED)
+  );
   const targetRotationRef = useRef(new Vector3());
   const rotating = useRef(false);
+  const isJumpingRef = useRef(false);
 
   useFrame((state, delta) => {
     const currentPosition = playerRef.current?.position;
@@ -222,27 +260,25 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
 
     if (currentPosition && currentRotation) {
       // Calculate movement components
-      const horizontalVelocity = calculateHorizontalMovement(
-        currentPosition,
-        velocityRef.current,
-        interactiveMode,
-        delta,
-        keyControlsRef.current
-      );
-      velocityRef.current.setX(horizontalVelocity.x);
-      velocityRef.current.setZ(horizontalVelocity.z);
-
-      console.log(velocityRef.current);
-
-      const verticalVelocity = calculateVerticalMovement(
-        currentPosition,
-        velocityRef.current,
+      const movementProps: MovementFunctionProps = {
         world,
         interactiveMode,
-        keyControlsRef.current,
-        delta
-      );
-      velocityRef.current.setY(verticalVelocity.y);
+        keyState: keyControlsRef.current,
+        delta,
+        currentPosition,
+        currentVelocity: velocityRef.current,
+        isJumpingRef,
+      };
+      const horizontalVelocity = calculateHorizontalMovement(movementProps);
+      const verticalVelocity = calculateVerticalMovement({
+        ...movementProps,
+        currentVelocity: velocityRef.current.add(horizontalVelocity),
+      });
+
+      // Add horizontal and vertical velocities
+      const netVelocity = horizontalVelocity.clone().add(verticalVelocity);
+
+      velocityRef.current.set(netVelocity.x, netVelocity.y, netVelocity.z);
 
       // Handle collisions and get final movement
       const movement = handleCollisions(
@@ -250,7 +286,7 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
         velocityRef.current,
         world,
         delta,
-        keyControlsRef.current
+        isJumpingRef
       );
 
       // Apply movement
