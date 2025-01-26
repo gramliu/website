@@ -99,15 +99,18 @@ export default function Hero() {
             <SocialIcons />
           </motion.div>
         </div>
-        <div className="mt-[10%] pt-[10%] xl:w-1/2 h-screen grid grid-rows-2" id="world">
+        <div
+          className="mt-[10%] pt-[10%] xl:w-1/2 h-screen grid grid-rows-2"
+          id="world"
+        >
           <div>
             <World size={0.8} interactiveMode={isPlaying} closeUp />
           </div>
-          <div className="hidden md:flex justify-center items-start pt-32">
+          <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-32">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               className={clsx(
-                "bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-yellow-500 text-black rounded-lg shadow-lg hover:bg-yellow-600 transition-all",
+                "z-10 bottom-8 px-4 py-2 bg-yellow-500 text-black rounded-lg shadow-lg hover:bg-yellow-600 transition-all",
                 {
                   "animate-bounce": !isPlaying,
                 }
@@ -115,6 +118,14 @@ export default function Hero() {
             >
               {isPlaying ? "Stop playing" : "Start playing"}
             </button>
+            {isPlaying ? (
+              <>
+                {/* Instructions */}
+                <span className="text-center">
+                  Use WASD + Space to move around.
+                </span>
+              </>
+            ) : null}
           </div>
         </div>
       </div>
