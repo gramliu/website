@@ -9,7 +9,8 @@ const world = new World();
 const ROTATION_SPEED = 0.3;
 
 type Vec3 = [number, number, number];
-const DEFAULT_PLAYER_POSITION: Vec3 = [9.5, 5, 1];
+const DEFAULT_PLAYER_POSITION: Vec3 = [9, 5, 1];
+// const DEFAULT_PLAYER_POSITION: Vec3 = [9, 3, 5];
 const DEFAULT_PLAYER_ROTATION: Vec3 = [0, 0, 0];
 const DEFAULT_WORLD_ROTATION: Vec3 = [0, 0, 0];
 
