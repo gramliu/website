@@ -8,6 +8,11 @@ import { useKeyControls } from "./keycontrols";
 const world = new World();
 const ROTATION_SPEED = 0.3;
 
+type Vec3 = [number, number, number];
+const DEFAULT_PLAYER_POSITION: Vec3 = [9.5, 5, 1];
+const DEFAULT_PLAYER_ROTATION: Vec3 = [0, 0, 0];
+const DEFAULT_WORLD_ROTATION: Vec3 = [0, 0, 0];
+
 interface Props {
   size?: number;
   rotateWorld?: boolean;
@@ -27,12 +32,24 @@ export default function Map({ size = 1, rotateWorld, interactiveMode = false }: 
       if (event.key === "r") {
         if (playerRef.current) {
           // Reset player's position
-          playerRef.current.position.set(9, 2, 1);
-          playerRef.current.rotation.set(0, 0, 0);
+          playerRef.current.position.set(
+            DEFAULT_PLAYER_POSITION[0],
+            DEFAULT_PLAYER_POSITION[1],
+            DEFAULT_PLAYER_POSITION[2]
+          );
+          playerRef.current.rotation.set(
+            DEFAULT_PLAYER_ROTATION[0],
+            DEFAULT_PLAYER_ROTATION[1],
+            DEFAULT_PLAYER_ROTATION[2]
+          );
         }
         if (worldRef.current) {
           // Reset world's rotation
-          worldRef.current.rotation.set(0, 0, 0);
+          worldRef.current.rotation.set(
+            DEFAULT_WORLD_ROTATION[0],
+            DEFAULT_WORLD_ROTATION[1],
+            DEFAULT_WORLD_ROTATION[2]
+          );
         }
       }
     };
@@ -53,7 +70,7 @@ export default function Map({ size = 1, rotateWorld, interactiveMode = false }: 
       <group position={[-4.5, 0, -4.5]}>
         {...world.blocks}
         <Player
-          position={[9, 2, 1]}
+          position={DEFAULT_PLAYER_POSITION}
           animate={!interactiveMode}
           world={world}
           ref={playerRef}
