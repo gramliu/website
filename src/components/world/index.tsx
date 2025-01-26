@@ -1,8 +1,6 @@
+import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import Map from "./map";
-import { OrbitControls } from "@react-three/drei";
-import { useEffect } from "react";
-import { onKeyDown, onKeyUp } from "./keycontrols";
 
 interface Props {
   size?: number;
@@ -17,20 +15,6 @@ function World({
   interactiveMode = false,
   closeUp = false,
 }: Props) {
-  useEffect(() => {
-    if (interactiveMode) {
-      // Add key listeners when interactive mode is enabled
-      window.addEventListener("keydown", onKeyDown);
-      window.addEventListener("keyup", onKeyUp);
-
-      return () => {
-        // Clean up listeners when component unmounts
-        window.removeEventListener("keydown", onKeyDown);
-        window.removeEventListener("keyup", onKeyUp);
-      };
-    }
-  }, [interactiveMode]);
-
   return (
     <Canvas 
       camera={{ 
