@@ -23,14 +23,17 @@ interface Props {
 /**
  * World map
  */
-export default function Map({ size = 1, rotateWorld, interactiveMode = false }: Props) {
+export default function Map({
+  size = 1,
+  rotateWorld,
+  interactiveMode = false,
+}: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
   const keyControlsRef = useKeyControls();
 
-  function resetMap() {
+  function resetPlayer() {
     if (playerRef.current) {
-      // Reset player's position
       playerRef.current.position.set(
         DEFAULT_PLAYER_POSITION[0],
         DEFAULT_PLAYER_POSITION[1],
@@ -42,8 +45,10 @@ export default function Map({ size = 1, rotateWorld, interactiveMode = false }: 
         DEFAULT_PLAYER_ROTATION[2]
       );
     }
+  }
+
+  function resetWorld() {
     if (worldRef.current) {
-      // Reset world's rotation
       worldRef.current.rotation.set(
         DEFAULT_WORLD_ROTATION[0],
         DEFAULT_WORLD_ROTATION[1],
@@ -55,7 +60,8 @@ export default function Map({ size = 1, rotateWorld, interactiveMode = false }: 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "r") {
-        resetMap();
+        resetPlayer();
+        resetWorld();
       }
     };
 
@@ -72,9 +78,7 @@ export default function Map({ size = 1, rotateWorld, interactiveMode = false }: 
 
   useEffect(() => {
     // Reset world rotation
-    if (!interactiveMode) {
-      resetMap();
-    }
+    resetWorld();
   }, [interactiveMode]);
 
   return (

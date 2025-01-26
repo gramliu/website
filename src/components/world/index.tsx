@@ -8,9 +8,15 @@ interface Props {
   size?: number;
   rotateWorld?: boolean;
   interactiveMode?: boolean;
+  closeUp?: boolean;
 }
 
-function World({ size = 1, rotateWorld = true, interactiveMode = false }: Props) {
+function World({
+  size = 1,
+  rotateWorld = true,
+  interactiveMode = false,
+  closeUp = false,
+}: Props) {
   useEffect(() => {
     if (interactiveMode) {
       // Add key listeners when interactive mode is enabled
@@ -26,7 +32,16 @@ function World({ size = 1, rotateWorld = true, interactiveMode = false }: Props)
   }, [interactiveMode]);
 
   return (
-    <Canvas camera={{ position: [15, 10, 15], fov: 60 }} shadows>
+    <Canvas 
+      camera={{ 
+        position: [15, 10, 15], 
+        fov: closeUp ? 50 : 60 
+      }} 
+      style={{
+        height: closeUp ? "900px" : "100%",
+      }}
+      shadows
+    >
       <ambientLight intensity={0.5} />
       <directionalLight
         position={[1, 10, 5]}
@@ -48,7 +63,11 @@ function World({ size = 1, rotateWorld = true, interactiveMode = false }: Props)
           <OrbitControls />
         </>
       ) : null}
-      <Map size={size} rotateWorld={rotateWorld} interactiveMode={interactiveMode} />
+      <Map
+        size={size}
+        rotateWorld={rotateWorld}
+        interactiveMode={interactiveMode}
+      />
     </Canvas>
   );
 }

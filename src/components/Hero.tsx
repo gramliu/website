@@ -1,9 +1,10 @@
+import clsx from "clsx";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import ProfilePhoto from "../../public/images/profilePhoto.jpg";
 import social from "../config/social";
 import World from "./world";
-import clsx from "clsx";
 
 function HeroContent() {
   return (
@@ -49,12 +50,25 @@ function SocialIcons() {
 }
 
 export default function Hero() {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const preventScroll = (e: KeyboardEvent) => {
+      if (isPlaying && e.code === "Space") {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("keydown", preventScroll);
+    return () => window.removeEventListener("keydown", preventScroll);
+  }, [isPlaying]);
+
   return (
     <>
       <div
         className={clsx(
           "items-center justify-center h-auto",
-          "xl:flex xl:justify-center xl:items-center",
+          "xl:flex xl:justify-center xl:items-center"
         )}
         id="home"
       >
@@ -85,8 +99,23 @@ export default function Hero() {
             <SocialIcons />
           </motion.div>
         </div>
-        <div className="mt-[10%] xl:w-1/2 h-screen" id="world">
-          <World size={0.8} />
+        <div className="mt-[10%] pt-[10%] xl:w-1/2 h-screen grid grid-rows-2" id="world">
+          <div>
+            <World size={0.8} interactiveMode={isPlaying} closeUp />
+          </div>
+          <div className="hidden md:flex justify-center items-start pt-32">
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className={clsx(
+                "bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-yellow-500 text-black rounded-lg shadow-lg hover:bg-yellow-600 transition-all",
+                {
+                  "animate-bounce": !isPlaying,
+                }
+              )}
+            >
+              {isPlaying ? "Stop playing" : "Start playing"}
+            </button>
+          </div>
         </div>
       </div>
     </>
