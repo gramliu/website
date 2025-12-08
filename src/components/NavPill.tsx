@@ -14,11 +14,6 @@ const links = [
     link: "/#portfolio",
   },
   {
-    label: "Resume",
-    link: "/Gram_Liu_Resume.pdf",
-    target: "_blank",
-  },
-  {
     label: "Library",
     link: "/library",
   },
