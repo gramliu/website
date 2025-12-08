@@ -4,7 +4,13 @@ import { useRouter } from "next/router";
 import { scroller } from "react-scroll";
 import LogoIcon from "../icons/logo";
 
-const links = [
+type NavLink = {
+  label: string;
+  link: string;
+  target?: string;
+};
+
+const links: NavLink[] = [
   {
     label: "About",
     link: "/#about",
