@@ -50,6 +50,11 @@ const blogs: Blog[] = [
     url: "https://staffeng.com/guides/staff-archetypes/",
     author: "Will Larson"
   },
+  {
+    title: "Michelle Bu - Payments Products Tech Lead at Stripe",
+    url: "https://staffeng.com/stories/michelle-bu/",
+    author: "Will Larson"
+  },
 ];
 
 export default blogs;
