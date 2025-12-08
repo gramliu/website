@@ -45,6 +45,11 @@ const blogs: Blog[] = [
     url: "https://d37ugbyn3rpeym.cloudfront.net/stripe-press/TAODSAE_zine_press.pdf",
     author: "Richard Hamming"
   },
+  {
+    title: "Staff Archetypes",
+    url: "https://staffeng.com/guides/staff-archetypes/",
+    author: "Will Larson"
+  },
 ];
 
 export default blogs;
