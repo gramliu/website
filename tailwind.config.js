@@ -54,18 +54,23 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        highlight: "#73ee87",
+        // Accent (used across links/hover states)
+        highlight: "#16a34a",
         bgcolor: {
-          primary: "#263238",
-          highlight: "#e7ecef20",
-          light: "#314149",
+          // Base page background
+          DEFAULT: "#ffffff",
+          primary: "#ffffff",
+          // Subtle hover/selection surface
+          highlight: "#0f172a0d",
+          // Light surface background (cards/panels)
+          light: "#f1f5f9",
         },
         text: {
-          primary: "#e6edf2",
-          highlight: "#73ee87",
-          faded: "#a3b6c2",
+          primary: "#0f172a",
+          highlight: "#16a34a",
+          faded: "#475569",
         },
-        divider: "#49636f",
+        divider: "#e2e8f0",
       },
       borderRadius: {
         lg: "var(--radius)",
