@@ -1,19 +1,21 @@
-$background-color: #263238;
-$background-highlighted: #e7ecef20;
-$background-light: #314149;
-$background-light2: #526e7c;
-$divider: #49636f;
+// Light theme (white background)
+$background-color: #ffffff;
+$background-highlighted: #16a34a1a; // green highlight @ ~10% alpha
+$background-light: #f3f4f6;
+$background-light2: #e5e7eb;
+$divider: #cbd5e1;
 
-$text-primary: #e6edf2;
-$text-secondary: #f05d5e;
-$text-faded: #a3b6c2;
+$text-primary: #0f172a;
+$text-secondary: #ef4444;
+$text-faded: #475569;
 
-$text-highlight: #73ee87;
-$text-highlight1: #5bbc6b;
+// Accent (green) tuned for contrast on white
+$text-highlight: #16a34a;
+$text-highlight1: #15803d;
 
-$highlight: #73ee87;
-$highlightDarker: #5bbc6b;
-$errorText: #e05652;
+$highlight: #16a34a;
+$highlightDarker: #15803d;
+$errorText: #dc2626;
 
 $box-shadow:
   0 1px 2px rgba(0, 0, 0, 0.07), 
