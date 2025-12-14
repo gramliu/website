@@ -93,12 +93,20 @@ export default function Papers({
         Papers
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <PaginationControls page={page} pages={pages} setPage={setPage} />
-        <div className="flex flex-col gap-4 w-full md:w-8/12 h-128 items-start">
-          {pages[page].map((paper) => (
-            <PaperEntry paper={paper} key={paper.title} />
-          ))}
-        </div>
+        {pages.length > 0 ? (
+          <>
+            <PaginationControls page={page} pages={pages} setPage={setPage} />
+            <div className="flex flex-col gap-4 w-full md:w-8/12 h-128 items-start">
+              {pages[Math.min(page, pages.length - 1)].map((paper) => (
+                <PaperEntry paper={paper} key={paper.title} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="text-text-faded text-sm md:text-base">
+            Papers list is unavailable right now.
+          </div>
+        )}
       </div>
     </div>
   );

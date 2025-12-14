@@ -34,19 +34,23 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${env.GOOGLE_ANALYTICS_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window.dataLayer.push(arguments);}
-          gtag('js', new Date());
+        {env.GOOGLE_ANALYTICS_ID ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${env.GOOGLE_ANALYTICS_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments);}
+                gtag('js', new Date());
 
-          gtag('config', '${env.GOOGLE_ANALYTICS_ID}');
-        `}
-        </Script>
+                gtag('config', '${env.GOOGLE_ANALYTICS_ID}');
+              `}
+            </Script>
+          </>
+        ) : null}
       </body>
     </Html>
   );
