@@ -20,8 +20,8 @@ const links: NavLink[] = [
     link: "/#portfolio",
   },
   {
-    label: "Blogs",
-    link: "/blogs",
+    label: "Blog",
+    link: "/blog",
   },
   {
     label: "Library",
