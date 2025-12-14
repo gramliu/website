@@ -3,10 +3,11 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    GOOGLE_ANALYTICS_ID: z.string(),
-    ZOTERO_API_KEY: z.string(),
-    REDIS_URL: z.string(),
-    REDIS_TOKEN: z.string(),
+    // Optional for local/dev builds; production can still enforce via deployment env.
+    GOOGLE_ANALYTICS_ID: z.string().optional(),
+    ZOTERO_API_KEY: z.string().optional(),
+    REDIS_URL: z.string().optional(),
+    REDIS_TOKEN: z.string().optional(),
   },
   client: {},
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually

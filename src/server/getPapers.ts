@@ -26,6 +26,8 @@ interface RawPaper {
  * Get research papers under the "Interesting Reads" Zotero collection
  */
 export default async function getPapers() {
+  if (!env.ZOTERO_API_KEY) return [];
+
   const { data } = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${env.ZOTERO_API_KEY}`,

@@ -74,13 +74,21 @@ export default function Papers({
         Papers
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <PaginationControls
-          currentPage={page}
-          totalPages={pages.length}
-          onPageChange={setPage}
-          className="mb-8"
-        />
-        <PaperList papers={currentPapers} />
+        {pages.length > 0 ? (
+          <>
+            <PaginationControls
+              currentPage={page}
+              totalPages={pages.length}
+              onPageChange={setPage}
+              className="mb-8"
+            />
+            <PaperList papers={currentPapers} />
+          </>
+        ) : (
+          <div className="text-text-faded text-sm md:text-base">
+            Papers list is unavailable right now.
+          </div>
+        )}
       </div>
     </div>
   );
