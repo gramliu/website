@@ -12,13 +12,14 @@ import {
 
 export default function BlogPostPage({ post }: { post: BlogPost }) {
   const content = parseMarkdoc(post.source);
+
   return (
     <Layout>
       <NavPill />
       <main className="mx-auto w-full max-w-3xl px-4 pt-32 pb-24">
         <div className="mb-10">
           <Link
-            href="/blogs"
+            href="/blog"
             className="hoverLink text-highlight no-underline text-sm"
           >
             ← All posts
