@@ -11,6 +11,11 @@ const blogs: Blog[] = [
     author: "Paul Graham"
   },
   {
+    title: "Exit the haunted forest",
+    url: "https://increment.com/software-architecture/exit-the-haunted-forest/",
+    author: "John Millikin"
+  },
+  {
     title: "Idea Generation",
     url: "https://blog.samaltman.com/idea-generation",
     author: "Sam Altman"
