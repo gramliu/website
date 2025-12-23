@@ -11,6 +11,11 @@ const blogs: Blog[] = [
     author: "Paul Graham"
   },
   {
+    title: "Staff Archetypes",
+    url: "https://staffeng.com/guides/staff-archetypes/",
+    author: "Will Larson"
+  },
+  {
     title: "Exit the haunted forest",
     url: "https://increment.com/software-architecture/exit-the-haunted-forest/",
     author: "John Millikin"
@@ -54,11 +59,6 @@ const blogs: Blog[] = [
     title: "You and Your Research",
     url: "https://d37ugbyn3rpeym.cloudfront.net/stripe-press/TAODSAE_zine_press.pdf",
     author: "Richard Hamming"
-  },
-  {
-    title: "Staff Archetypes",
-    url: "https://staffeng.com/guides/staff-archetypes/",
-    author: "Will Larson"
   },
   {
     title: "Michelle Bu - Payments Products Tech Lead at Stripe",
