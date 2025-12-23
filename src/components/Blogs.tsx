@@ -53,16 +53,17 @@ export default function Blogs({ className }: { className?: string }) {
         Essays
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <PaginationControls
-          currentPage={page}
-          totalPages={pages.length}
-          onPageChange={setPage}
-        />
         <div className="flex flex-col gap-4 w-full md:w-8/12 min-h-[400px] items-start">
           {(pages[page] ?? []).map((blog) => (
             <BlogEntry blog={blog} key={blog.url} />
           ))}
         </div>
+        <PaginationControls
+          currentPage={page}
+          totalPages={pages.length}
+          onPageChange={setPage}
+          className="mt-8"
+        />
       </div>
     </div>
   );

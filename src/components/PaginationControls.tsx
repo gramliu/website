@@ -70,7 +70,7 @@ export default function PaginationControls({
   const pageNumbers = getPageNumbers(currentPage, totalPages);
 
   return (
-    <div className={cn("flex flex-col items-center gap-3 mb-8", className)}>
+    <div className={cn("flex flex-col items-center gap-3", className)}>
       <Pagination>
         <PaginationContent className="h-10">
           <PaginationItem>

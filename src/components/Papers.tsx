@@ -59,16 +59,17 @@ export default function Papers({
         Papers
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <PaginationControls
-          currentPage={page}
-          totalPages={pages.length}
-          onPageChange={setPage}
-        />
         <div className="flex flex-col gap-4 w-full md:w-8/12 min-h-[500px] items-start">
           {(pages[page] ?? []).map((paper) => (
             <PaperEntry paper={paper} key={paper.title} />
           ))}
         </div>
+        <PaginationControls
+          currentPage={page}
+          totalPages={pages.length}
+          onPageChange={setPage}
+          className="mt-8"
+        />
       </div>
     </div>
   );
