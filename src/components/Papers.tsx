@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { ResearchPaper } from "../server/getPapers";
 import { LinkIcon } from "lucide-react";
+import PaginationControls from "./PaginationControls";
 
 function PaperEntry({ paper }: { paper: ResearchPaper }) {
   return (
@@ -38,40 +39,19 @@ function paginate<T>(array: T[], pageSize: number): T[][] {
   return pages;
 }
 
-function PaginationControls({
-  page,
-  pages,
-  setPage,
-}: {
-  page: number;
-  pages: ResearchPaper[][];
-  setPage: (page: number) => void;
-}) {
+/**
+ * Memoized component for rendering the list of papers.
+ * Prevents parent rerenders from causing unnecessary list updates.
+ */
+const PaperList = memo(function PaperList({ papers }: { papers: ResearchPaper[] }) {
   return (
-    <div className="flex flex-row gap-2 ml-4 mb-10">
-      {/* Previous button */}
-      <button
-        className="flex items-center justify-center text-2xl font-black text-text-primary h-8"
-        onClick={() => setPage(Math.max(page - 1, 0))}
-        disabled={page === 0}
-      >
-        &lt;
-      </button>
-      {/* Page number */}
-      <div className="flex items-center tracking-widest justify-center text-2xl font-light text-white w-24 h-8">
-        {page + 1}/{pages.length}
-      </div>
-      {/* Next button */}
-      <button
-        className="flex items-center justify-center text-2xl font-black text-white h-8"
-        onClick={() => setPage(Math.min(page + 1, pages.length - 1))}
-        disabled={page === pages.length - 1}
-      >
-        &gt;
-      </button>
+    <div className="flex flex-col gap-4 w-full md:w-8/12 items-start">
+      {papers.map((paper) => (
+        <PaperEntry paper={paper} key={paper.title} />
+      ))}
     </div>
   );
-}
+});
 
 export default function Papers({
   papers,
@@ -83,6 +63,7 @@ export default function Papers({
   // Group papers into pages
   const pages = useMemo(() => paginate(papers, PAGE_SIZE), [papers]);
   const [page, setPage] = useState(0);
+  const currentPapers = pages[page] ?? [];
 
   return (
     <div className={className}>
@@ -93,12 +74,13 @@ export default function Papers({
         Papers
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <PaginationControls page={page} pages={pages} setPage={setPage} />
-        <div className="flex flex-col gap-4 w-full md:w-8/12 h-128 items-start">
-          {pages[page].map((paper) => (
-            <PaperEntry paper={paper} key={paper.title} />
-          ))}
-        </div>
+        <PaginationControls
+          currentPage={page}
+          totalPages={pages.length}
+          onPageChange={setPage}
+          className="mb-8"
+        />
+        <PaperList papers={currentPapers} />
       </div>
     </div>
   );
