@@ -45,7 +45,7 @@ function paginate<T>(array: T[], pageSize: number): T[][] {
  */
 const BlogList = memo(function BlogList({ blogs }: { blogs: Blog[] }) {
   return (
-    <div className="flex flex-col gap-4 w-full md:w-8/12 h-[800px] items-start">
+    <div className="flex flex-col gap-4 w-full md:w-8/12 items-start">
       {blogs.map((blog) => (
         <BlogEntry blog={blog} key={blog.url} />
       ))}
@@ -68,13 +68,13 @@ export default function Blogs({ className }: { className?: string }) {
         Essays
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <BlogList blogs={currentBlogs} />
         <PaginationControls
           currentPage={page}
           totalPages={pages.length}
           onPageChange={setPage}
-          className="mt-8"
+          className="mb-8"
         />
+        <BlogList blogs={currentBlogs} />
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ function paginate<T>(array: T[], pageSize: number): T[][] {
  */
 const PaperList = memo(function PaperList({ papers }: { papers: ResearchPaper[] }) {
   return (
-    <div className="flex flex-col gap-4 w-full md:w-8/12 h-[1000px] items-start">
+    <div className="flex flex-col gap-4 w-full md:w-8/12 items-start">
       {papers.map((paper) => (
         <PaperEntry paper={paper} key={paper.title} />
       ))}
@@ -74,13 +74,13 @@ export default function Papers({
         Papers
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <PaperList papers={currentPapers} />
         <PaginationControls
           currentPage={page}
           totalPages={pages.length}
           onPageChange={setPage}
-          className="mt-8"
+          className="mb-8"
         />
+        <PaperList papers={currentPapers} />
       </div>
     </div>
   );

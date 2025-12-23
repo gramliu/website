@@ -71,6 +71,10 @@ export default function PaginationControls({
 
   return (
     <div className={cn("flex flex-col items-center gap-3", className)}>
+      <div className="text-sm text-text-faded tracking-wide">
+        Page {currentPage + 1} of {totalPages}
+      </div>
+      
       <Pagination>
         <PaginationContent className="h-10">
           <PaginationItem>
@@ -116,10 +120,6 @@ export default function PaginationControls({
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      
-      <div className="text-sm text-text-faded tracking-wide">
-        Page {currentPage + 1} of {totalPages}
-      </div>
     </div>
   );
 }
