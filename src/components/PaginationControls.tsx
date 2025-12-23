@@ -97,7 +97,7 @@ export default function PaginationControls({
                   onClick={() => onPageChange(pageNum)}
                   isActive={currentPage === pageNum}
                   className={cn(
-                    "text-text-primary hover:text-white hover:bg-white/10 border-none min-w-10",
+                    "text-text-primary hover:text-white hover:bg-white/10 border-none min-w-8 md:min-w-10",
                     currentPage === pageNum && 
                       "bg-white/10 text-white border border-white/20"
                   )}
