@@ -1,5 +1,5 @@
 import { LinkIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import blogs, { Blog } from "../config/blogs";
 import PaginationControls from "./PaginationControls";
 
@@ -39,10 +39,25 @@ function paginate<T>(array: T[], pageSize: number): T[][] {
   return pages;
 }
 
+/**
+ * Memoized component for rendering the list of blogs.
+ * Prevents parent rerenders from causing unnecessary list updates.
+ */
+const BlogList = memo(function BlogList({ blogs }: { blogs: Blog[] }) {
+  return (
+    <div className="flex flex-col gap-4 w-full md:w-8/12 h-[400px] items-start overflow-hidden">
+      {blogs.map((blog) => (
+        <BlogEntry blog={blog} key={blog.url} />
+      ))}
+    </div>
+  );
+});
+
 export default function Blogs({ className }: { className?: string }) {
   // Group essays into pages
   const pages = useMemo(() => paginate(blogs, PAGE_SIZE), []);
   const [page, setPage] = useState(0);
+  const currentBlogs = pages[page] ?? [];
 
   return (
     <div className={className}>
@@ -53,11 +68,7 @@ export default function Blogs({ className }: { className?: string }) {
         Essays
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <div className="flex flex-col gap-4 w-full md:w-8/12 min-h-[400px] items-start">
-          {(pages[page] ?? []).map((blog) => (
-            <BlogEntry blog={blog} key={blog.url} />
-          ))}
-        </div>
+        <BlogList blogs={currentBlogs} />
         <PaginationControls
           currentPage={page}
           totalPages={pages.length}
