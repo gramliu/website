@@ -1,6 +1,7 @@
 import { LinkIcon } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import blogs, { Blog } from "../config/blogs";
+import PaginationControls from "./PaginationControls";
 
 interface BlogEntryProps {
   blog: Blog;
@@ -38,46 +39,9 @@ function paginate<T>(array: T[], pageSize: number): T[][] {
   return pages;
 }
 
-function PaginationControls({
-  page,
-  pages,
-  setPage,
-}: {
-  page: number;
-  pages: Blog[][];
-  setPage: (page: number) => void;
-}) {
-  return (
-    <div className="flex flex-row gap-2 ml-4 mb-10">
-      {/* Previous button */}
-      <button
-        className="flex items-center justify-center text-2xl font-black text-text-primary h-8"
-        onClick={() => setPage(Math.max(page - 1, 0))}
-        disabled={page === 0}
-        aria-label="Previous page"
-      >
-        &lt;
-      </button>
-      {/* Page number */}
-      <div className="flex items-center tracking-widest justify-center text-2xl font-light text-white w-24 h-8">
-        {page + 1}/{pages.length}
-      </div>
-      {/* Next button */}
-      <button
-        className="flex items-center justify-center text-2xl font-black text-white h-8"
-        onClick={() => setPage(Math.min(page + 1, pages.length - 1))}
-        disabled={page === pages.length - 1}
-        aria-label="Next page"
-      >
-        &gt;
-      </button>
-    </div>
-  );
-}
-
 export default function Blogs({ className }: { className?: string }) {
   // Group essays into pages
-  const pages = paginate(blogs, PAGE_SIZE);
+  const pages = useMemo(() => paginate(blogs, PAGE_SIZE), []);
   const [page, setPage] = useState(0);
 
   return (
@@ -89,10 +53,12 @@ export default function Blogs({ className }: { className?: string }) {
         Essays
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        {pages.length > 1 ? (
-          <PaginationControls page={page} pages={pages} setPage={setPage} />
-        ) : null}
-        <div className="flex flex-col gap-4 w-full md:w-8/12 h-128 items-start">
+        <PaginationControls
+          currentPage={page}
+          totalPages={pages.length}
+          onPageChange={setPage}
+        />
+        <div className="flex flex-col gap-4 w-full md:w-8/12 min-h-[400px] items-start">
           {(pages[page] ?? []).map((blog) => (
             <BlogEntry blog={blog} key={blog.url} />
           ))}
