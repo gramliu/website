@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@markdoc/markdoc": "^0.5.4",
+    "@markdoc/next.js": "^0.5.0",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
     "@next/mdx": "^13.5.6",
@@ -17,6 +19,7 @@
     "@react-three/drei": "^9.107.0",
     "@react-three/fiber": "^8.16.8",
     "@t3-oss/env-nextjs": "^0.6.1",
+    "@tailwindcss/typography": "^0.5.19",
     "@upstash/redis": "^1.22.0",
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
