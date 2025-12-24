@@ -1,7 +1,7 @@
 import Markdoc from "@markdoc/markdoc";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { GetServerSideProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import Link from "next/link";
 import React from "react";
 import { Helmet } from "react-helmet";
@@ -53,7 +53,7 @@ export default function BlogPostPage({
                 className="inline-flex items-center gap-2 text-text-faded hover:text-text-primary transition-colors mb-8 no-underline"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to blogs
+                Back to blog
               </Link>
 
               <header className="mb-12">
@@ -82,14 +82,27 @@ export default function BlogPostPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps<BlogPostPageProps> = async ({
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Generate paths for ALL blogs including drafts
+  const blogs = getAllBlogs(true);
+
+  const paths = blogs.map((blog) => ({
+    params: { slug: blog.slug },
+  }));
+
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export const getStaticProps: GetStaticProps<BlogPostPageProps> = async ({
   params,
-  query,
 }) => {
   const slug = params?.slug as string;
-  const showDrafts = query.includeDrafts === "true";
 
-  const blog = getBlogBySlug(slug, showDrafts);
+  // Get blog including drafts - all pages are statically generated
+  const blog = getBlogBySlug(slug, true);
 
   if (!blog) {
     return {

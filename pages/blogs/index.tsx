@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useMemo } from "react";
 import Layout from "../../src/components/Layout";
 import NavPill from "../../src/components/NavPill";
 import { BlogPost, getAllBlogs } from "../../src/lib/markdoc/blogs";
 
 interface BlogsPageProps {
   blogs: BlogPost[];
-  showingDrafts: boolean;
 }
 
 function BlogCard({ blog }: { blog: BlogPost }) {
@@ -57,7 +58,18 @@ function EmptyState() {
   );
 }
 
-export default function BlogsPage({ blogs, showingDrafts }: BlogsPageProps) {
+export default function BlogsPage({ blogs }: BlogsPageProps) {
+  const router = useRouter();
+  const includeDrafts = router.query.includeDrafts === "true";
+
+  // Filter blogs client-side based on query param
+  const filteredBlogs = useMemo(() => {
+    if (includeDrafts) {
+      return blogs;
+    }
+    return blogs.filter((blog) => blog.frontmatter.published);
+  }, [blogs, includeDrafts]);
+
   return (
     <Layout>
       <NavPill />
@@ -74,7 +86,7 @@ export default function BlogsPage({ blogs, showingDrafts }: BlogsPageProps) {
             <p className="text-text-faded text-center mb-12">
               Thoughts, ideas, and reflections
             </p>
-            {showingDrafts && (
+            {includeDrafts && (
               <div className="mb-8 p-3 bg-yellow-600/10 border border-yellow-600/30 rounded-lg text-center">
                 <p className="text-yellow-500 text-sm">
                   Including drafts. <Link href="/blogs" className="underline">Hide drafts</Link>
@@ -83,7 +95,7 @@ export default function BlogsPage({ blogs, showingDrafts }: BlogsPageProps) {
             )}
           </motion.div>
 
-          {blogs.length === 0 ? (
+          {filteredBlogs.length === 0 ? (
             <EmptyState />
           ) : (
             <motion.div
@@ -92,7 +104,7 @@ export default function BlogsPage({ blogs, showingDrafts }: BlogsPageProps) {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="flex flex-col gap-4"
             >
-              {blogs.map((blog) => (
+              {filteredBlogs.map((blog) => (
                 <BlogCard key={blog.slug} blog={blog} />
               ))}
             </motion.div>
@@ -103,16 +115,14 @@ export default function BlogsPage({ blogs, showingDrafts }: BlogsPageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<BlogsPageProps> = async ({
-  query,
-}) => {
-  const showDrafts = query.includeDrafts === "true";
-  const blogs = getAllBlogs(showDrafts);
+export const getStaticProps: GetStaticProps<BlogsPageProps> = async () => {
+  // Fetch all blogs including drafts at build time
+  // Filtering happens client-side based on query param
+  const blogs = getAllBlogs(true);
 
   return {
     props: {
       blogs,
-      showingDrafts: showDrafts,
     },
   };
 };
