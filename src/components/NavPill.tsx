@@ -20,7 +20,7 @@ const links: NavLink[] = [
     link: "/#portfolio",
   },
   {
-    label: "Blogs",
+    label: "Blog",
     link: "/blogs",
   },
   {
