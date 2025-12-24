@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<BlogPostPageProps> = async (
   query,
 }) => {
   const slug = params?.slug as string;
-  const showDrafts = query.showDrafts === "true";
+  const showDrafts = query.includeDrafts === "true";
 
   const blog = getBlogBySlug(slug, showDrafts);
 

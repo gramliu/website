@@ -77,7 +77,7 @@ export default function BlogsPage({ blogs, showingDrafts }: BlogsPageProps) {
             {showingDrafts && (
               <div className="mb-8 p-3 bg-yellow-600/10 border border-yellow-600/30 rounded-lg text-center">
                 <p className="text-yellow-500 text-sm">
-                  Showing drafts. <Link href="/blogs" className="underline">Hide drafts</Link>
+                  Including drafts. <Link href="/blogs" className="underline">Hide drafts</Link>
                 </p>
               </div>
             )}
@@ -106,7 +106,7 @@ export default function BlogsPage({ blogs, showingDrafts }: BlogsPageProps) {
 export const getServerSideProps: GetServerSideProps<BlogsPageProps> = async ({
   query,
 }) => {
-  const showDrafts = query.showDrafts === "true";
+  const showDrafts = query.includeDrafts === "true";
   const blogs = getAllBlogs(showDrafts);
 
   return {

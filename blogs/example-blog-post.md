@@ -13,7 +13,7 @@ This is an example blog post written in Markdoc. It demonstrates the basic struc
 
 Welcome to this example blog post! This post is configured as **unpublished** in the frontmatter, which means it won't appear on the blogs page by default.
 
-To view unpublished posts, add the `?showDrafts=true` query parameter to the URL.
+To view unpublished posts, add the `?includeDrafts=true` query parameter to the URL.
 
 ## Features
 
