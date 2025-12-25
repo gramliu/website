@@ -65,6 +65,11 @@ const blogs: Blog[] = [
     url: "https://staffeng.com/stories/michelle-bu/",
     author: "Will Larson"
   },
+  {
+    title: "Building a System for Front-End Translations",
+    url: "https://engineering.squarespace.com/blog/2018/building-a-system-for-front-end-translations",
+    author: "Dan Na"
+  },
 ];
 
 export default blogs;
