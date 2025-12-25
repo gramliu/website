@@ -70,6 +70,11 @@ const blogs: Blog[] = [
     url: "https://engineering.squarespace.com/blog/2018/building-a-system-for-front-end-translations",
     author: "Dan Na"
   },
+  {
+    title: "Six Attributes of Beautiful Systems",
+    url: "https://engineering.squarespace.com/blog/2018/six-attributes-of-beautiful-systems",
+    author: "Thomas Chau"
+  },
 ];
 
 export default blogs;
