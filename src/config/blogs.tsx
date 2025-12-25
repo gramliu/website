@@ -16,6 +16,11 @@ const blogs: Blog[] = [
     author: "Will Larson"
   },
   {
+    title: "Six Attributes of Beautiful Systems",
+    url: "https://engineering.squarespace.com/blog/2018/six-attributes-of-beautiful-systems",
+    author: "Thomas Chau"
+  },
+  {
     title: "Exit the haunted forest",
     url: "https://increment.com/software-architecture/exit-the-haunted-forest/",
     author: "John Millikin"
@@ -69,11 +74,6 @@ const blogs: Blog[] = [
     title: "Building a System for Front-End Translations",
     url: "https://engineering.squarespace.com/blog/2018/building-a-system-for-front-end-translations",
     author: "Dan Na"
-  },
-  {
-    title: "Six Attributes of Beautiful Systems",
-    url: "https://engineering.squarespace.com/blog/2018/six-attributes-of-beautiful-systems",
-    author: "Thomas Chau"
   },
 ];
 
