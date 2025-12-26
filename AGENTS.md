@@ -2,9 +2,9 @@
 
 ## Adding New Reads
 
-When adding a new read (essay/article) to the website:
+When adding a new read (blog/article) to the website:
 
-1. **Location**: Add a new entry to the essays data file located at `src/config/blogs.tsx`
+1. **Location**: Add a new entry to the blogs data file located at `src/config/blogs.tsx`
 
 2. **Entry Format**: Each entry should follow this structure:
    ```typescript
