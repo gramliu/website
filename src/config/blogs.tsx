@@ -76,7 +76,7 @@ const blogs: Blog[] = [
     author: "Dan Na"
   },
   {
-    title: "The Power of Yes If",
+    title: "The Power of Yes If (RFC Process)",
     url: "https://engineering.squarespace.com/blog/2019/the-power-of-yes-if",
     author: "Squarespace Engineering"
   },
