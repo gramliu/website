@@ -90,6 +90,11 @@ const blogs: Blog[] = [
     url: "https://adventures.nodeland.dev/archive/you-should-not-use-urlpattern-to-route-http/",
     author: "Adventures in Nodeland"
   },
+  {
+    title: "Fast and flexible observability with canonical log lines",
+    url: "https://stripe.com/blog/canonical-log-lines",
+    author: "Brandur Leach"
+  },
 ];
 
 export default blogs;
