@@ -85,6 +85,11 @@ const blogs: Blog[] = [
     url: "https://loggingsucks.com/",
     author: "Boris Tane"
   },
+  {
+    title: "You should not use URLPattern to route HTTP requests on the server",
+    url: "https://adventures.nodeland.dev/archive/you-should-not-use-urlpattern-to-route-http/",
+    author: "Adventures in Nodeland"
+  },
 ];
 
 export default blogs;
