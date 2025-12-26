@@ -54,7 +54,7 @@ const BlogList = memo(function BlogList({ blogs }: { blogs: Blog[] }) {
 });
 
 export default function Blogs({ className }: { className?: string }) {
-  // Group essays into pages
+  // Group blogs into pages
   const pages = useMemo(() => paginate(blogs, PAGE_SIZE), []);
   const [page, setPage] = useState(0);
   const currentBlogs = pages[page] ?? [];
@@ -62,10 +62,10 @@ export default function Blogs({ className }: { className?: string }) {
   return (
     <div className={className}>
       <div
-        id="essays"
+        id="blogs"
         className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
       >
-        Essays
+        Blogs
       </div>
       <div className="flex flex-col items-center justify-center p-4">
         <PaginationControls
