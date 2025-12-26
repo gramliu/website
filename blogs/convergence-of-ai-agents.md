@@ -2,7 +2,7 @@
 title: Convergence of AI Agents
 description: From a Cambrian explosion of agents to two durable endpoints—Personal AI and Business AI—and the agent-to-agent interfaces between them.
 date: 2025-12-26
-published: false
+published: true
 ---
 
 # Convergence of AI Agents
