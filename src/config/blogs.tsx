@@ -75,6 +75,11 @@ const blogs: Blog[] = [
     url: "https://engineering.squarespace.com/blog/2018/building-a-system-for-front-end-translations",
     author: "Dan Na"
   },
+  {
+    title: "The Power of Yes If (RFC Process)",
+    url: "https://engineering.squarespace.com/blog/2019/the-power-of-yes-if",
+    author: "Squarespace Engineering"
+  },
 ];
 
 export default blogs;
