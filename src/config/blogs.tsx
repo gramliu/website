@@ -80,6 +80,11 @@ const blogs: Blog[] = [
     url: "https://engineering.squarespace.com/blog/2019/the-power-of-yes-if",
     author: "Squarespace Engineering"
   },
+  {
+    title: "Logging Sucks",
+    url: "https://loggingsucks.com/",
+    author: "Boris Tane"
+  },
 ];
 
 export default blogs;
