@@ -120,6 +120,11 @@ const blogs: Blog[] = [
     url: "https://stripe.com/blog/rate-limiters",
     author: "Paul Tarjan"
   },
+  {
+    title: "Connect: behind the front-end experience",
+    url: "https://stripe.com/blog/connect-front-end-experience",
+    author: "Benjamin De Cock"
+  },
 ];
 
 export default blogs;
