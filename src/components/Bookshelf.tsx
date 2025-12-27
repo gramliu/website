@@ -6,18 +6,6 @@ import { Book } from "../server/getBooks";
 
 const animationStyle = "transition-all duration-500 ease will-change-auto";
 
-/**
- * Convert a book title to a URL-friendly anchor ID
- */
-function slugifyTitle(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "") // Remove special characters
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
-    .trim();
-}
-
 // For md and up
 function InteractiveBookshelf({ books }: { books: Book[] }) {
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -65,21 +53,10 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
               className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full opacity-40 [filter:url(#paper)]"
             />
             <h2
-              id={slugifyTitle(book.title)}
               className="text-base m-auto text-ellipsis h-64 w-[44px] font-serif line-clamp-2 align-middle leading-tight text-start"
               style={{ writingMode: "vertical-rl" }}
             >
-              <a
-                href={`#${slugifyTitle(book.title)}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Allow default anchor link behavior (scrolls to element and updates URL)
-                }}
-                className="hover:underline cursor-pointer"
-                style={{ color: "inherit", textDecoration: "none" }}
-              >
-                {book.title}
-              </a>
+              {book.title}
             </h2>
           </div>
           <div
@@ -162,7 +139,13 @@ export default function Bookshelf({
         id="bookshelf"
         className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
       >
-        Bookshelf
+        <a
+          href="#bookshelf"
+          className="hover:underline cursor-pointer"
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          Bookshelf
+        </a>
       </div>
       <svg className="invisible absolute inset-0">
         <defs>

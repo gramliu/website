@@ -71,7 +71,13 @@ export default function Blogs({ className }: { className?: string }) {
         id="blogs"
         className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
       >
-        Blogs
+        <a
+          href="#blogs"
+          className="hover:underline cursor-pointer"
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          Blogs
+        </a>
       </div>
       <div className="flex flex-col items-center justify-center p-4">
         <PaginationControls
