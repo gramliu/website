@@ -115,6 +115,11 @@ const blogs: Blog[] = [
     url: "https://blog.cloudflare.com/adopting-opentelemetry-for-our-logging-pipeline/",
     author: "Colin Douch"
   },
+  {
+    title: "Scaling your API with rate limiters",
+    url: "https://stripe.com/blog/rate-limiters",
+    author: "Paul Tarjan"
+  },
 ];
 
 export default blogs;
