@@ -26,10 +26,10 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
             }
           }}
           className={clsx(
-            "flex shrink-0 flex-row items-center outline-none",
+            "relative flex shrink-0 flex-row items-center outline-none w-[50px]",
             focusedIndex !== index &&
               "hover:-translate-y-4 focus-visible:-translate-y-4",
-            focusedIndex === index ? "basis-72" : "basis-12",
+            focusedIndex === index && "z-10",
             animationStyle
           )}
           style={{ perspective: "1000px", WebkitPerspective: "1000px" }}
@@ -61,7 +61,7 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
           </div>
           <div
             className={clsx(
-              "relative z-10 h-72 shrink-0 origin-left overflow-hidden border-gray-900 brightness-[0.80] contrast-[2.00]",
+              "absolute left-[50px] z-10 h-72 shrink-0 origin-left overflow-hidden border-gray-900 brightness-[0.80] contrast-[2.00]",
               animationStyle
             )}
             style={{
