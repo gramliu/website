@@ -81,14 +81,17 @@ interface HashBookColor extends BookColor, Record<string, unknown> {}
  * Get the foreground and background colors of a remote image
  */
 async function getImageColors(imageUrl: string): Promise<BookColor> {
-  const cachedResponse = await redisClient.hgetall<HashBookColor>(imageUrl);
-  if (cachedResponse) {
-    const { fgColor, bgColor, hasValidImage } = cachedResponse;
-    return {
-      fgColor,
-      bgColor,
-      hasValidImage: hasValidImage ?? false,
-    };
+  // Check cache if Redis is available
+  if (redisClient) {
+    const cachedResponse = await redisClient.hgetall<HashBookColor>(imageUrl);
+    if (cachedResponse) {
+      const { fgColor, bgColor, hasValidImage } = cachedResponse;
+      return {
+        fgColor,
+        bgColor,
+        hasValidImage: hasValidImage ?? false,
+      };
+    }
   }
 
   try {
@@ -108,8 +111,10 @@ async function getImageColors(imageUrl: string): Promise<BookColor> {
     const fgColor = getForegroundColor(rgb);
     const bgColor = `#${rgbHex(rgb[0], rgb[1], rgb[2])}`;
 
-    // Cache response
-    await redisClient.hset(imageUrl, { fgColor, bgColor, hasValidImage: true });
+    // Cache response if Redis is available
+    if (redisClient) {
+      await redisClient.hset(imageUrl, { fgColor, bgColor, hasValidImage: true });
+    }
 
     return {
       fgColor,
@@ -119,11 +124,14 @@ async function getImageColors(imageUrl: string): Promise<BookColor> {
   } catch (e) {
     console.error(`Failed to download image for ${imageUrl}`);
 
-    await redisClient.hset(imageUrl, {
-      fgColor: "#000",
-      bgColor: "#fff",
-      hasValidImage: false,
-    });
+    // Cache error response if Redis is available
+    if (redisClient) {
+      await redisClient.hset(imageUrl, {
+        fgColor: "#000",
+        bgColor: "#fff",
+        hasValidImage: false,
+      });
+    }
     return {
       fgColor: "#000",
       bgColor: "#fff",
