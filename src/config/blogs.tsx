@@ -105,6 +105,11 @@ const blogs: Blog[] = [
     url: "https://stripe.com/blog/api-versioning",
     author: "Brandur Leach"
   },
+  {
+    title: "Distributed Tracing",
+    url: "https://www.uber.com/en-IE/blog/distributed-tracing/",
+    author: "Uber Engineering"
+  },
 ];
 
 export default blogs;
