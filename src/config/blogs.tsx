@@ -90,6 +90,46 @@ const blogs: Blog[] = [
     url: "https://adventures.nodeland.dev/archive/you-should-not-use-urlpattern-to-route-http/",
     author: "Adventures in Nodeland"
   },
+  {
+    title: "Fast and flexible observability with canonical log lines",
+    url: "https://stripe.com/blog/canonical-log-lines",
+    author: "Brandur Leach"
+  },
+  {
+    title: "How Stripe's document databases supported 99.999% uptime with zero-downtime data migrations",
+    url: "https://stripe.com/blog/how-stripes-document-databases-supported-99.999-uptime-with-zero-downtime-data-migrations",
+    author: "Jimmy Morzaria"
+  },
+  {
+    title: "APIs as infrastructure: future-proofing Stripe with versioning",
+    url: "https://stripe.com/blog/api-versioning",
+    author: "Brandur Leach"
+  },
+  {
+    title: "Distributed Tracing",
+    url: "https://www.uber.com/en-IE/blog/distributed-tracing/",
+    author: "Uber Engineering"
+  },
+  {
+    title: "Adopting OpenTelemetry for our logging pipeline",
+    url: "https://blog.cloudflare.com/adopting-opentelemetry-for-our-logging-pipeline/",
+    author: "Colin Douch"
+  },
+  {
+    title: "Scaling your API with rate limiters",
+    url: "https://stripe.com/blog/rate-limiters",
+    author: "Paul Tarjan"
+  },
+  {
+    title: "Connect: behind the front-end experience",
+    url: "https://stripe.com/blog/connect-front-end-experience",
+    author: "Benjamin De Cock"
+  },
+  {
+    title: "Introducing Veneur: high performance and global aggregation for Datadog",
+    url: "https://stripe.com/blog/introducing-veneur-high-performance-and-global-aggregation-for-datadog",
+    author: "Cory Watson"
+  },
 ];
 
 export default blogs;
