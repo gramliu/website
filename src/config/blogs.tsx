@@ -100,6 +100,11 @@ const blogs: Blog[] = [
     url: "https://stripe.com/blog/how-stripes-document-databases-supported-99.999-uptime-with-zero-downtime-data-migrations",
     author: "Jimmy Morzaria"
   },
+  {
+    title: "APIs as infrastructure: future-proofing Stripe with versioning",
+    url: "https://stripe.com/blog/api-versioning",
+    author: "Brandur Leach"
+  },
 ];
 
 export default blogs;
