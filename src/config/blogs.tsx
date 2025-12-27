@@ -125,6 +125,11 @@ const blogs: Blog[] = [
     url: "https://stripe.com/blog/connect-front-end-experience",
     author: "Benjamin De Cock"
   },
+  {
+    title: "Introducing Veneur: high performance and global aggregation for Datadog",
+    url: "https://stripe.com/blog/introducing-veneur-high-performance-and-global-aggregation-for-datadog",
+    author: "Cory Watson"
+  },
 ];
 
 export default blogs;
