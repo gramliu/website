@@ -95,6 +95,11 @@ const blogs: Blog[] = [
     url: "https://stripe.com/blog/canonical-log-lines",
     author: "Brandur Leach"
   },
+  {
+    title: "How Stripe's document databases supported 99.999% uptime with zero-downtime data migrations",
+    url: "https://stripe.com/blog/how-stripes-document-databases-supported-99.999-uptime-with-zero-downtime-data-migrations",
+    author: "Jimmy Morzaria"
+  },
 ];
 
 export default blogs;
