@@ -1,6 +1,7 @@
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { ResearchPaper } from "../server/getPapers";
 import { LinkIcon } from "lucide-react";
+import { usePagination } from "../hooks/usePagination";
 import PaginationControls from "./PaginationControls";
 
 function PaperEntry({ paper }: { paper: ResearchPaper }) {
@@ -62,7 +63,12 @@ export default function Papers({
 }) {
   // Group papers into pages
   const pages = useMemo(() => paginate(papers, PAGE_SIZE), [papers]);
-  const [page, setPage] = useState(0);
+  
+  const { page, handlePageChange } = usePagination({
+    queryParamName: "papersPage",
+    totalPages: pages.length,
+  });
+  
   const currentPapers = pages[page] ?? [];
 
   return (
@@ -77,7 +83,7 @@ export default function Papers({
         <PaginationControls
           currentPage={page}
           totalPages={pages.length}
-          onPageChange={setPage}
+          onPageChange={handlePageChange}
           className="mb-8"
         />
         <PaperList papers={currentPapers} />

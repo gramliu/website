@@ -1,6 +1,7 @@
 import { LinkIcon } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import blogs, { Blog } from "../config/blogs";
+import { usePagination } from "../hooks/usePagination";
 import PaginationControls from "./PaginationControls";
 
 interface BlogEntryProps {
@@ -56,7 +57,12 @@ const BlogList = memo(function BlogList({ blogs }: { blogs: Blog[] }) {
 export default function Blogs({ className }: { className?: string }) {
   // Group blogs into pages
   const pages = useMemo(() => paginate(blogs, PAGE_SIZE), []);
-  const [page, setPage] = useState(0);
+  
+  const { page, handlePageChange } = usePagination({
+    queryParamName: "blogsPage",
+    totalPages: pages.length,
+  });
+  
   const currentBlogs = pages[page] ?? [];
 
   return (
@@ -71,7 +77,7 @@ export default function Blogs({ className }: { className?: string }) {
         <PaginationControls
           currentPage={page}
           totalPages={pages.length}
-          onPageChange={setPage}
+          onPageChange={handlePageChange}
           className="mb-8"
         />
         <BlogList blogs={currentBlogs} />
