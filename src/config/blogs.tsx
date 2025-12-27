@@ -110,6 +110,11 @@ const blogs: Blog[] = [
     url: "https://www.uber.com/en-IE/blog/distributed-tracing/",
     author: "Uber Engineering"
   },
+  {
+    title: "Adopting OpenTelemetry for our logging pipeline",
+    url: "https://blog.cloudflare.com/adopting-opentelemetry-for-our-logging-pipeline/",
+    author: "Colin Douch"
+  },
 ];
 
 export default blogs;
