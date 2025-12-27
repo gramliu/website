@@ -1,7 +1,7 @@
 import { LinkIcon } from "lucide-react";
-import { useRouter } from "next/router";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import blogs, { Blog } from "../config/blogs";
+import { usePagination } from "../hooks/usePagination";
 import PaginationControls from "./PaginationControls";
 
 interface BlogEntryProps {
@@ -55,45 +55,13 @@ const BlogList = memo(function BlogList({ blogs }: { blogs: Blog[] }) {
 });
 
 export default function Blogs({ className }: { className?: string }) {
-  const router = useRouter();
   // Group blogs into pages
   const pages = useMemo(() => paginate(blogs, PAGE_SIZE), []);
   
-  // Calculate initial page from query param
-  const initialPage = useMemo(() => {
-    if (!router.isReady) return 0;
-    const blogsPage = router.query.blogsPage;
-    if (typeof blogsPage === "string") {
-      const pageNum = parseInt(blogsPage, 10);
-      if (!isNaN(pageNum) && pageNum >= 0 && pageNum < pages.length) {
-        return pageNum;
-      }
-    }
-    return 0;
-  }, [router.isReady, router.query.blogsPage, pages.length]);
-  
-  const [page, setPage] = useState(initialPage);
-  
-  // Sync page state with query params when they change
-  useEffect(() => {
-    setPage(initialPage);
-  }, [initialPage]);
-  
-  // Update URL when page changes
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-    router.replace(
-      {
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          blogsPage: newPage > 0 ? newPage.toString() : undefined,
-        },
-      },
-      undefined,
-      { shallow: true }
-    );
-  };
+  const { page, handlePageChange } = usePagination({
+    queryParamName: "blogsPage",
+    totalPages: pages.length,
+  });
   
   const currentBlogs = pages[page] ?? [];
 

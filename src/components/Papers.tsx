@@ -1,7 +1,7 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { ResearchPaper } from "../server/getPapers";
 import { LinkIcon } from "lucide-react";
-import { useRouter } from "next/router";
+import { usePagination } from "../hooks/usePagination";
 import PaginationControls from "./PaginationControls";
 
 function PaperEntry({ paper }: { paper: ResearchPaper }) {
@@ -61,45 +61,13 @@ export default function Papers({
   papers: ResearchPaper[];
   className?: string;
 }) {
-  const router = useRouter();
   // Group papers into pages
   const pages = useMemo(() => paginate(papers, PAGE_SIZE), [papers]);
   
-  // Calculate initial page from query param
-  const initialPage = useMemo(() => {
-    if (!router.isReady) return 0;
-    const papersPage = router.query.papersPage;
-    if (typeof papersPage === "string") {
-      const pageNum = parseInt(papersPage, 10);
-      if (!isNaN(pageNum) && pageNum >= 0 && pageNum < pages.length) {
-        return pageNum;
-      }
-    }
-    return 0;
-  }, [router.isReady, router.query.papersPage, pages.length]);
-  
-  const [page, setPage] = useState(initialPage);
-  
-  // Sync page state with query params when they change
-  useEffect(() => {
-    setPage(initialPage);
-  }, [initialPage]);
-  
-  // Update URL when page changes
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-    router.replace(
-      {
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          papersPage: newPage > 0 ? newPage.toString() : undefined,
-        },
-      },
-      undefined,
-      { shallow: true }
-    );
-  };
+  const { page, handlePageChange } = usePagination({
+    queryParamName: "papersPage",
+    totalPages: pages.length,
+  });
   
   const currentPapers = pages[page] ?? [];
 
