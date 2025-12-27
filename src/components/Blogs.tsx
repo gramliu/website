@@ -1,5 +1,6 @@
 import { LinkIcon } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { memo, useEffect, useMemo, useState } from "react";
 import blogs, { Blog } from "../config/blogs";
 import PaginationControls from "./PaginationControls";
 
@@ -54,9 +55,46 @@ const BlogList = memo(function BlogList({ blogs }: { blogs: Blog[] }) {
 });
 
 export default function Blogs({ className }: { className?: string }) {
+  const router = useRouter();
   // Group blogs into pages
   const pages = useMemo(() => paginate(blogs, PAGE_SIZE), []);
-  const [page, setPage] = useState(0);
+  
+  // Calculate initial page from query param
+  const initialPage = useMemo(() => {
+    if (!router.isReady) return 0;
+    const blogsPage = router.query.blogsPage;
+    if (typeof blogsPage === "string") {
+      const pageNum = parseInt(blogsPage, 10);
+      if (!isNaN(pageNum) && pageNum >= 0 && pageNum < pages.length) {
+        return pageNum;
+      }
+    }
+    return 0;
+  }, [router.isReady, router.query.blogsPage, pages.length]);
+  
+  const [page, setPage] = useState(initialPage);
+  
+  // Sync page state with query params when they change
+  useEffect(() => {
+    setPage(initialPage);
+  }, [initialPage]);
+  
+  // Update URL when page changes
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          blogsPage: newPage > 0 ? newPage.toString() : undefined,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+  
   const currentBlogs = pages[page] ?? [];
 
   return (
@@ -71,7 +109,7 @@ export default function Blogs({ className }: { className?: string }) {
         <PaginationControls
           currentPage={page}
           totalPages={pages.length}
-          onPageChange={setPage}
+          onPageChange={handlePageChange}
           className="mb-8"
         />
         <BlogList blogs={currentBlogs} />
