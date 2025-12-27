@@ -130,6 +130,16 @@ const blogs: Blog[] = [
     url: "https://stripe.com/blog/introducing-veneur-high-performance-and-global-aggregation-for-datadog",
     author: "Cory Watson"
   },
+  {
+    title: "Edgar: Solving Mysteries Faster with Observability",
+    url: "https://netflixtechblog.com/edgar-solving-mysteries-faster-with-observability-e1a76302c71f",
+    author: "Netflix Technology Blog"
+  },
+  {
+    title: "Distributed Tracing: We've Been Doing It Wrong",
+    url: "https://copyconstruct.medium.com/distributed-tracing-weve-been-doing-it-wrong-39fc92a857df",
+    author: "Cindy Sridharan"
+  },
 ];
 
 export default blogs;
