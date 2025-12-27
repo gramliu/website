@@ -77,7 +77,13 @@ export default function Papers({
         id="papers"
         className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
       >
-        Papers
+        <a
+          href="#papers"
+          className="hover:underline cursor-pointer"
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          Papers
+        </a>
       </div>
       <div className="flex flex-col items-center justify-center p-4">
         <PaginationControls

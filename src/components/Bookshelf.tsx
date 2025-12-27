@@ -139,7 +139,13 @@ export default function Bookshelf({
         id="bookshelf"
         className="flex items-center justify-center text-center w-full font-bold text-3xl mb-8 mx-auto"
       >
-        Bookshelf
+        <a
+          href="#bookshelf"
+          className="hover:underline cursor-pointer"
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          Bookshelf
+        </a>
       </div>
       <svg className="invisible absolute inset-0">
         <defs>
