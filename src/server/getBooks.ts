@@ -4,8 +4,10 @@ import { getColor } from "colorthief";
 import rgbHex from "rgb-hex";
 import { redisClient } from "../lib/redis";
 
-const url =
+const readUrl =
   "https://www.goodreads.com/review/list/153517339?shelf=read&sort=date_read";
+const currentlyReadingUrl =
+  "https://www.goodreads.com/review/list/153517339?shelf=currently-reading";
 
 export interface Book {
   title: string;
@@ -17,14 +19,17 @@ export interface Book {
   hasValidImage: boolean;
 }
 
-/**
- * Get GoodReads books
- */
-export default async function getBooks(): Promise<Book[]> {
-  // if (env.NODE_ENV === "development") {
-  //   return booksCached;
-  // }
+interface BookWithoutColors {
+  title: string;
+  author: string;
+  url: string;
+  imageUrl: string;
+}
 
+/**
+ * Fetch and parse books from a Goodreads shelf URL
+ */
+async function fetchBooksFromShelf(url: string): Promise<BookWithoutColors[]> {
   const html = await axios.get(url);
   const $ = cheerio.load(html.data);
 
@@ -51,9 +56,29 @@ export default async function getBooks(): Promise<Book[]> {
     })
     .toArray();
 
+  return books;
+}
+
+/**
+ * Get GoodReads books (currently reading + read)
+ */
+export default async function getBooks(): Promise<Book[]> {
+  // if (env.NODE_ENV === "development") {
+  //   return booksCached;
+  // }
+
+  // Fetch both currently reading and read books in parallel
+  const [currentlyReadingBooks, readBooks] = await Promise.all([
+    fetchBooksFromShelf(currentlyReadingUrl),
+    fetchBooksFromShelf(readUrl),
+  ]);
+
+  // Combine with currently reading books first
+  const allBooks = [...currentlyReadingBooks, ...readBooks];
+
   // Get image colors
   const booksWithColors = await Promise.all(
-    books.map(async (book) => {
+    allBooks.map(async (book) => {
       const { fgColor, bgColor, hasValidImage } = await getImageColors(
         book.imageUrl
       );
