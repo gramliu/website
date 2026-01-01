@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import { getColor } from "colorthief";
 import rgbHex from "rgb-hex";
 import { redisClient } from "../lib/redis";
-import manualBooksData from "../../public/manualBooks.json";
+import manualBooksData from "../config/manualBooks.json";
 
 const readUrl =
   "https://www.goodreads.com/review/list/153517339?shelf=read&sort=date_read";
