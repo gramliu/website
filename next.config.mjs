@@ -23,6 +23,19 @@ const nextConfig = {
     ],
   },
   pageExtensions: ["md", "mdx", "tsx", "ts", "jsx", "js"],
+  async headers() {
+    return [
+      {
+        source: "/Gram_Liu_Resume.pdf",
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow",
+          },
+        ],
+      },
+    ];
+  },
   webpack: (config, { dev }) => {
     config.module.rules.push({
       test: /\.txt$/,
