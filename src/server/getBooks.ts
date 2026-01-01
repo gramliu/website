@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { getColor } from "colorthief";
 import rgbHex from "rgb-hex";
 import { redisClient } from "../lib/redis";
+import manualBooksData from "../../public/manualBooks.json";
 
 const readUrl =
   "https://www.goodreads.com/review/list/153517339?shelf=read&sort=date_read";
@@ -17,6 +18,14 @@ export interface Book {
   fgColor: string;
   bgColor: string;
   hasValidImage: boolean;
+}
+
+export interface ManualBook {
+  title: string;
+  imageUrl: string;
+  url?: string;
+  dateRead: string;
+  bgColor?: string;
 }
 
 interface BookWithoutColors {
@@ -60,25 +69,69 @@ async function fetchBooksFromShelf(url: string): Promise<BookWithoutColors[]> {
 }
 
 /**
- * Get GoodReads books (currently reading + read)
+ * Convert manual book entries to full Book format with colors
+ */
+async function processManualBooks(manualBooks: ManualBook[]): Promise<Book[]> {
+  // Sort manual books by dateRead (newest first)
+  const sortedManualBooks = [...manualBooks].sort(
+    (a, b) => new Date(b.dateRead).getTime() - new Date(a.dateRead).getTime()
+  );
+
+  const booksWithColors = await Promise.all(
+    sortedManualBooks.map(async (book) => {
+      // If bgColor is provided, use it; otherwise extract from image
+      if (book.bgColor) {
+        const fgColor = getForegroundColorFromHex(book.bgColor);
+        return {
+          title: book.title,
+          author: "",
+          url: book.url ?? "",
+          imageUrl: book.imageUrl,
+          fgColor,
+          bgColor: book.bgColor,
+          hasValidImage: true,
+        };
+      }
+
+      const { fgColor, bgColor, hasValidImage } = await getImageColors(
+        book.imageUrl
+      );
+      return {
+        title: book.title,
+        author: "",
+        url: book.url ?? "",
+        imageUrl: book.imageUrl,
+        fgColor,
+        bgColor,
+        hasValidImage,
+      };
+    })
+  );
+
+  return booksWithColors;
+}
+
+/**
+ * Get GoodReads books (currently reading + read) plus manual books
  */
 export default async function getBooks(): Promise<Book[]> {
   // if (env.NODE_ENV === "development") {
   //   return booksCached;
   // }
 
-  // Fetch both currently reading and read books in parallel
-  const [currentlyReadingBooks, readBooks] = await Promise.all([
+  // Fetch both currently reading and read books in parallel, plus process manual books
+  const [currentlyReadingBooks, readBooks, manualBooks] = await Promise.all([
     fetchBooksFromShelf(currentlyReadingUrl),
     fetchBooksFromShelf(readUrl),
+    processManualBooks(manualBooksData as ManualBook[]),
   ]);
 
   // Combine with currently reading books first
-  const allBooks = [...currentlyReadingBooks, ...readBooks];
+  const allGoodreadsBooks = [...currentlyReadingBooks, ...readBooks];
 
-  // Get image colors
-  const booksWithColors = await Promise.all(
-    allBooks.map(async (book) => {
+  // Get image colors for Goodreads books
+  const goodreadsBooksWithColors = await Promise.all(
+    allGoodreadsBooks.map(async (book) => {
       const { fgColor, bgColor, hasValidImage } = await getImageColors(
         book.imageUrl
       );
@@ -91,7 +144,8 @@ export default async function getBooks(): Promise<Book[]> {
     })
   );
 
-  return booksWithColors;
+  // Manual books go first (most recently read), then Goodreads books
+  return [...manualBooks, ...goodreadsBooksWithColors];
 }
 
 interface BookColor {
@@ -172,4 +226,16 @@ function getForegroundColor(rgb: [number, number, number]) {
   const [r, g, b] = rgb;
   const yiq = (r * 299 + g * 587 + b * 114) / 1000;
   return yiq >= 128 ? "#000" : "#fff";
+}
+
+/**
+ * Get the accessible foreground color from a hex background color
+ */
+function getForegroundColorFromHex(hex: string): string {
+  // Remove # if present
+  const cleanHex = hex.replace("#", "");
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+  return getForegroundColor([r, g, b]);
 }
