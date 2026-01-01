@@ -20,6 +20,12 @@ const nextConfig = {
         port: "",
         pathname: "/images/S/compressed.photo.goodreads.com/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.ctfassets.net",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   pageExtensions: ["md", "mdx", "tsx", "ts", "jsx", "js"],
