@@ -86,12 +86,12 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
               <Image
                 src={book.imageUrl}
                 alt={book.title}
-                width={128}
-                height={128}
-                className={clsx("h-full w-48 bg-cover", animationStyle)}
+                width={192}
+                height={288}
+                className={clsx("h-full w-48 object-cover", animationStyle)}
               />
             ) : (
-              <div className="h-full w-48 bg-cover" />
+              <div className="h-full w-48" />
             )}
           </div>
         </button>
@@ -114,11 +114,11 @@ function StaticBookshelf({ books }: { books: Book[] }) {
               src={book.imageUrl}
               alt={book.title}
               width={128}
-              height={128}
-              className="h-full w-auto bg-cover"
+              height={192}
+              className="h-full w-auto object-cover"
             />
           ) : (
-            <div className="h-full w-auto bg-cover" />
+            <div className="h-full w-auto" />
           )}
         </div>
       ))}
