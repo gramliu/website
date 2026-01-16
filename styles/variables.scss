@@ -1,18 +1,20 @@
-$background-color: #263238;
-$background-highlighted: #e7ecef20;
-$background-light: #314149;
-$background-light2: #526e7c;
-$divider: #49636f;
+$background-color: #ffffff;
+// Subtle hover/selection background on light theme
+$background-highlighted: #0f172a0d;
+// Light surfaces (cards, pills, panels)
+$background-light: #f1f5f9;
+$background-light2: #e2e8f0;
+$divider: #e2e8f0;
 
-$text-primary: #e6edf2;
+$text-primary: #0f172a;
 $text-secondary: #f05d5e;
-$text-faded: #a3b6c2;
+$text-faded: #475569;
 
-$text-highlight: #73ee87;
-$text-highlight1: #5bbc6b;
+$text-highlight: #16a34a;
+$text-highlight1: #15803d;
 
-$highlight: #73ee87;
-$highlightDarker: #5bbc6b;
+$highlight: #16a34a;
+$highlightDarker: #15803d;
 $errorText: #e05652;
 
 $box-shadow:

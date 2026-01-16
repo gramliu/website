@@ -86,7 +86,7 @@ export default function NavPill() {
           delay: isHome ? 0.7 : 0,
         }}
       >
-        <div className="flex justify-center border rounded-[30rem] border-gray-500 bg-bgcolor-primary p-3 pr-4 md:p-4 md:pr-5">
+        <div className="flex justify-center border rounded-[30rem] border-divider bg-bgcolor-primary p-3 pr-4 md:p-4 md:pr-5">
           <div className="flex flex-row items-center gap-2 md:gap-4">
             <Link
               href="/#home"
