@@ -140,6 +140,11 @@ const blogs: Blog[] = [
     url: "https://copyconstruct.medium.com/distributed-tracing-weve-been-doing-it-wrong-39fc92a857df",
     author: "Cindy Sridharan"
   },
+  {
+    title: "Scaling PostgreSQL to power 800 million ChatGPT users",
+    url: "https://openai.com/index/scaling-postgresql/",
+    author: "OpenAI"
+  },
 ];
 
 export default blogs;
