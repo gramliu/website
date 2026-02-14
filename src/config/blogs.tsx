@@ -145,6 +145,11 @@ const blogs: Blog[] = [
     url: "https://openai.com/index/scaling-postgresql/",
     author: "OpenAI"
   },
+  {
+    title: "Taste for Makers",
+    url: "https://paulgraham.com/taste.html",
+    author: "Paul Graham"
+  },
 ];
 
 export default blogs;
