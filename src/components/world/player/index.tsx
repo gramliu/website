@@ -26,7 +26,7 @@ const Player = forwardRef(function Player(
     rotation = [0, 0, 0],
     size = 1,
     animate = false,
-    world,
+    gameStateRef,
     interactiveMode = false,
     keyControlsRef,
   }: PlayerProps,
@@ -60,7 +60,7 @@ const Player = forwardRef(function Player(
         isMovingRef={isMovingRef}
       />
       <PlayerMotionHelper
-        world={world}
+        gameStateRef={gameStateRef}
         leftArmRef={leftArmRef}
         rightArmRef={rightArmRef}
         leftLegRef={leftLegRef}

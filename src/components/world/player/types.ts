@@ -1,14 +1,14 @@
 import type { Group } from "three";
+import type { KeyboardState } from "../../../adapters/input/keyboard";
+import type { GameState } from "../../../game/game";
 import type { CommonProps } from "../../common/types";
-import type { KeyState } from "../keycontrols";
-import type { World } from "../world";
 
 export interface PlayerProps extends CommonProps {
   animate?: boolean;
   playerRef?: React.RefObject<Group>;
-  world: World;
+  gameStateRef: React.MutableRefObject<GameState>;
   interactiveMode?: boolean;
-  keyControlsRef: React.MutableRefObject<KeyState>;
+  keyControlsRef: React.MutableRefObject<KeyboardState>;
 }
 
 export interface PlayerHelperProps {
@@ -20,8 +20,8 @@ export interface PlayerHelperProps {
 }
 
 export interface PlayerMotionHelperProps extends PlayerHelperProps {
-  world: World;
+  gameStateRef: React.MutableRefObject<GameState>;
   interactiveMode?: boolean;
   isMovingRef: React.MutableRefObject<boolean>;
-  keyControlsRef: React.MutableRefObject<KeyState>;
+  keyControlsRef: React.MutableRefObject<KeyboardState>;
 }
