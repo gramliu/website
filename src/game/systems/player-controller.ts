@@ -11,7 +11,6 @@ import {
   PLAYER_GROUND_SNAP_DISTANCE,
   PLAYER_JUMP_VELOCITY,
   PLAYER_MOVE_SPEED,
-  PLAYER_STEP_HEIGHT,
 } from "../rules/constants";
 import type { VoxelWorld } from "../world/world";
 
@@ -20,10 +19,6 @@ type Axis = "x" | "y" | "z";
 interface AxisResolution {
   amount: number;
   clipped: boolean;
-}
-
-interface HorizontalResolution extends AxisResolution {
-  stepHeightApplied: number;
 }
 
 function resolveAxis(
@@ -64,45 +59,6 @@ function resolveAxis(
   return {
     amount: amount * safeFraction,
     clipped: true,
-  };
-}
-
-function resolveHorizontalAxis(
-  world: VoxelWorld,
-  aabb: ReturnType<typeof createBodyAABB>,
-  axis: "x" | "z",
-  amount: number,
-  grounded: boolean
-): HorizontalResolution {
-  const direct = resolveAxis(world, aabb, axis, amount);
-  if (!direct.clipped || !grounded) {
-    return {
-      ...direct,
-      stepHeightApplied: 0,
-    };
-  }
-
-  const stepUp = resolveAxis(world, aabb, "y", PLAYER_STEP_HEIGHT);
-  if (stepUp.clipped) {
-    return {
-      ...direct,
-      stepHeightApplied: 0,
-    };
-  }
-
-  const raisedAabb = translateAABB(aabb, { y: stepUp.amount });
-  const stepped = resolveAxis(world, raisedAabb, axis, amount);
-  if (stepped.clipped) {
-    return {
-      ...direct,
-      stepHeightApplied: 0,
-    };
-  }
-
-  return {
-    amount: stepped.amount,
-    clipped: false,
-    stepHeightApplied: stepUp.amount,
   };
 }
 
@@ -181,40 +137,20 @@ export function simulatePlayerStep(
   const requestedZ = nextVelocity.z * dt;
   const requestedY = nextVelocity.y * dt;
 
-  const xResolution = resolveHorizontalAxis(
-    world,
-    aabb,
-    "x",
-    requestedX,
-    player.grounded
-  );
-  nextPosition.y += xResolution.stepHeightApplied;
+  const xResolution = resolveAxis(world, aabb, "x", requestedX);
   nextPosition.x += xResolution.amount;
   aabb = createBodyAABB(nextPosition, player.collider);
   if (xResolution.clipped) {
     applyAxisContact(moveResult, "x", requestedX);
     nextVelocity.x = 0;
   }
-  if (xResolution.stepHeightApplied > 0) {
-    moveResult.steppedUp = true;
-  }
 
-  const zResolution = resolveHorizontalAxis(
-    world,
-    aabb,
-    "z",
-    requestedZ,
-    player.grounded
-  );
-  nextPosition.y += zResolution.stepHeightApplied;
+  const zResolution = resolveAxis(world, aabb, "z", requestedZ);
   nextPosition.z += zResolution.amount;
   aabb = createBodyAABB(nextPosition, player.collider);
   if (zResolution.clipped) {
     applyAxisContact(moveResult, "z", requestedZ);
     nextVelocity.z = 0;
-  }
-  if (zResolution.stepHeightApplied > 0) {
-    moveResult.steppedUp = true;
   }
 
   const yResolution = resolveAxis(world, aabb, "y", requestedY);

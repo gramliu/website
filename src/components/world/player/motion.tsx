@@ -42,7 +42,10 @@ export function PlayerMotionHelper({
             keyControlsRef.current,
             previousKeyboardStateRef.current
           )
-        : createAutoplayInputFrame(gameStateRef.current.player);
+        : createAutoplayInputFrame(
+            gameStateRef.current.player,
+            gameStateRef.current.world
+          );
 
       gameStateRef.current = simulateTick(
         gameStateRef.current,

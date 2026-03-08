@@ -1,11 +1,15 @@
 import { describe, expect, it } from "bun:test";
 import { vec3 } from "./core/math/vec3";
+import { createAutoplayStepWorld } from "./fixtures/autoplay-step";
 import { createFlatFloorWorld } from "./fixtures/flat-floor";
 import { createLowCeilingWorld } from "./fixtures/low-ceiling";
 import { createStepWorld } from "./fixtures/step";
 import { createWallWorld } from "./fixtures/wall";
 import { createGameState, simulateTick } from "./game";
-import { createPlayerInputFrame } from "./systems/input";
+import {
+  createAutoplayInputFrame,
+  createPlayerInputFrame,
+} from "./systems/input";
 
 const fixedDt = 1 / 60;
 
@@ -83,7 +87,7 @@ describe("game simulation", () => {
     expect(moved.player.lastMoveResult.contactFlags.east).toBe(true);
   });
 
-  it("steps onto single-block ledges without jumping", () => {
+  it("does not climb single-block ledges without a jump input", () => {
     const initial = createGameState(createStepWorld(), vec3(1.3, 2, 2.5));
     const grounded = runSteps(initial, () => createPlayerInputFrame(), 60);
     const moved = runSteps(
@@ -95,9 +99,26 @@ describe("game simulation", () => {
       30
     );
 
-    expect(moved.player.position.x).toBeGreaterThan(2.2);
-    expect(moved.player.position.y).toBeCloseTo(2, 2);
-    expect(moved.player.grounded).toBe(true);
+    expect(moved.player.position.x).toBeLessThan(1.71);
+    expect(moved.player.position.y).toBeCloseTo(1, 2);
+    expect(moved.player.lastMoveResult.clipped.x).toBe(true);
+  });
+
+  it("lets autoplay request a jump before a one-block rise", () => {
+    const initial = createGameState(
+      createAutoplayStepWorld(),
+      vec3(2.5, 2, 1.7)
+    );
+    const grounded = runSteps(initial, () => createPlayerInputFrame(), 60);
+    const autoplayInput = createAutoplayInputFrame(
+      grounded.player,
+      grounded.world
+    );
+    const jumped = simulateTick(grounded, autoplayInput, fixedDt);
+
+    expect(autoplayInput.jumpPressed).toBe(true);
+    expect(jumped.player.velocity.y).toBeGreaterThan(0);
+    expect(jumped.player.grounded).toBe(false);
   });
 
   it("clips upward movement into low ceilings", () => {
