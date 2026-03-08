@@ -27,8 +27,6 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
           }}
           className={clsx(
             "flex shrink-0 flex-row items-center outline-none",
-            focusedIndex !== index &&
-              "hover:-translate-y-4 focus-visible:-translate-y-4",
             focusedIndex === index ? "basis-72" : "basis-12",
             animationStyle
           )}
