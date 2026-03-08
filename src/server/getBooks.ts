@@ -1,8 +1,11 @@
 import axios from "axios";
-import manualBooksData from "../config/manualBooks.json";
 import fallbackBooksData from "../../public/books.json";
+import manualBooksData from "../config/manualBooks.json";
 import { getForegroundColorFromHex, getImageColors } from "./bookColors";
-import { isGoodreadsSignInPageHtml, parseBooksFromGoodreadsHtml } from "./goodreads";
+import {
+  isGoodreadsSignInPageHtml,
+  parseBooksFromGoodreadsHtml,
+} from "./goodreads";
 
 const readUrl =
   "https://www.goodreads.com/review/list/153517339?shelf=read&sort=date_read";
@@ -153,4 +156,3 @@ export default async function getBooks(): Promise<Book[]> {
   // Manual books go first (most recently read), then Goodreads books
   return [...manualBooks, ...goodreadsBooksWithColors];
 }
-

@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { Euler } from "three";
-import { PlayerHelperProps } from "./types";
+import type { PlayerHelperProps } from "./types";
 
 export interface PlayerAnimationHelperProps
   extends Omit<PlayerHelperProps, "playerRef"> {
@@ -12,16 +12,14 @@ export interface PlayerAnimationHelperProps
 /**
  * Helper for player animations
  */
-export function PlayerAnimationHelper(
-  {
-    animate,
-    leftArmRef,
-    rightArmRef,
-    leftLegRef,
-    rightLegRef,
-    isMovingRef,
-  }: PlayerAnimationHelperProps
-) {
+export function PlayerAnimationHelper({
+  animate,
+  leftArmRef,
+  rightArmRef,
+  leftLegRef,
+  rightLegRef,
+  isMovingRef,
+}: PlayerAnimationHelperProps) {
   const limbDirection = useRef(1);
   const limbAngle = useRef(1);
 

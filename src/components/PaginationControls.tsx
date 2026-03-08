@@ -1,4 +1,3 @@
-import { cn } from "~/utils/cn";
 import {
   Pagination,
   PaginationContent,
@@ -8,6 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "~/components/ui/pagination";
+import { cn } from "~/utils/cn";
 
 interface PaginationControlsProps {
   currentPage: number;
@@ -27,33 +27,33 @@ function getPageNumbers(currentPage: number, totalPages: number): number[] {
   }
 
   const pages: number[] = [];
-  
+
   // Always show first page
   pages.push(0);
-  
+
   if (currentPage > 2) {
     pages.push(-1); // ellipsis
   }
-  
+
   // Pages around current
   const start = Math.max(1, currentPage - 1);
   const end = Math.min(totalPages - 2, currentPage + 1);
-  
+
   for (let i = start; i <= end; i++) {
     if (!pages.includes(i)) {
       pages.push(i);
     }
   }
-  
+
   if (currentPage < totalPages - 3) {
     pages.push(-1); // ellipsis
   }
-  
+
   // Always show last page
   if (!pages.includes(totalPages - 1)) {
     pages.push(totalPages - 1);
   }
-  
+
   return pages;
 }
 
@@ -74,7 +74,7 @@ export default function PaginationControls({
       <div className="text-sm text-text-faded tracking-wide">
         Page {currentPage + 1} of {totalPages}
       </div>
-      
+
       <Pagination>
         <PaginationContent className="h-10">
           <PaginationItem>
@@ -89,7 +89,9 @@ export default function PaginationControls({
           </PaginationItem>
 
           {pageNumbers.map((pageNum, index) => (
-            <PaginationItem key={pageNum === -1 ? `ellipsis-${index}` : pageNum}>
+            <PaginationItem
+              key={pageNum === -1 ? `ellipsis-${index}` : pageNum}
+            >
               {pageNum === -1 ? (
                 <PaginationEllipsis className="text-text-faded" />
               ) : (
@@ -98,7 +100,7 @@ export default function PaginationControls({
                   isActive={currentPage === pageNum}
                   className={cn(
                     "text-text-primary hover:text-white hover:bg-white/10 border-none min-w-8 md:min-w-10",
-                    currentPage === pageNum && 
+                    currentPage === pageNum &&
                       "bg-white/10 text-white border border-white/20"
                   )}
                 >
@@ -110,11 +112,14 @@ export default function PaginationControls({
 
           <PaginationItem>
             <PaginationNext
-              onClick={() => onPageChange(Math.min(currentPage + 1, totalPages - 1))}
+              onClick={() =>
+                onPageChange(Math.min(currentPage + 1, totalPages - 1))
+              }
               disabled={currentPage === totalPages - 1}
               className={cn(
                 "text-text-primary hover:text-white hover:bg-white/10 border-none",
-                currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
+                currentPage === totalPages - 1 &&
+                  "opacity-50 cursor-not-allowed"
               )}
             />
           </PaginationItem>

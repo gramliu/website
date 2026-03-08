@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function LinkIcon({ className }: { className?: string }) {
   return (
     <svg

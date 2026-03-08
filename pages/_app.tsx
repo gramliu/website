@@ -2,12 +2,8 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import "../styles/shadcn.css";
 import "../styles/global.scss";
-import {
-  Noto_Sans_Mono,
-  Open_Sans,
-  Roboto_Slab
-} from "next/font/google";
 import clsx from "clsx";
+import { Noto_Sans_Mono, Open_Sans, Roboto_Slab } from "next/font/google";
 
 const openSans = Open_Sans({
   subsets: ["latin"],

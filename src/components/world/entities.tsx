@@ -1,10 +1,13 @@
-import { MaterialTextureProps } from "../../lib/texture";
-import { Material } from "three";
+import type { Material } from "three";
+import type { MaterialTextureProps } from "../../lib/texture";
 
 const parts = ["left", "right", "top", "bottom", "front", "back"] as const;
 
-export type EntityTextureProps = Record<typeof parts[number], MaterialTextureProps>;
-export type EntityTexture = Record<typeof parts[number], Material>;
+export type EntityTextureProps = Record<
+  (typeof parts)[number],
+  MaterialTextureProps
+>;
+export type EntityTexture = Record<(typeof parts)[number], Material>;
 
 /**
  * Given a base parent folder path, return an entity texture, i.e. an array of MaterialTextureProps

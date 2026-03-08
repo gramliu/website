@@ -3,8 +3,8 @@ import Bookshelf from "../src/components/Bookshelf";
 import Layout from "../src/components/Layout";
 import NavPill from "../src/components/NavPill";
 import Papers from "../src/components/Papers";
-import getBooks, { Book } from "../src/server/getBooks";
-import getPapers, { ResearchPaper } from "../src/server/getPapers";
+import getBooks, { type Book } from "../src/server/getBooks";
+import getPapers, { type ResearchPaper } from "../src/server/getPapers";
 
 export default function BookshelfPage({
   books,

@@ -16,11 +16,11 @@ function World({
   closeUp = false,
 }: Props) {
   return (
-    <Canvas 
-      camera={{ 
-        position: [15, 10, 15], 
-        fov: closeUp ? 50 : 60 
-      }} 
+    <Canvas
+      camera={{
+        position: [15, 10, 15],
+        fov: closeUp ? 50 : 60,
+      }}
       style={{
         height: closeUp ? "900px" : "100%",
       }}

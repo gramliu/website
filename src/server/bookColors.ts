@@ -40,7 +40,11 @@ export async function getImageColors(imageUrl: string): Promise<BookColor> {
     const bgColor = `#${rgbHex(rgb[0], rgb[1], rgb[2])}`;
 
     if (redisClient) {
-      await redisClient.hset(imageUrl, { fgColor, bgColor, hasValidImage: true });
+      await redisClient.hset(imageUrl, {
+        fgColor,
+        bgColor,
+        hasValidImage: true,
+      });
     }
 
     return {

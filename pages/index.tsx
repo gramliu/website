@@ -1,7 +1,7 @@
-import { MDXProvider, MergeComponents } from "@mdx-js/react/lib";
-import { MDXComponents } from "mdx/types";
+import { MDXProvider, type MergeComponents } from "@mdx-js/react/lib";
+import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import AboutSection from "../src/components/AboutSection";
 import ActivitiesList from "../src/components/ActivitiesList";
 import Footer from "../src/components/Footer";

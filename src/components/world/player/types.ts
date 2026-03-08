@@ -1,7 +1,7 @@
-import { Group } from "three";
-import { World } from "../world";
-import { CommonProps } from "../../common/types";
-import { KeyState } from "../keycontrols";
+import type { Group } from "three";
+import type { CommonProps } from "../../common/types";
+import type { KeyState } from "../keycontrols";
+import type { World } from "../world";
 
 export interface PlayerProps extends CommonProps {
   animate?: boolean;
@@ -25,4 +25,3 @@ export interface PlayerMotionHelperProps extends PlayerHelperProps {
   isMovingRef: React.MutableRefObject<boolean>;
   keyControlsRef: React.MutableRefObject<KeyState>;
 }
-

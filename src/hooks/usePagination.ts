@@ -26,10 +26,10 @@ interface UsePaginationReturn {
 
 /**
  * Custom hook for managing pagination state with URL query parameters.
- * 
+ *
  * @param options - Configuration options for pagination
  * @returns Object containing current page and page change handler
- * 
+ *
  * @example
  * ```tsx
  * const { page, handlePageChange } = usePagination({

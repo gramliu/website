@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function RedirectIcon({ className }: { className?: string }) {
   const strokeWidth = 50;
 

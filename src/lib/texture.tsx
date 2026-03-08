@@ -1,13 +1,16 @@
-import { EntityTexture, EntityTextureProps } from "../components/world/entities";
 import { useTexture } from "@react-three/drei";
 import { useMemo } from "react";
 import {
-  Material,
+  type Material,
   MeshStandardMaterial,
-  MeshStandardMaterialParameters,
+  type MeshStandardMaterialParameters,
   RepeatWrapping,
-  Texture
+  type Texture,
 } from "three";
+import type {
+  EntityTexture,
+  EntityTextureProps,
+} from "../components/world/entities";
 
 export interface MaterialTextureProps {
   path: string;

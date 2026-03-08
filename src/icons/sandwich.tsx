@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function SandwichIcon() {
   return (
     <svg x="0px" y="0px" viewBox="0 0 100 80">

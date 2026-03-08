@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Project } from "../config/projects";
+import type { Project } from "../config/projects";
 import GitHubIcon from "../icons/github";
 import RedirectIcon from "../icons/redirect";
 import YouTubeIcon from "../icons/youtube";
@@ -18,7 +18,7 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         key="github"
       >
         <GitHubIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
-      </a>,
+      </a>
     );
   }
   if (link) {
@@ -31,7 +31,7 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         key="link"
       >
         <RedirectIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
-      </a>,
+      </a>
     );
   }
   if (video) {
@@ -44,7 +44,7 @@ function getLinks(github?: string, link?: string, video?: string): ReactNode[] {
         key="youtube"
       >
         <YouTubeIcon className="fill-text-primary stroke-text-primary h-8 w-auto transition-all hover:fill-text-highlight hover:stroke-text-highlight" />
-      </a>,
+      </a>
     );
   }
 
@@ -70,7 +70,7 @@ export default function ProjectEntry({
         "sm:grid-cols-1 sm:grid-rows-[4fr_3fr] sm:text-center",
         "sm:row-[1/1] sm:col-[1/1]",
         "grid-cols-1 grid-rows-1 justify-center mb-4 sm:mb-0",
-        "flex flex-col justify-center",
+        "flex flex-col justify-center"
       )}
     >
       <Image
@@ -93,7 +93,7 @@ export default function ProjectEntry({
         "lg:group-even:col-[1/1] lg:group-even:items-end",
         "lg:mt-0 lg:row-[1/1]",
         "sm:grid-cols-1 sm:grid-rows-[4fr_3fr] text-center",
-        "sm:row-[2/2] sm:col-[1/1] sm:mx-0 sm:mt-8",
+        "sm:row-[2/2] sm:col-[1/1] sm:mx-0 sm:mt-8"
       )}
     >
       <div className="text-4xl">{title}</div>
@@ -117,7 +117,7 @@ export default function ProjectEntry({
       className={clsx(
         "grid grid-flow-dense w-full mt-8 group lg:gap-4",
         "lg:odd:grid-cols-[4fr_3fr] lg:odd:text-start",
-        "lg:even:grid-cols-[3fr_4fr] lg:even:text-end",
+        "lg:even:grid-cols-[3fr_4fr] lg:even:text-end"
       )}
     >
       {imageContainer}

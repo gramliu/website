@@ -1,6 +1,6 @@
-import { Vector3 as R3FVector3 } from "@react-three/fiber";
+import type { Vector3 as R3FVector3 } from "@react-three/fiber";
 import { forwardRef, useRef } from "react";
-import { Group } from "three";
+import type { Group } from "three";
 import {
   playerBodyTextures,
   playerHeadTextures,
@@ -12,7 +12,7 @@ import {
 import { EntityPart } from "../entity";
 import { PlayerAnimationHelper } from "./animation";
 import { PlayerMotionHelper } from "./motion";
-import { PlayerProps } from "./types";
+import type { PlayerProps } from "./types";
 
 // Base dimensions
 const headSize: [number, number, number] = [8, 8, 8];
@@ -118,4 +118,4 @@ const Player = forwardRef(function Player(
   );
 });
 
-export default Player; 
+export default Player;
