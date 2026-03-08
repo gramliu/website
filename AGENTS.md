@@ -148,3 +148,27 @@ Here are the steps taken to test and verify the extraction methods:
 - Some sites embed author in the title tag (e.g., "Title - Author Name")
 - Always try multiple extraction methods as different sites use different formats
 - The complete extraction script combines all methods with fallbacks for maximum compatibility
+
+## Cursor Cloud specific instructions
+
+### Project overview
+
+Personal portfolio website (gramliu.com) built with **Next.js** (Pages Router) + **TypeScript**, using **Bun** as the package manager and runtime.
+
+### Key commands
+
+| Task | Command |
+|------|---------|
+| Install deps | `bun install` |
+| Dev server | `bun run dev` (starts on port 3000) |
+| Build | `bun run build` |
+| Lint | `bun run lint` (uses Biome) |
+| Lint + fix | `bun run lint:fix` |
+| Format | `bun run format` |
+
+### Notes
+
+- All environment variables (`REDIS_URL`, `REDIS_TOKEN`, `ZOTERO_API_KEY`, `GOOGLE_ANALYTICS_ID`) are **optional**. The app starts and builds fully without any `.env` file.
+- The Library page's Bookshelf section scrapes Goodreads at build/SSR time; if that fails, it falls back to `public/books.json`.
+- There are no automated test suites (no test runner configured). Validation is via lint (`biome check .`) and build.
+- The project has no Docker, no database, and no devcontainer setup.
