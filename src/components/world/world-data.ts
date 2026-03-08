@@ -1,4 +1,5 @@
-1 1 1 1 1 1 1 1 1 1
+// Keep the world definition bundler-agnostic so Next can use Turbopack by default.
+const worldData = `1 1 1 1 1 1 1 1 1 1
 1 1 1 1 1 1 1 1 1 1
 1 1 1 1 1 1 1 1 1 1
 1 1 1 1 1 1 1 1 1 1
@@ -128,4 +129,6 @@
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0`;
+
+export default worldData;
