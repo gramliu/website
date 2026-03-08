@@ -1,7 +1,7 @@
 import { MaterialTextureProps } from "../../lib/texture";
 import Block from "./block";
 import { blockMap } from "./blocks";
-import worldData from "./world.txt";
+import worldData from "./world-data";
 
 interface BlockRenderData {
   position: [number, number, number];
