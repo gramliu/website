@@ -1,6 +1,6 @@
 import type { MaterialTextureProps } from "../../lib/texture";
 
-export interface BlockType {
+export interface BlockTextureSet {
   top: MaterialTextureProps;
   side: MaterialTextureProps;
 }
@@ -27,7 +27,7 @@ function textureFromPath(
 function blockTypeFromTexture(
   top: MaterialTextureProps,
   side?: MaterialTextureProps
-): BlockType {
+): BlockTextureSet {
   return {
     top,
     side: side ?? top,
@@ -60,31 +60,40 @@ const craftingTableTextureSide = textureFromPath(
   "textures/crafting_table_side.png"
 );
 
-export const waterBlock = blockTypeFromTexture(
+export const waterBlockTextures = blockTypeFromTexture(
   waterStillTexture,
   waterFlowTexture
 );
-export const stoneBlock = blockTypeFromTexture(stoneTexture);
-export const sandBlock = blockTypeFromTexture(sandTexture);
-export const dirtBlock = blockTypeFromTexture(dirtTexture);
-export const grassBlock = blockTypeFromTexture(
+export const stoneBlockTextures = blockTypeFromTexture(stoneTexture);
+export const sandBlockTextures = blockTypeFromTexture(sandTexture);
+export const dirtBlockTextures = blockTypeFromTexture(dirtTexture);
+export const grassBlockTextures = blockTypeFromTexture(
   grassTextureTop,
   grassTextureSide
 );
-export const logBlock = blockTypeFromTexture(logTextureTop, logTextureSide);
-export const leafBlock = blockTypeFromTexture(leafTexture);
-export const craftingTableBlock = blockTypeFromTexture(
+export const logBlockTextures = blockTypeFromTexture(
+  logTextureTop,
+  logTextureSide
+);
+export const leafBlockTextures = blockTypeFromTexture(leafTexture);
+export const craftingTableBlockTextures = blockTypeFromTexture(
   craftingTableTextureTop,
   craftingTableTextureSide
 );
 
-export const blockMap: Record<string, BlockType | null> = {
-  "1": stoneBlock,
-  "2": grassBlock,
-  "3": dirtBlock,
-  "9": waterBlock,
-  "12": sandBlock,
-  "17": logBlock,
-  "18": leafBlock,
-  "58": craftingTableBlock,
+const renderableBlocks: Record<string, BlockTextureSet> = {
+  stone: stoneBlockTextures,
+  grass: grassBlockTextures,
+  dirt: dirtBlockTextures,
+  water: waterBlockTextures,
+  sand: sandBlockTextures,
+  log: logBlockTextures,
+  leaves: leafBlockTextures,
+  crafting_table: craftingTableBlockTextures,
 };
+
+export function getRenderableBlockTextures(
+  renderKey: string
+): BlockTextureSet | null {
+  return renderableBlocks[renderKey] ?? null;
+}

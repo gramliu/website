@@ -44,7 +44,7 @@ function World({
       />
       {!rotateWorld ? (
         <>
-          <OrbitControls />
+          <OrbitControls enabled={!interactiveMode} />
         </>
       ) : null}
       <Map
