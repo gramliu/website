@@ -1,11 +1,93 @@
 [
   {
+    "title": "Staff Engineer: Leadership Beyond the Management Track",
+    "author": "Larson, Will",
+    "url": "https://www.goodreads.com/book/show/56481725-staff-engineer",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1609348975l/56481725.jpg",
+    "fgColor": "#000",
+    "bgColor": "#e8e7e7",
+    "hasValidImage": true
+  },
+  {
+    "title": "Scaling People: Tactics for Management and Company Building",
+    "author": "Johnson, Claire Hughes",
+    "url": "https://www.goodreads.com/book/show/63063173-scaling-people",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1676853747l/63063173.jpg",
+    "fgColor": "#fff",
+    "bgColor": "#936f4b",
+    "hasValidImage": true
+  },
+  {
+    "title": "The Art of Doing Science and Engineering: Learning to Learn",
+    "author": "Hamming, Richard",
+    "url": "https://www.goodreads.com/book/show/53503835-the-art-of-doing-science-and-engineering",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1590610974l/53503835.jpg",
+    "fgColor": "#fff",
+    "bgColor": "#3b4334",
+    "hasValidImage": true
+  },
+  {
+    "title": "Hidden Games: The Surprising Power of Game Theory to Explain Irrational Human Behavior",
+    "author": "Yoeli, Erez",
+    "url": "https://www.goodreads.com/book/show/60753584-hidden-games",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1649135794l/60753584.jpg",
+    "fgColor": "#fff",
+    "bgColor": "#1b3235",
+    "hasValidImage": true
+  },
+  {
+    "title": "The Big Score: The Billion Dollar Story of Silicon Valley",
+    "author": "Malone, Michael S.",
+    "url": "https://www.goodreads.com/book/show/58261325-the-big-score",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1622841377l/58261325.jpg",
+    "fgColor": "#fff",
+    "bgColor": "#203264",
+    "hasValidImage": true
+  },
+  {
+    "title": "Cards on the Table (Hercule Poirot, #15)",
+    "author": "Christie, Agatha",
+    "url": "https://www.goodreads.com/book/show/16297.Cards_on_the_Table",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388208739l/16297.jpg",
+    "fgColor": "#000",
+    "bgColor": "#d27142",
+    "hasValidImage": true
+  },
+  {
+    "title": "Thinking In Systems: A Primer",
+    "author": "Meadows, Donella H.",
+    "url": "https://www.goodreads.com/book/show/3828902-thinking-in-systems",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1390169859l/3828902.jpg",
+    "fgColor": "#000",
+    "bgColor": "#dde0d4",
+    "hasValidImage": true
+  },
+  {
+    "title": "The Martian",
+    "author": "Weir, Andy",
+    "url": "https://www.goodreads.com/book/show/18401393-the-martian",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1730462983l/18401393.jpg",
+    "fgColor": "#000",
+    "bgColor": "#f08333",
+    "hasValidImage": true
+  },
+  {
+    "title": "Brave New World",
+    "author": "Huxley, Aldous",
+    "url": "https://www.goodreads.com/book/show/63255956-brave-new-world",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1667925593l/63255956.jpg",
+    "fgColor": "#fff",
+    "bgColor": "#271a19",
+    "hasValidImage": true
+  },
+  {
     "title": "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
     "author": "Clear, James",
     "url": "https://www.goodreads.com/book/show/40121378-atomic-habits",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1655988385l/40121378.jpg",
     "fgColor": "#000",
-    "bgColor": "#f4f4ea"
+    "bgColor": "#f4f4ea",
+    "hasValidImage": true
   },
   {
     "title": "The Last Lecture",
@@ -13,7 +95,8 @@
     "url": "https://www.goodreads.com/book/show/12484072-the-last-lecture",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328315003l/12484072.jpg",
     "fgColor": "#fff",
-    "bgColor": "#252325"
+    "bgColor": "#252325",
+    "hasValidImage": true
   },
   {
     "title": "At the Edge of Time: Exploring the Mysteries of Our Universe’s First Seconds (Science Essentials Book 32)",
@@ -21,7 +104,8 @@
     "url": "https://www.goodreads.com/book/show/53019316-at-the-edge-of-time",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1568402294l/53019316.jpg",
     "fgColor": "#fff",
-    "bgColor": "#1a1817"
+    "bgColor": "#1a1817",
+    "hasValidImage": true
   },
   {
     "title": "Build: An Unorthodox Guide to Making Things Worth Making",
@@ -29,7 +113,8 @@
     "url": "https://www.goodreads.com/book/show/59696349-build",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1652120231l/59696349.jpg",
     "fgColor": "#000",
-    "bgColor": "#ece7e6"
+    "bgColor": "#ece7e6",
+    "hasValidImage": true
   },
   {
     "title": "The Seven Moons of Maali Almeida",
@@ -37,7 +122,8 @@
     "url": "https://www.goodreads.com/book/show/62357957-the-seven-moons-of-maali-almeida",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1663969219l/62357957.jpg",
     "fgColor": "#fff",
-    "bgColor": "#534e82"
+    "bgColor": "#534e82",
+    "hasValidImage": true
   },
   {
     "title": "Kafka on the Shore",
@@ -45,7 +131,8 @@
     "url": "https://www.goodreads.com/book/show/6564051-kafka-on-the-shore",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1529183566l/6564051.jpg",
     "fgColor": "#fff",
-    "bgColor": "#130d14"
+    "bgColor": "#130d14",
+    "hasValidImage": true
   },
   {
     "title": "1984",
@@ -53,7 +140,8 @@
     "url": "https://www.goodreads.com/book/show/61439040-1984",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1657781256l/61439040.jpg",
     "fgColor": "#000",
-    "bgColor": "#cabebb"
+    "bgColor": "#cabebb",
+    "hasValidImage": true
   },
   {
     "title": "How to Win Friends and Influence People: Updated For the Next Generation of Leaders (Dale Carnegie Books)",
@@ -61,7 +149,8 @@
     "url": "https://www.goodreads.com/book/show/60002503-how-to-win-friends-and-influence-people",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1641117231l/60002503.jpg",
     "fgColor": "#000",
-    "bgColor": "#e5e6e8"
+    "bgColor": "#e5e6e8",
+    "hasValidImage": true
   },
   {
     "title": "Animal Farm",
@@ -69,7 +158,8 @@
     "url": "https://www.goodreads.com/book/show/61382296-animal-farm",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1656780317l/61382296.jpg",
     "fgColor": "#fff",
-    "bgColor": "#dc0625"
+    "bgColor": "#dc0625",
+    "hasValidImage": true
   },
   {
     "title": "Shoe Dog",
@@ -77,7 +167,8 @@
     "url": "https://www.goodreads.com/book/show/4030991-shoe-dog",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1456974900l/4030991.jpg",
     "fgColor": "#fff",
-    "bgColor": "#b76020"
+    "bgColor": "#b76020",
+    "hasValidImage": true
   },
   {
     "title": "The Defining Decade: Why Your Twenties Matter—And How to Make the Most of Them Now",
@@ -85,7 +176,8 @@
     "url": "https://www.goodreads.com/book/show/40603783-the-defining-decade",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1529594243l/40603783.jpg",
     "fgColor": "#000",
-    "bgColor": "#cdd0d1"
+    "bgColor": "#cdd0d1",
+    "hasValidImage": true
   },
   {
     "title": "Smaller and Smaller Circles",
@@ -93,7 +185,8 @@
     "url": "https://www.goodreads.com/book/show/59138828-smaller-and-smaller-circles",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1633307434l/59138828.jpg",
     "fgColor": "#000",
-    "bgColor": "#64bbc5"
+    "bgColor": "#64bbc5",
+    "hasValidImage": true
   },
   {
     "title": "Project Hail Mary",
@@ -101,7 +194,8 @@
     "url": "https://www.goodreads.com/book/show/54906250-project-hail-mary",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1655684120l/54906250.jpg",
     "fgColor": "#fff",
-    "bgColor": "#0d0b06"
+    "bgColor": "#0d0b06",
+    "hasValidImage": true
   },
   {
     "title": "Originals: How Non-Conformists Move the World",
@@ -109,7 +203,8 @@
     "url": "https://www.goodreads.com/book/show/25614523-originals",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1445791874l/25614523.jpg",
     "fgColor": "#000",
-    "bgColor": "#eeede8"
+    "bgColor": "#eeede8",
+    "hasValidImage": true
   },
   {
     "title": "Homo Deus: A History of Tomorrow",
@@ -117,7 +212,8 @@
     "url": "https://www.goodreads.com/book/show/31138556-homo-deus",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1468760805l/31138556.jpg",
     "fgColor": "#fff",
-    "bgColor": "#050505"
+    "bgColor": "#050505",
+    "hasValidImage": true
   },
   {
     "title": "Zero to One: Notes on Startups, or How to Build the Future",
@@ -125,15 +221,17 @@
     "url": "https://www.goodreads.com/book/show/18050143-zero-to-one",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1630663027l/18050143.jpg",
     "fgColor": "#000",
-    "bgColor": "#6e93b9"
+    "bgColor": "#6e93b9",
+    "hasValidImage": true
   },
   {
-    "title": "The Hard Thing About Hard Things: Building a Business When There Are No Easy Answers",
+    "title": "The Hard Thing About Hard Things: Building a Business When There Are No Easy Answers―Straight Talk on the Challenges of Entrepreneurship",
     "author": "Horowitz, Ben",
     "url": "https://www.goodreads.com/book/show/18176747-the-hard-thing-about-hard-things",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386609333l/18176747.jpg",
     "fgColor": "#000",
-    "bgColor": "#e76c3b"
+    "bgColor": "#e76c3b",
+    "hasValidImage": true
   },
   {
     "title": "Wanting: The Power of Mimetic Desire in Everyday Life",
@@ -141,7 +239,8 @@
     "url": "https://www.goodreads.com/book/show/54860444-wanting",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1615240502l/54860444.jpg",
     "fgColor": "#000",
-    "bgColor": "#06dacf"
+    "bgColor": "#06dacf",
+    "hasValidImage": true
   },
   {
     "title": "The Lean Startup",
@@ -149,23 +248,26 @@
     "url": "https://www.goodreads.com/book/show/10127019-the-lean-startup",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1629999184l/10127019.jpg",
     "fgColor": "#fff",
-    "bgColor": "#3b75b6"
+    "bgColor": "#3b75b6",
+    "hasValidImage": true
   },
   {
     "title": "Sapiens: A Brief History of Humankind",
     "author": "Harari, Yuval Noah",
     "url": "https://www.goodreads.com/book/show/23692271-sapiens",
-    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1595674533l/23692271.jpg",
+    "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1703329310l/23692271.jpg",
     "fgColor": "#000",
-    "bgColor": "#fbfbf3"
+    "bgColor": "#fbfbf3",
+    "hasValidImage": true
   },
   {
     "title": "A Brief History of Time",
-    "author": "Hawking, Stephen",
+    "author": "Hawking, Stephen W.",
     "url": "https://www.goodreads.com/book/show/3869.A_Brief_History_of_Time",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1333578746l/3869.jpg",
     "fgColor": "#000",
-    "bgColor": "#bebc98"
+    "bgColor": "#bebc98",
+    "hasValidImage": true
   },
   {
     "title": "El Filibusterismo (Noli Me Tangere, #2)",
@@ -173,15 +275,17 @@
     "url": "https://www.goodreads.com/book/show/323980.El_Filibusterismo",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347516505l/323980.jpg",
     "fgColor": "#fff",
-    "bgColor": "#544231"
+    "bgColor": "#544231",
+    "hasValidImage": true
   },
   {
-    "title": "Noli Me Tángere (Touch Me Not) (Noli Me Tángere, #1)",
+    "title": "Noli Me Tángere (Touch Me Not)",
     "author": "Rizal, José",
-    "url": "https://www.goodreads.com/book/show/418285.Noli_Me_T_ngere_Touch_Me_Not_",
+    "url": "https://www.goodreads.com/book/show/418285.Noli_Me_T_ngere",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1309199939l/418285.jpg",
     "fgColor": "#fff",
-    "bgColor": "#262933"
+    "bgColor": "#262933",
+    "hasValidImage": true
   },
   {
     "title": "A Little History of the World",
@@ -189,6 +293,7 @@
     "url": "https://www.goodreads.com/book/show/61505.A_Little_History_of_the_World",
     "imageUrl": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388179842l/61505.jpg",
     "fgColor": "#000",
-    "bgColor": "#e0dddc"
+    "bgColor": "#e0dddc",
+    "hasValidImage": true
   }
 ]
