@@ -2,9 +2,9 @@ import Markdoc from "@markdoc/markdoc";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { GetStaticPaths, GetStaticProps } from "next";
+import Head from "next/head";
 import Link from "next/link";
 import React from "react";
-import { Helmet } from "react-helmet";
 import Layout from "../../src/components/Layout";
 import NavPill from "../../src/components/NavPill";
 import {
@@ -35,10 +35,10 @@ export default function BlogPostPage({
 
   return (
     <>
-      <Helmet>
+      <Head>
         <title>{frontmatter.title} | Gram Liu</title>
         <meta name="description" content={frontmatter.description} />
-      </Helmet>
+      </Head>
       <Layout>
         <NavPill />
         <div className="min-h-screen pt-32 pb-16 px-4">

@@ -43,13 +43,17 @@ interface TabListProps {
 }
 
 export default function TabList({ activities, setActivity }: TabListProps) {
-  const [focusTab, setFocusTab] = useState(0);
+  const [focusedTabIndex, setFocusedTabIndex] = useState(0);
+  const activeTabIndex = Math.min(
+    Math.max(focusedTabIndex, 0),
+    Math.max(activities.length - 1, 0)
+  );
   const tabButtons = activities.map(({ title }, idx) => {
     return (
       <TabButton
         title={title}
-        focusTab={focusTab}
-        setFocusTab={setFocusTab}
+        focusTab={activeTabIndex}
+        setFocusTab={setFocusedTabIndex}
         idx={idx}
         key={idx}
       />
@@ -57,13 +61,12 @@ export default function TabList({ activities, setActivity }: TabListProps) {
   });
 
   useEffect(() => {
-    if (focusTab >= tabButtons.length) {
-      setFocusTab(tabButtons.length - 1);
-    } else if (focusTab < 0) {
-      setFocusTab(0);
+    const activeActivity = activities[activeTabIndex];
+
+    if (activeActivity) {
+      setActivity(activeActivity);
     }
-    setActivity(activities[focusTab]);
-  }, [focusTab, activities, setActivity, tabButtons.length]);
+  }, [activeTabIndex, activities, setActivity]);
 
   return (
     <div className="flex sm:flex-col w-12/12 sm:w-4/12 md:w-6/12 overflow-x-scroll sm:overflow-x-auto relative text-lg">

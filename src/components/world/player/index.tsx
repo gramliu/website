@@ -57,7 +57,6 @@ const Player = forwardRef(function Player(
         rightArmRef={rightArmRef}
         leftLegRef={leftLegRef}
         rightLegRef={rightLegRef}
-        playerRef={playerRef}
         isMovingRef={isMovingRef}
       />
       <PlayerMotionHelper

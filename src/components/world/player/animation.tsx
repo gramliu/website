@@ -1,9 +1,10 @@
 import { useFrame } from "@react-three/fiber";
-import { forwardRef, useRef } from "react";
-import { Euler, Vector3 } from "three";
+import { useRef } from "react";
+import { Euler } from "three";
 import { PlayerHelperProps } from "./types";
 
-export interface PlayerAnimationHelper extends PlayerHelperProps {
+export interface PlayerAnimationHelperProps
+  extends Omit<PlayerHelperProps, "playerRef"> {
   animate: boolean;
   isMovingRef: React.MutableRefObject<boolean>;
 }
@@ -11,22 +12,20 @@ export interface PlayerAnimationHelper extends PlayerHelperProps {
 /**
  * Helper for player animations
  */
-export const PlayerAnimationHelper = forwardRef(function PlayerAnimationHelper(
+export function PlayerAnimationHelper(
   {
     animate,
     leftArmRef,
     rightArmRef,
     leftLegRef,
     rightLegRef,
-    playerRef,
     isMovingRef,
-  }: PlayerAnimationHelper,
-  ref
+  }: PlayerAnimationHelperProps
 ) {
   const limbDirection = useRef(1);
   const limbAngle = useRef(1);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     const maxArmAngle = Math.PI / 4;
     const maxLegAngle = Math.PI / 6;
 
@@ -63,4 +62,4 @@ export const PlayerAnimationHelper = forwardRef(function PlayerAnimationHelper(
   });
 
   return null;
-}); 
+}

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Helmet } from "react-helmet";
+import Head from "next/head";
 
 interface LayoutProps {
   children: ReactNode;
@@ -8,10 +8,10 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   return (
     <>
-      <Helmet>
+      <Head>
         <meta charSet="utf-8" />
         <title>Gram Liu</title>
-      </Helmet>
+      </Head>
       <div id="children" className="h-screen w-screen">
         {children}
       </div>
