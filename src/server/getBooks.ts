@@ -4,6 +4,7 @@ import { getColor } from "colorthief";
 import rgbHex from "rgb-hex";
 import { redisClient } from "../lib/redis";
 import manualBooksData from "../config/manualBooks.json";
+import fallbackBooksData from "../../public/books.json";
 
 const readUrl =
   "https://www.goodreads.com/review/list/153517339?shelf=read&sort=date_read";
@@ -35,37 +36,61 @@ interface BookWithoutColors {
   imageUrl: string;
 }
 
+type SnapshotBook = Omit<Book, "hasValidImage"> & {
+  hasValidImage?: boolean;
+};
+
 /**
  * Fetch and parse books from a Goodreads shelf URL
  */
 async function fetchBooksFromShelf(url: string): Promise<BookWithoutColors[]> {
-  const html = await axios.get(url);
-  const $ = cheerio.load(html.data);
+  try {
+    const html = await axios.get(url);
+    const $ = cheerio.load(html.data);
 
-  const booksBody = $("#booksBody tr");
+    if ($("title").text().trim() === "Sign in") {
+      console.warn(`Goodreads returned a sign-in page for ${url}`);
+      return [];
+    }
 
-  // Construct books array
-  const books = booksBody
-    .map((_, tr) => {
-      const imageUrl =
-        $(tr)
-          .find(".cover > .value a > img")
-          .attr("src")
-          // Remove suffixes of the form ._SX75_, ._SY50_, or ._SX50_SY75_
-          ?.replace(/\.((_SX[0-9]{2})?(_SY[0-9]{2})|(_SX[0-9]{2}))_/, "") ?? "";
+    const booksBody = $("#booksBody tr");
 
-      return {
-        title: $(tr).find(".title > .value > a").attr("title")?.trim() ?? "",
-        author: $(tr).find(".author > .value > a").text().trim(),
-        url: `https://www.goodreads.com${
-          $(tr).find(".title > .value > a").attr("href") ?? ""
-        }`,
-        imageUrl,
-      };
-    })
-    .toArray();
+    // Construct books array
+    const books = booksBody
+      .map((_, tr) => {
+        const imageUrl =
+          $(tr)
+            .find(".cover > .value a > img")
+            .attr("src")
+            // Remove suffixes of the form ._SX75_, ._SY50_, or ._SX50_SY75_
+            ?.replace(
+              /\.((_SX[0-9]{2})?(_SY[0-9]{2})|(_SX[0-9]{2}))_/,
+              ""
+            ) ?? "";
 
-  return books;
+        return {
+          title: $(tr).find(".title > .value > a").attr("title")?.trim() ?? "",
+          author: $(tr).find(".author > .value > a").text().trim(),
+          url: `https://www.goodreads.com${
+            $(tr).find(".title > .value > a").attr("href") ?? ""
+          }`,
+          imageUrl,
+        };
+      })
+      .toArray();
+
+    return books;
+  } catch (error) {
+    console.error(`Failed to fetch Goodreads shelf ${url}`, error);
+    return [];
+  }
+}
+
+function normalizeSnapshotBooks(snapshotBooks: SnapshotBook[]): Book[] {
+  return snapshotBooks.map((book) => ({
+    ...book,
+    hasValidImage: book.hasValidImage ?? true,
+  }));
 }
 
 /**
@@ -128,6 +153,16 @@ export default async function getBooks(): Promise<Book[]> {
 
   // Combine with currently reading books first
   const allGoodreadsBooks = [...currentlyReadingBooks, ...readBooks];
+
+  if (allGoodreadsBooks.length === 0) {
+    console.warn(
+      "Goodreads shelves returned no books; falling back to public/books.json."
+    );
+    return [
+      ...manualBooks,
+      ...normalizeSnapshotBooks(fallbackBooksData as SnapshotBook[]),
+    ];
+  }
 
   // Get image colors for Goodreads books
   const goodreadsBooksWithColors = await Promise.all(
