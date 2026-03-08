@@ -43,11 +43,11 @@ export function usePagination({
   totalPages,
 }: UsePaginationOptions): UsePaginationReturn {
   const router = useRouter();
+  const pageParam = router.query[queryParamName];
 
   // Calculate initial page from query param
   const initialPage = useMemo(() => {
     if (!router.isReady) return 0;
-    const pageParam = router.query[queryParamName];
     if (typeof pageParam === "string") {
       const pageNum = parseInt(pageParam, 10);
       if (!isNaN(pageNum) && pageNum >= 0 && pageNum < totalPages) {
@@ -55,7 +55,7 @@ export function usePagination({
       }
     }
     return 0;
-  }, [router.isReady, router.query[queryParamName], totalPages, queryParamName]);
+  }, [pageParam, queryParamName, router.isReady, totalPages]);
 
   const [page, setPage] = useState(initialPage);
 

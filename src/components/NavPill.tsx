@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { scroller } from "react-scroll";
+import type { ReactElement } from "react";
 import LogoIcon from "../icons/logo";
 
 type NavLink = {
@@ -31,6 +31,22 @@ const links: NavLink[] = [
 
 const divider = <span className="text-divider text-2xl">|</span>;
 
+function scrollToSection(targetId: string) {
+  const target = document.getElementById(targetId);
+
+  if (!target) {
+    return;
+  }
+
+  const navHeight = 100;
+  const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
+
+  window.scrollTo({
+    top,
+    behavior: "smooth",
+  });
+}
+
 export default function NavPill() {
   const router = useRouter();
   const path = router.pathname;
@@ -53,11 +69,7 @@ export default function NavPill() {
         <div
           className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
           onClick={() => {
-            const target = linkTarget.link.substring(2);
-            scroller.scrollTo(target, {
-              smooth: true,
-              offset: -100
-            });
+            scrollToSection(linkTarget.link.substring(2));
           }}
           key={index}
         >
@@ -68,7 +80,7 @@ export default function NavPill() {
   });
   const navLinksDivided = navLinks.reduce((acc, curr) => {
     return acc.length === 0 ? [curr] : [...acc, divider, curr];
-  }, [] as JSX.Element[]);
+  }, [] as ReactElement[]);
 
   return (
     <div

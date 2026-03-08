@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { forwardRef, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { MathUtils, Vector3 } from "three";
 import { getMovementVector, KeyState } from "../keycontrols";
 import { World } from "../world";
@@ -144,10 +144,6 @@ function handleCollisions(
   const nextHeadBlock = world.getBlockAtPosition(
     nextPosition.clone().add(new Vector3(0, 2, 0))
   );
-  const blockBelow = world.getBlockAtPosition(
-    currentPosition.clone().add(new Vector3(0, -1, 0))
-  );
-  const onGround = currentPosition.y % 1 === 0 && blockBelow !== 0;
   const topBlock = world.getHighestBlockPosition(
     nextPosition.x,
     nextPosition.z
@@ -236,15 +232,14 @@ function calculateRotation(
 /**
  * Helper for player motion
  */
-export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
+export function PlayerMotionHelper(
   {
     world,
     playerRef,
     interactiveMode = false,
     isMovingRef,
     keyControlsRef,
-  }: PlayerMotionHelperProps,
-  ref
+  }: PlayerMotionHelperProps
 ) {
   // Refs
   const velocityRef = useRef(
@@ -254,7 +249,7 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
   const rotating = useRef(false);
   const isJumpingRef = useRef(false);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     const currentPosition = playerRef.current?.position;
     const currentRotation = playerRef.current?.rotation;
 
@@ -315,4 +310,4 @@ export const PlayerMotionHelper = forwardRef(function PlayerMotionHelper(
   }, [interactiveMode]);
 
   return null;
-});
+}

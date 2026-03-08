@@ -15,7 +15,7 @@ export interface EntityPartProps extends EntityPartRefProps {
   texture: EntityTextureProps;
 }
 
-export const EntityPart = forwardRef(function _EntityPart(
+export const EntityPart = forwardRef(function EntityPartInner(
   {
     position = [0, 0, 0],
     size,

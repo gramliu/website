@@ -1,5 +1,6 @@
 import { EntityTexture, EntityTextureProps } from "../components/world/entities";
 import { useTexture } from "@react-three/drei";
+import { useMemo } from "react";
 import {
   Material,
   MeshStandardMaterial,
@@ -21,38 +22,43 @@ const fallbackTexture = "textures/water_still.png";
 export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
   const texture = _texture as MaterialTextureProps;
   const texturePath = texture.path ?? fallbackTexture;
-  const textureMap = useTexture(texturePath);
+  const baseTexture = useTexture(texturePath);
 
   const repeat = texture.repeat ?? 1;
   const offsetX = texture.offset?.[0] ?? 0;
   const offsetY = texture.offset?.[1] ?? 0;
 
-  textureMap.wrapS = RepeatWrapping;
-  textureMap.wrapT = RepeatWrapping;
-  textureMap.repeat.set(repeat, repeat);
-  textureMap.offset.set(offsetX, offsetY);
-
-  return textureMap;
+  return useMemo(() => {
+    const textureMap = baseTexture.clone();
+    textureMap.wrapS = RepeatWrapping;
+    textureMap.wrapT = RepeatWrapping;
+    textureMap.repeat.set(repeat, repeat);
+    textureMap.offset.set(offsetX, offsetY);
+    textureMap.needsUpdate = true;
+    return textureMap;
+  }, [baseTexture, offsetX, offsetY, repeat]);
 }
 
 export function useTextureMaterial(texture: MaterialTextureProps): Material {
   const textureMap = useRepeatedTexture(texture);
+  return useMemo(() => {
+    const materialProps: MeshStandardMaterialParameters = {
+      map: textureMap,
+      roughness: 1,
+      metalness: 0,
+    };
 
-  const materialProps: MeshStandardMaterialParameters = {
-    map: textureMap,
-    roughness: 1,
-    metalness: 0,
-  };
+    if (texture.translucent) {
+      materialProps.transparent = true;
+      materialProps.alphaTest = 0.2;
+    }
 
-  if (texture.translucent) {
-    materialProps.transparent = true;
-    materialProps.alphaTest = 0.2;
-  }
+    if (texture.opacity) {
+      materialProps.opacity = texture.opacity;
+    }
 
-  if (texture.opacity) {
-    materialProps.opacity = texture.opacity;
-  }
-  return new MeshStandardMaterial(materialProps);
+    return new MeshStandardMaterial(materialProps);
+  }, [textureMap, texture.opacity, texture.translucent]);
 }
 
 export function useEntityTexture(

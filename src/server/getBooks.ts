@@ -235,7 +235,7 @@ async function getImageColors(imageUrl: string): Promise<BookColor> {
       bgColor,
       hasValidImage: true,
     };
-  } catch (e) {
+  } catch {
     console.error(`Failed to download image for ${imageUrl}`);
 
     // Cache error response if Redis is available

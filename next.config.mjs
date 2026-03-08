@@ -11,7 +11,6 @@ const withMdx = nextMdx({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     remotePatterns: [
       {
@@ -42,7 +41,7 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config, { dev }) => {
+  webpack: (config) => {
     config.module.rules.push({
       test: /\.txt$/,
       use: "raw-loader",

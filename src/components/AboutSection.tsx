@@ -1,4 +1,3 @@
-import { Element } from "react-scroll";
 import Bio from "./bio.mdx";
 import TapToPayAnimation from "./taptopay";
 
@@ -20,7 +19,6 @@ export default function About() {
           </a>
         </div>
         <div className="flex flex-col items-center justify-center order-1 md:order-2">
-          <Element name="about" />
           <div className="flex items-center font-bold text-3xl">About Me</div>
           <div className="w-10/12 md:w-8/12 mt-8 text-lg text-left">
             <Bio />
