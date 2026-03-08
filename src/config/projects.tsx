@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export interface Project {
   title: string;
@@ -76,8 +76,8 @@ const projects: Project[] = [
       <div>
         Journaling app where you take short audio notes throughout the day. It
         integrates with papers you&apos;ve read and past notes to provide
-        AI-generated daily and weekly reflections. It additionally generates
-        a knowledge graph to determine connections between entities you frequently
+        AI-generated daily and weekly reflections. It additionally generates a
+        knowledge graph to determine connections between entities you frequently
         talk about.
       </div>
     ),

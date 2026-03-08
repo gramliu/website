@@ -81,16 +81,16 @@ export function useKeyControls() {
 
 export function getMovementVector(keyState: KeyState): Vector3 {
   const movement = new Vector3();
-  
+
   if (keyState.forward) movement.z -= 1;
   if (keyState.backward) movement.z += 1;
   if (keyState.left) movement.x -= 1;
   if (keyState.right) movement.x += 1;
-  
+
   // Normalize the movement vector
   if (movement.length() > 0) {
     movement.normalize();
   }
-  
+
   return movement;
 }

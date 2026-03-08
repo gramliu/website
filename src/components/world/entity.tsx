@@ -1,8 +1,8 @@
+import { useFrame, type Vector3 } from "@react-three/fiber";
+import { forwardRef, type Ref } from "react";
+import type { Group } from "three";
 import { useTextureMaterial } from "../../lib/texture";
-import { Vector3, useFrame } from "@react-three/fiber";
-import { Ref, forwardRef } from "react";
-import { Group } from "three";
-import { EntityTextureProps } from "./entities";
+import type { EntityTextureProps } from "./entities";
 
 export interface EntityPartRefProps {
   size: [number, number, number];

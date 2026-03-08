@@ -1,4 +1,4 @@
-import { MaterialTextureProps } from "../../lib/texture";
+import type { MaterialTextureProps } from "../../lib/texture";
 import Block from "./block";
 import { blockMap } from "./blocks";
 import worldData from "./world-data";
@@ -86,13 +86,7 @@ export class World {
         y: block.position[1],
         z: block.position[2],
       });
-      return (
-        <Block
-          key={index}
-          {...block}
-          adjacentBlocks={adjacentBlocks}
-        />
-      );
+      return <Block key={index} {...block} adjacentBlocks={adjacentBlocks} />;
     });
   }
 

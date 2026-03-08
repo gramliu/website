@@ -46,11 +46,16 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-async function loadBooksFromArgs(args: string[]): Promise<GoodreadsBookSnapshot[]> {
+async function loadBooksFromArgs(
+  args: string[]
+): Promise<GoodreadsBookSnapshot[]> {
   const books: GoodreadsBookSnapshot[] = [];
 
   const readHtmlPath = getArgValue(args, "--read-html");
-  const currentlyReadingHtmlPath = getArgValue(args, "--currently-reading-html");
+  const currentlyReadingHtmlPath = getArgValue(
+    args,
+    "--currently-reading-html"
+  );
   const rawBooksJsonPath = getArgValue(args, "--raw-books-json");
 
   if (hasFlag(args, "--stdin-json")) {

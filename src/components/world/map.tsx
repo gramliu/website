@@ -1,9 +1,9 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
-import { Group } from "three";
+import type { Group } from "three";
+import { useKeyControls } from "./keycontrols";
 import Player from "./player";
 import { World } from "./world";
-import { useKeyControls } from "./keycontrols";
 
 const world = new World();
 const ROTATION_SPEED = 0.3;

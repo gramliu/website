@@ -1,4 +1,4 @@
-import { Activity } from "../config/activities";
+import type { Activity } from "../config/activities";
 import LinkIcon from "../icons/link";
 
 export default function ActivityEntry({

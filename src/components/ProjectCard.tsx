@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { ReactNode } from "react";
-import { Project } from "../config/projects";
+import type { ReactNode } from "react";
+import type { Project } from "../config/projects";
 import GitHubIcon from "../icons/github";
 import RedirectIcon from "../icons/redirect";
 import YouTubeIcon from "../icons/youtube";

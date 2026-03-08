@@ -1,8 +1,11 @@
-import { MaterialTextureProps, useTextureMaterial } from "../../lib/texture";
 import { useRef } from "react";
-import { Material, Mesh } from "three";
-import { CommonProps } from "../common/types";
-import { WaterBlockAdjacency } from "./world";
+import type { Material, Mesh } from "three";
+import {
+  type MaterialTextureProps,
+  useTextureMaterial,
+} from "../../lib/texture";
+import type { CommonProps } from "../common/types";
+import type { WaterBlockAdjacency } from "./world";
 
 export interface BlockProps extends CommonProps {
   texture: {
@@ -43,7 +46,7 @@ export default function Block({
           [
             shouldRenderFace("east") ? sideTexture : null,
             shouldRenderFace("west") ? sideTexture : null,
-            shouldRenderFace("top")? topTexture : null,
+            shouldRenderFace("top") ? topTexture : null,
             shouldRenderFace("bottom") ? topTexture : null,
             shouldRenderFace("south") ? sideTexture : null,
             shouldRenderFace("north") ? sideTexture : null,

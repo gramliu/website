@@ -1,0 +1,106 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": ["**", "!styles/variables.scss"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "noInteractiveElementToNoninteractiveRole": "off",
+        "noRedundantRoles": "off",
+        "noStaticElementInteractions": "off",
+        "noSvgWithoutTitle": "off",
+        "useButtonType": "off",
+        "useKeyWithClickEvents": "off",
+        "useSemanticElements": "off"
+      },
+      "complexity": {
+        "noUselessFragments": "off",
+        "noUselessTypeConstraint": "error"
+      },
+      "correctness": {
+        "noNextAsyncClientComponent": "warn",
+        "useParseIntRadix": "off",
+        "useExhaustiveDependencies": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "off",
+        "noImgElement": "warn",
+        "noUnwantedPolyfillio": "warn",
+        "useGoogleFontPreconnect": "warn"
+      },
+      "style": {
+        "noCommonJs": "error",
+        "noHeadElement": "warn",
+        "noNamespace": "error",
+        "useNodejsImportProtocol": "off",
+        "useAsConstAssertion": "error"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noDocumentImportInPage": "error",
+        "noExplicitAny": "error",
+        "noExtraNonNullAssertion": "error",
+        "noGlobalIsNan": "off",
+        "noHeadImportInDocument": "error",
+        "noMisleadingInstantiator": "error",
+        "noNonNullAssertedOptionalChain": "error",
+        "noShadowRestrictedNames": "off",
+        "noUnknownAtRules": "off",
+        "noUnsafeDeclarationMerging": "error",
+        "useGoogleFontDisplay": "warn",
+        "useNamespaceKeyword": "error"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "semicolons": "always",
+      "trailingCommas": "es5",
+      "arrowParentheses": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["*.config.js"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noCommonJs": "off"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

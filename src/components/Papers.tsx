@@ -1,7 +1,7 @@
-import { memo, useMemo } from "react";
-import { ResearchPaper } from "../server/getPapers";
 import { LinkIcon } from "lucide-react";
+import { memo, useMemo } from "react";
 import { usePagination } from "../hooks/usePagination";
+import type { ResearchPaper } from "../server/getPapers";
 import PaginationControls from "./PaginationControls";
 
 function PaperEntry({ paper }: { paper: ResearchPaper }) {
@@ -19,7 +19,7 @@ function PaperEntry({ paper }: { paper: ResearchPaper }) {
         <LinkIcon className="h-4 ml-1 opacity-80" />
       </a>
       <p className="text-sm text-text-faded">
-        {(paper.authorSummary == null || paper.authorSummary.trim() === "")
+        {paper.authorSummary == null || paper.authorSummary.trim() === ""
           ? paper.year
           : `${paper.authorSummary}, ${paper.year}`}
       </p>
@@ -44,7 +44,11 @@ function paginate<T>(array: T[], pageSize: number): T[][] {
  * Memoized component for rendering the list of papers.
  * Prevents parent rerenders from causing unnecessary list updates.
  */
-const PaperList = memo(function PaperList({ papers }: { papers: ResearchPaper[] }) {
+const PaperList = memo(function PaperList({
+  papers,
+}: {
+  papers: ResearchPaper[];
+}) {
   return (
     <div className="flex flex-col gap-4 w-full md:w-8/12 items-start">
       {papers.map((paper) => (
@@ -63,12 +67,12 @@ export default function Papers({
 }) {
   // Group papers into pages
   const pages = useMemo(() => paginate(papers, PAGE_SIZE), [papers]);
-  
+
   const { page, handlePageChange } = usePagination({
     queryParamName: "papersPage",
     totalPages: pages.length,
   });
-  
+
   const currentPapers = pages[page] ?? [];
 
   return (

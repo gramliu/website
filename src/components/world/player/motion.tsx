@@ -1,10 +1,10 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { MathUtils, Vector3 } from "three";
-import { getMovementVector, KeyState } from "../keycontrols";
-import { World } from "../world";
-import { PlayerMotionHelperProps } from "./types";
 import { inRange } from "../../../lib/utils";
+import { getMovementVector, type KeyState } from "../keycontrols";
+import type { World } from "../world";
+import type { PlayerMotionHelperProps } from "./types";
 
 // Map boundaries
 const MAP_MIN_X = 0;
@@ -232,15 +232,13 @@ function calculateRotation(
 /**
  * Helper for player motion
  */
-export function PlayerMotionHelper(
-  {
-    world,
-    playerRef,
-    interactiveMode = false,
-    isMovingRef,
-    keyControlsRef,
-  }: PlayerMotionHelperProps
-) {
+export function PlayerMotionHelper({
+  world,
+  playerRef,
+  interactiveMode = false,
+  isMovingRef,
+  keyControlsRef,
+}: PlayerMotionHelperProps) {
   // Refs
   const velocityRef = useRef(
     interactiveMode ? new Vector3() : new Vector3(0, 0, MOVEMENT_SPEED)

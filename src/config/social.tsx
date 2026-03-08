@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 import GitHubIcon from "../icons/github";
 import LinkedInIcon from "../icons/linkedin";
 import MailIcon from "../icons/mail";

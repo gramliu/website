@@ -1,14 +1,14 @@
 import Markdoc from "@markdoc/markdoc";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { GetStaticPaths, GetStaticProps } from "next";
+import type { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 import Layout from "../../src/components/Layout";
 import NavPill from "../../src/components/NavPill";
 import {
-  BlogFrontmatter,
+  type BlogFrontmatter,
   getAllBlogs,
   getBlogBySlug,
 } from "../../src/lib/markdoc/blogs";

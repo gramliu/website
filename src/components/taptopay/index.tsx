@@ -1,4 +1,9 @@
-import { MotionValue, motion, useScroll, useTransform } from "framer-motion";
+import {
+  type MotionValue,
+  motion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { useRef } from "react";
 
 function SmartphoneOutline({
@@ -302,7 +307,10 @@ export default function TapToPayAnimation() {
 
   return (
     <div ref={ref}>
-      <motion.div className="transform" style={{ rotateX, rotateY, rotateZ: 10 }}>
+      <motion.div
+        className="transform"
+        style={{ rotateX, rotateY, rotateZ: 10 }}
+      >
         <motion.div style={{ y: creditCardY }}>
           <CreditCardOutline />
         </motion.div>

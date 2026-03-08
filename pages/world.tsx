@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import World from "../src/components/world";
 import { Inter } from "next/font/google";
 import { useState } from "react";
+import World from "../src/components/world";
 
 const inter = Inter({ subsets: ["latin"] });
 

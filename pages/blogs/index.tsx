@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { GetStaticProps } from "next";
+import type { GetStaticProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import Layout from "../../src/components/Layout";
 import NavPill from "../../src/components/NavPill";
-import { BlogPost, getAllBlogs } from "../../src/lib/markdoc/blogs";
+import { type BlogPost, getAllBlogs } from "../../src/lib/markdoc/blogs";
 
 interface BlogsPageProps {
   blogs: BlogPost[];
@@ -34,7 +34,9 @@ function BlogCard({ blog }: { blog: BlogPost }) {
                 </span>
               )}
             </h2>
-            <p className="text-text-faded mt-2">{blog.frontmatter.description}</p>
+            <p className="text-text-faded mt-2">
+              {blog.frontmatter.description}
+            </p>
           </div>
           <time className="text-sm text-text-faded whitespace-nowrap">
             {formattedDate}
@@ -89,7 +91,10 @@ export default function BlogsPage({ blogs }: BlogsPageProps) {
             {includeDrafts && (
               <div className="mb-8 p-3 bg-yellow-600/10 border border-yellow-600/30 rounded-lg text-center">
                 <p className="text-yellow-500 text-sm">
-                  Including drafts. <Link href="/blogs" className="underline">Hide drafts</Link>
+                  Including drafts.{" "}
+                  <Link href="/blogs" className="underline">
+                    Hide drafts
+                  </Link>
                 </p>
               </div>
             )}
