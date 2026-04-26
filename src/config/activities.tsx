@@ -12,6 +12,13 @@ export interface Activity {
 
 const activities: Activity[] = [
   {
+    title: "Decagon",
+    url: "https://decagon.ai/",
+    dates: "Oct 2024 - Present",
+    role: "Member of Technical Staff",
+    description: ["Building"],
+  },
+  {
     title: "Stripe",
     url: "https://stripe.com/",
     dates: "July 2023 - Oct 2024",
