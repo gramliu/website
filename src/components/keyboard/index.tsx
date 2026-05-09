@@ -1,4 +1,9 @@
-import { Center, ContactShadows, OrbitControls, RoundedBox } from "@react-three/drei";
+import {
+  Center,
+  ContactShadows,
+  OrbitControls,
+  RoundedBox,
+} from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { Keycap } from "./keycap";
@@ -55,14 +60,15 @@ function usePressedKeys() {
         return;
       }
 
+      const keyCode = event.code;
       event.preventDefault();
       setPressedKeys((current) => {
-        if (current.has(event.code)) {
+        if (current.has(keyCode)) {
           return current;
         }
 
         const next = new Set(current);
-        next.add(event.code);
+        next.add(keyCode);
         return next;
       });
     };
@@ -72,14 +78,15 @@ function usePressedKeys() {
         return;
       }
 
+      const keyCode = event.code;
       event.preventDefault();
       setPressedKeys((current) => {
-        if (!current.has(event.code)) {
+        if (!current.has(keyCode)) {
           return current;
         }
 
         const next = new Set(current);
-        next.delete(event.code);
+        next.delete(keyCode);
         return next;
       });
     };

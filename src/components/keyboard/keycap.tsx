@@ -41,7 +41,11 @@ export function Keycap({
 
   return (
     <group ref={groupRef} position={[position[0], REST_Y, position[2]]}>
-      <RoundedBox args={[width, KEY_HEIGHT, depth]} radius={0.08} smoothness={4}>
+      <RoundedBox
+        args={[width, KEY_HEIGHT, depth]}
+        radius={0.08}
+        smoothness={4}
+      >
         <meshStandardMaterial
           color={pressed ? "#d6e0e4" : "#edf4f7"}
           roughness={0.65}
