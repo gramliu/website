@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import ProfilePhoto from "../../public/images/profilePhoto.jpg";
 import social from "../config/social";
+import KeyboardPreview from "./keyboard";
 import World from "./world";
 
 function HeroContent() {
@@ -106,7 +107,10 @@ export default function Hero() {
           <div>
             <World size={0.8} interactiveMode={isPlaying} closeUp />
           </div>
-          <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-32">
+          <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-10">
+            <div className="w-full max-w-[520px] px-4">
+              <KeyboardPreview />
+            </div>
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               className={clsx(
