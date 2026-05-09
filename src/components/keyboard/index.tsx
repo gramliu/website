@@ -115,7 +115,7 @@ function KeyboardScene({ pressedKeys }: { pressedKeys: Set<KeyCode> }) {
       <ambientLight intensity={0.7} />
       <directionalLight position={[0, 5, 4]} intensity={1.45} castShadow />
       <Center>
-        <group rotation={[0.16, 0, 0]}>
+        <group rotation={[Math.PI / 4, 0, 0]}>
           <RoundedBox
             args={[4.6, 0.22, 3.2]}
             radius={0.12}
@@ -171,7 +171,7 @@ export default function KeyboardPreview() {
   const pressedKeys = usePressedKeys();
 
   return (
-    <div className="h-[240px] w-full overflow-hidden rounded-2xl border border-highlight/20 bg-bgcolor-highlight/20">
+    <div className="h-[240px] w-full overflow-visible">
       <Canvas
         camera={{
           position: [0, 3.35, 5.35],

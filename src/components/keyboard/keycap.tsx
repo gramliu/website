@@ -107,8 +107,8 @@ function createKeycapBodyGeometry(
       positions,
       uvs,
       bottomPoints[i],
-      bottomPoints[next],
       topPoints[next],
+      bottomPoints[next],
       width,
       depth
     );
@@ -116,8 +116,8 @@ function createKeycapBodyGeometry(
       positions,
       uvs,
       bottomPoints[i],
-      topPoints[next],
       topPoints[i],
+      topPoints[next],
       width,
       depth
     );
