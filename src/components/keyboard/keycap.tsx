@@ -22,7 +22,7 @@ interface KeycapProps {
 
 const KEY_HEIGHT = 0.62;
 const REST_Y = 0.52;
-const PRESSED_Y = 0.18;
+const PRESSED_Y = 0.08;
 const TOP_INSET = 0.18;
 const CORNER_INSET = 0.12;
 const SIDE_COLOR = "#d2dde2";
@@ -189,8 +189,10 @@ function createLegendTexture(label: string, width: number, depth: number) {
   context.fillStyle = edge;
   context.fillRect(0, 0, canvas.width, canvas.height);
 
-  context.fillStyle = "#ff4328";
-  context.font = `800 ${label === "Space" ? 36 : 58}px Arial, sans-serif`;
+  context.shadowColor = "rgba(255, 67, 40, 0.35)";
+  context.shadowBlur = 3;
+  context.fillStyle = "#ff2f17";
+  context.font = `900 ${label === "Space" ? 44 : 72}px Arial, sans-serif`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(label, canvas.width / 2, canvas.height / 2);
@@ -199,6 +201,7 @@ function createLegendTexture(label: string, width: number, depth: number) {
   texture.colorSpace = SRGBColorSpace;
   texture.minFilter = LinearFilter;
   texture.magFilter = LinearFilter;
+  texture.needsUpdate = true;
 
   return texture;
 }
@@ -228,7 +231,7 @@ export function Keycap({
         metalness: 0.04,
       }),
       new MeshBasicMaterial({
-        color: pressed ? "#b7c0c5" : "#ffffff",
+        color: pressed ? "#7f8c93" : "#ffffff",
         map: legendTexture,
       }),
     ],

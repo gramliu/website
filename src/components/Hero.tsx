@@ -107,7 +107,7 @@ export default function Hero() {
           <div>
             <World size={0.8} interactiveMode={isPlaying} closeUp />
           </div>
-          <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-10">
+          <div className="hidden md:flex flex-col justify-start items-center text-center gap-8 pt-10">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               className={clsx(
@@ -120,7 +120,7 @@ export default function Hero() {
               {isPlaying ? "Stop playing" : "Start playing"}
             </button>
             {isPlaying ? (
-              <div className="w-full max-w-[520px] px-4">
+              <div className="w-full max-w-[520px] px-4 pt-2">
                 <KeyboardPreview />
               </div>
             ) : null}
