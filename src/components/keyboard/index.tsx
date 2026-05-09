@@ -115,7 +115,7 @@ function KeyboardScene({ pressedKeys }: { pressedKeys: Set<KeyCode> }) {
       <ambientLight intensity={0.7} />
       <directionalLight position={[0, 5, 4]} intensity={1.45} castShadow />
       <Center>
-        <group rotation={[Math.PI / 4, 0, 0]}>
+        <group rotation={[Math.PI / 6, 0, 0]}>
           <RoundedBox
             args={[4.6, 0.22, 3.9]}
             radius={0.12}
