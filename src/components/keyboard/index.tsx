@@ -27,7 +27,7 @@ const KEY_LAYOUT: KeyboardKey[] = [
   {
     code: "Space",
     label: "Space",
-    position: [0, 0, 1.08],
+    position: [0, 0, 1.42],
     width: 3.2,
     depth: 0.8,
     row: 3,
@@ -117,10 +117,10 @@ function KeyboardScene({ pressedKeys }: { pressedKeys: Set<KeyCode> }) {
       <Center>
         <group rotation={[Math.PI / 4, 0, 0]}>
           <RoundedBox
-            args={[4.6, 0.22, 3.2]}
+            args={[4.6, 0.22, 3.9]}
             radius={0.12}
             smoothness={4}
-            position={[0, 0.05, 0.08]}
+            position={[0, 0.05, 0.22]}
             receiveShadow
           >
             <meshStandardMaterial
@@ -130,10 +130,10 @@ function KeyboardScene({ pressedKeys }: { pressedKeys: Set<KeyCode> }) {
             />
           </RoundedBox>
           <RoundedBox
-            args={[4.9, 0.18, 3.5]}
+            args={[4.9, 0.18, 4.2]}
             radius={0.14}
             smoothness={4}
-            position={[0, -0.1, 0.08]}
+            position={[0, -0.1, 0.22]}
             receiveShadow
           >
             <meshStandardMaterial
