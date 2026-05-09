@@ -6,6 +6,7 @@ import {
   CanvasTexture,
   type Group,
   LinearFilter,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   SRGBColorSpace,
 } from "three";
@@ -226,11 +227,9 @@ export function Keycap({
         roughness: 0.72,
         metalness: 0.04,
       }),
-      new MeshStandardMaterial({
-        color: pressed ? "#aab5ba" : "#ffffff",
+      new MeshBasicMaterial({
+        color: pressed ? "#b7c0c5" : "#ffffff",
         map: legendTexture,
-        roughness: 0.65,
-        metalness: 0.05,
       }),
     ],
     [pressed, legendTexture]
