@@ -188,8 +188,8 @@ function createLegendTexture(label: string, width: number, depth: number) {
   context.fillStyle = edge;
   context.fillRect(0, 0, canvas.width, canvas.height);
 
-  context.fillStyle = "#ef4438";
-  context.font = `700 ${label === "Space" ? 28 : 46}px Arial, sans-serif`;
+  context.fillStyle = "#ff4328";
+  context.font = `800 ${label === "Space" ? 36 : 58}px Arial, sans-serif`;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(label, canvas.width / 2, canvas.height / 2);
@@ -227,7 +227,7 @@ export function Keycap({
         metalness: 0.04,
       }),
       new MeshStandardMaterial({
-        color: pressed ? "#9aa8ae" : "#ffffff",
+        color: pressed ? "#aab5ba" : "#ffffff",
         map: legendTexture,
         roughness: 0.65,
         metalness: 0.05,
