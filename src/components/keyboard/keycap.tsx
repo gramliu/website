@@ -13,7 +13,7 @@ interface KeycapProps {
 
 const KEY_HEIGHT = 0.36;
 const REST_Y = 0.38;
-const PRESSED_Y = 0.18;
+const PRESSED_Y = 0.06;
 
 export function Keycap({
   label,
@@ -30,7 +30,7 @@ export function Keycap({
     }
 
     const targetY = pressed ? PRESSED_Y : REST_Y;
-    const targetRotationX = pressed ? -0.08 : 0;
+    const targetRotationX = pressed ? -0.16 : 0;
     const smoothing = Math.min(1, delta * 18);
 
     groupRef.current.position.y +=
@@ -47,7 +47,7 @@ export function Keycap({
         smoothness={4}
       >
         <meshStandardMaterial
-          color={pressed ? "#d6e0e4" : "#edf4f7"}
+          color={pressed ? "#9aa8ae" : "#edf4f7"}
           roughness={0.65}
           metalness={0.05}
         />
