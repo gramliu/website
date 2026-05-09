@@ -6,6 +6,7 @@ import {
   CanvasTexture,
   type Group,
   LinearFilter,
+  MeshStandardMaterial,
   SRGBColorSpace,
 } from "three";
 
@@ -218,6 +219,22 @@ export function Keycap({
     () => createLegendTexture(label, width, depth),
     [label, width, depth]
   );
+  const materials = useMemo(
+    () => [
+      new MeshStandardMaterial({
+        color: pressed ? PRESSED_SIDE_COLOR : SIDE_COLOR,
+        roughness: 0.72,
+        metalness: 0.04,
+      }),
+      new MeshStandardMaterial({
+        color: pressed ? "#9aa8ae" : "#ffffff",
+        map: legendTexture,
+        roughness: 0.65,
+        metalness: 0.05,
+      }),
+    ],
+    [pressed, legendTexture]
+  );
 
   useFrame((_, delta) => {
     if (!groupRef.current) {
@@ -236,21 +253,12 @@ export function Keycap({
 
   return (
     <group ref={groupRef} position={[position[0], REST_Y, position[2]]}>
-      <mesh geometry={bodyGeometry} castShadow receiveShadow>
-        <meshStandardMaterial
-          attach="material-0"
-          color={pressed ? PRESSED_SIDE_COLOR : SIDE_COLOR}
-          roughness={0.72}
-          metalness={0.04}
-        />
-        <meshStandardMaterial
-          attach="material-1"
-          color={pressed ? "#9aa8ae" : "#edf4f7"}
-          map={legendTexture}
-          roughness={0.65}
-          metalness={0.05}
-        />
-      </mesh>
+      <mesh
+        geometry={bodyGeometry}
+        material={materials}
+        castShadow
+        receiveShadow
+      />
     </group>
   );
 }
