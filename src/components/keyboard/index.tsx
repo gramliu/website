@@ -16,19 +16,21 @@ interface KeyboardKey {
   position: [number, number, number];
   width?: number;
   depth?: number;
+  row?: number;
 }
 
 const KEY_LAYOUT: KeyboardKey[] = [
-  { code: "KeyW", label: "W", position: [0, 0, -1] },
-  { code: "KeyA", label: "A", position: [-1.05, 0, 0] },
-  { code: "KeyS", label: "S", position: [0, 0, 0] },
-  { code: "KeyD", label: "D", position: [1.05, 0, 0] },
+  { code: "KeyW", label: "W", position: [0, 0, -1.05], row: 1 },
+  { code: "KeyA", label: "A", position: [-1.05, 0, 0], row: 2 },
+  { code: "KeyS", label: "S", position: [0, 0, 0], row: 2 },
+  { code: "KeyD", label: "D", position: [1.05, 0, 0], row: 2 },
   {
     code: "Space",
     label: "Space",
-    position: [0, 0, 1.05],
+    position: [0, 0, 1.08],
     width: 3.2,
     depth: 0.8,
+    row: 3,
   },
 ];
 
@@ -111,9 +113,9 @@ function KeyboardScene({ pressedKeys }: { pressedKeys: Set<KeyCode> }) {
   return (
     <>
       <ambientLight intensity={0.7} />
-      <directionalLight position={[3, 5, 4]} intensity={1.4} castShadow />
+      <directionalLight position={[0, 5, 4]} intensity={1.45} castShadow />
       <Center>
-        <group rotation={[0, -0.22, 0]}>
+        <group>
           <RoundedBox
             args={[4.6, 0.22, 3.2]}
             radius={0.12}
@@ -147,6 +149,7 @@ function KeyboardScene({ pressedKeys }: { pressedKeys: Set<KeyCode> }) {
               position={key.position}
               width={key.width}
               depth={key.depth}
+              row={key.row}
               pressed={pressedKeys.has(key.code)}
             />
           ))}
@@ -171,8 +174,8 @@ export default function KeyboardPreview() {
     <div className="h-[240px] w-full overflow-hidden rounded-2xl border border-highlight/20 bg-bgcolor-highlight/20">
       <Canvas
         camera={{
-          position: [3.9, 3.2, 4.5],
-          fov: 42,
+          position: [0, 3.35, 5.35],
+          fov: 40,
         }}
         shadows
       >
