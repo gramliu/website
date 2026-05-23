@@ -10,7 +10,7 @@ export default function WorldPage() {
 
   return (
     <main className={`flex h-screen w-screen ${inter.className} relative`}>
-      <World rotateWorld={false} interactiveMode={isPlaying} />
+      <World rotateWorld={false} interactiveMode={isPlaying} showFringe />
       <button
         onClick={() => setIsPlaying(!isPlaying)}
         className={clsx(
