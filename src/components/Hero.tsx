@@ -104,7 +104,7 @@ export default function Hero() {
           id="world"
         >
           <div>
-            <World size={0.8} interactiveMode={isPlaying} closeUp />
+            <World size={0.8} interactiveMode={isPlaying} closeUp showFringe />
           </div>
           <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-32">
             <button
