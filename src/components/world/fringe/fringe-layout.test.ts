@@ -81,7 +81,7 @@ describe("computeFringeLayout", () => {
       .map((wireframe) => wireframe.y)
       .sort((a, b) => a - b);
 
-    expect(backWireframeYs).toEqual([0, 1, 2, 3, 4]);
-    expect(hasWireframe(layout, -1, 5, 0)).toBe(false);
+    expect(backWireframeYs).toEqual([0, 1, 2, 3]);
+    expect(hasWireframe(layout, -1, 4, 0)).toBe(false);
   });
 });

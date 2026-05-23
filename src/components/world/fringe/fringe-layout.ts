@@ -165,7 +165,7 @@ function addEdgeFringe(
       continue;
     }
 
-    const maxWireframeY = useGrassHeight ? topY : getWireframeMaxY(topY);
+    const maxWireframeY = getWireframeMaxY(topY);
 
     for (let row = 1; row <= wireframeRows; row++) {
       const opacity = wireframeOpacityForRow(row);
