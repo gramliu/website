@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import ProfilePhoto from "../../public/images/profilePhoto.jpg";
 import social from "../config/social";
+import { useIsDesktop } from "../hooks/useIsDesktop";
 import World from "./world";
 
 function HeroContent() {
@@ -51,6 +52,7 @@ function SocialIcons() {
 
 export default function Hero() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     const preventScroll = (e: KeyboardEvent) => {
@@ -104,7 +106,12 @@ export default function Hero() {
           id="world"
         >
           <div>
-            <World size={0.8} interactiveMode={isPlaying} closeUp showFringe />
+            <World
+              size={0.8}
+              interactiveMode={isPlaying}
+              closeUp
+              showFringe={isDesktop}
+            />
           </div>
           <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-32">
             <button
