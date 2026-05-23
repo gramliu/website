@@ -84,4 +84,21 @@ describe("computeFringeLayout", () => {
     expect(backWireframeYs).toEqual([0, 1, 2, 3]);
     expect(hasWireframe(layout, -1, 4, 0)).toBe(false);
   });
+
+  it("assigns outward vectors pointing away from world center", () => {
+    const layout = computeFringeLayout(world);
+    const bounds = world.getBounds();
+    const centerX = (bounds.min.x + bounds.max.x + 1) / 2;
+    const centerZ = (bounds.min.z + bounds.max.z + 1) / 2;
+
+    for (const tile of layout.gridTiles) {
+      const toCenterX = centerX - (tile.x + 0.5);
+      const toCenterZ = centerZ - (tile.z + 0.5);
+      const dot = tile.outward[0] * toCenterX + tile.outward[1] * toCenterZ;
+      expect(dot).toBeLessThan(0);
+      expect(tile.emissionWeight).toBe(tile.opacity);
+      expect(tile.row).toBeGreaterThanOrEqual(1);
+      expect(tile.row).toBeLessThanOrEqual(FRINGE_CONFIG.gridRows);
+    }
+  });
 });

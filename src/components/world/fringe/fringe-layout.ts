@@ -1,5 +1,6 @@
 import type { WorldBounds } from "../../../game/core/types";
 import type { VoxelWorld } from "../../../game/world/world";
+import { computeOutwardVector } from "./fringe-animation";
 
 export interface FringeWireframe {
   x: number;
@@ -12,6 +13,9 @@ export interface FringeGridTile {
   x: number;
   z: number;
   opacity: number;
+  row: number;
+  outward: [number, number];
+  emissionWeight: number;
 }
 
 export interface FringeLayout {
@@ -25,8 +29,17 @@ export const FRINGE_CONFIG = {
   gridRows: 3,
   gridY: 0,
   wireframeOpacityByRow: [1.0],
-  gridOpacityByRow: [1.0, 0.55, 0.2],
+  gridOpacityByRow: [1.0, 0.3, 0.06],
   minOpacity: 0.05,
+  dashSpeed: 0.4,
+  rowDashStagger: 0.05,
+  particleMinRow: 2,
+  particlePoolSize: 15000,
+  particlesPerSecond: 2700,
+  particleSize: 0.2,
+  particleMinLife: 0.8,
+  particleMaxLife: 1.6,
+  particleGravity: 0.2,
 } as const;
 
 type FringeAxis = "x" | "z";
@@ -88,8 +101,7 @@ function getColumnTopY(
   }
 
   return (
-    getHighestGrassY(world, x, z) ??
-    getHighestSolidExcludingLeaves(world, x, z)
+    getHighestGrassY(world, x, z) ?? getHighestSolidExcludingLeaves(world, x, z)
   );
 }
 
@@ -139,20 +151,32 @@ function addGridTile(
   gridTiles: Map<string, FringeGridTile>,
   x: number,
   z: number,
-  opacity: number
+  row: number,
+  centerX: number,
+  centerZ: number
 ): void {
+  const opacity = gridOpacityForRow(row);
   if (opacity < FRINGE_CONFIG.minOpacity) {
     return;
   }
 
-  gridTiles.set(`${x},${z}`, { x, z, opacity });
+  gridTiles.set(`${x},${z}`, {
+    x,
+    z,
+    opacity,
+    row,
+    outward: computeOutwardVector(x, z, centerX, centerZ),
+    emissionWeight: opacity,
+  });
 }
 
 function addEdgeFringe(
   world: VoxelWorld,
   wireframes: Map<string, FringeWireframe>,
   gridTiles: Map<string, FringeGridTile>,
-  config: EdgeFringeConfig
+  config: EdgeFringeConfig,
+  centerX: number,
+  centerZ: number
 ): void {
   const { wireframeRows, gridRows } = FRINGE_CONFIG;
   const { axis, sign, anchor, iterateMin, iterateMax, useGrassHeight } = config;
@@ -178,11 +202,10 @@ function addEdgeFringe(
     }
 
     for (let row = 1; row <= gridRows; row++) {
-      const opacity = gridOpacityForRow(row);
       const outward = outwardCoord(anchor, sign, wireframeRows + row);
       const gx = axis === "x" ? outward : x;
       const gz = axis === "z" ? outward : z;
-      addGridTile(gridTiles, gx, gz, opacity);
+      addGridTile(gridTiles, gx, gz, row, centerX, centerZ);
     }
   }
 }
@@ -191,7 +214,9 @@ function addCornerFringe(
   gridTiles: Map<string, FringeGridTile>,
   signX: FringeSign,
   signZ: FringeSign,
-  bounds: WorldBounds
+  bounds: WorldBounds,
+  centerX: number,
+  centerZ: number
 ): void {
   const { wireframeRows, gridRows } = FRINGE_CONFIG;
   const anchorX = signX === 1 ? bounds.max.x : bounds.min.x;
@@ -204,70 +229,105 @@ function addCornerFringe(
         gridTiles,
         outwardCoord(anchorX, signX, wireframeRows + xRow),
         outwardCoord(anchorZ, signZ, wireframeRows + zRow),
-        gridOpacityForRow(row)
+        row,
+        centerX,
+        centerZ
       );
     }
   }
 
   for (let row = 1; row <= gridRows; row++) {
-    const opacity = gridOpacityForRow(row);
     addGridTile(
       gridTiles,
       outwardCoord(anchorX, signX, wireframeRows + row),
       outwardCoord(anchorZ, signZ, wireframeRows),
-      opacity
+      row,
+      centerX,
+      centerZ
     );
     addGridTile(
       gridTiles,
       outwardCoord(anchorX, signX, wireframeRows),
       outwardCoord(anchorZ, signZ, wireframeRows + row),
-      opacity
+      row,
+      centerX,
+      centerZ
     );
   }
 }
 
 export function computeFringeLayout(world: VoxelWorld): FringeLayout {
   const bounds = world.getBounds();
+  const centerX = (bounds.min.x + bounds.max.x + 1) / 2;
+  const centerZ = (bounds.min.z + bounds.max.z + 1) / 2;
   const wireframes = new Map<string, FringeWireframe>();
   const gridTiles = new Map<string, FringeGridTile>();
 
-  addEdgeFringe(world, wireframes, gridTiles, {
-    axis: "x",
-    sign: 1,
-    anchor: bounds.max.x,
-    iterateMin: bounds.min.z,
-    iterateMax: bounds.max.z,
-    useGrassHeight: false,
-  });
-  addEdgeFringe(world, wireframes, gridTiles, {
-    axis: "x",
-    sign: -1,
-    anchor: bounds.min.x,
-    iterateMin: bounds.min.z,
-    iterateMax: bounds.max.z,
-    useGrassHeight: true,
-  });
-  addEdgeFringe(world, wireframes, gridTiles, {
-    axis: "z",
-    sign: 1,
-    anchor: bounds.max.z,
-    iterateMin: bounds.min.x,
-    iterateMax: bounds.max.x,
-    useGrassHeight: false,
-  });
-  addEdgeFringe(world, wireframes, gridTiles, {
-    axis: "z",
-    sign: -1,
-    anchor: bounds.min.z,
-    iterateMin: bounds.min.x,
-    iterateMax: bounds.max.x,
-    useGrassHeight: true,
-  });
+  addEdgeFringe(
+    world,
+    wireframes,
+    gridTiles,
+    {
+      axis: "x",
+      sign: 1,
+      anchor: bounds.max.x,
+      iterateMin: bounds.min.z,
+      iterateMax: bounds.max.z,
+      useGrassHeight: false,
+    },
+    centerX,
+    centerZ
+  );
+  addEdgeFringe(
+    world,
+    wireframes,
+    gridTiles,
+    {
+      axis: "x",
+      sign: -1,
+      anchor: bounds.min.x,
+      iterateMin: bounds.min.z,
+      iterateMax: bounds.max.z,
+      useGrassHeight: true,
+    },
+    centerX,
+    centerZ
+  );
+  addEdgeFringe(
+    world,
+    wireframes,
+    gridTiles,
+    {
+      axis: "z",
+      sign: 1,
+      anchor: bounds.max.z,
+      iterateMin: bounds.min.x,
+      iterateMax: bounds.max.x,
+      useGrassHeight: false,
+    },
+    centerX,
+    centerZ
+  );
+  addEdgeFringe(
+    world,
+    wireframes,
+    gridTiles,
+    {
+      axis: "z",
+      sign: -1,
+      anchor: bounds.min.z,
+      iterateMin: bounds.min.x,
+      iterateMax: bounds.max.x,
+      useGrassHeight: true,
+    },
+    centerX,
+    centerZ
+  );
 
-  addCornerFringe(gridTiles, 1, 1, bounds);
-  addCornerFringe(gridTiles, -1, 1, bounds);
-  addCornerFringe(gridTiles, 1, -1, bounds);
-  addCornerFringe(gridTiles, -1, -1, bounds);
+  addCornerFringe(gridTiles, 1, 1, bounds, centerX, centerZ);
+  addCornerFringe(gridTiles, -1, 1, bounds, centerX, centerZ);
+  addCornerFringe(gridTiles, 1, -1, bounds, centerX, centerZ);
+  addCornerFringe(gridTiles, -1, -1, bounds, centerX, centerZ);
 
   return {
     wireframes: Array.from(wireframes.values()),
