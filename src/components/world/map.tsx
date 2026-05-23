@@ -7,6 +7,7 @@ import { vec3 } from "../../game/core/math/vec3";
 import { createGameState, type GameState } from "../../game/game";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
+import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
 import worldData from "./world-data";
 
@@ -23,6 +24,7 @@ interface Props {
   size?: number;
   rotateWorld?: boolean;
   interactiveMode?: boolean;
+  showFringe?: boolean;
 }
 
 /**
@@ -32,6 +34,7 @@ export default function Map({
   size = 1,
   rotateWorld,
   interactiveMode = false,
+  showFringe = false,
 }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
@@ -104,6 +107,7 @@ export default function Map({
     <group ref={worldRef} scale={[size, size, size]}>
       <group position={[-4.5, 0, -4.5]}>
         <WorldRenderer world={world} />
+        {showFringe ? <FringeRenderer world={world} /> : null}
         <Player
           position={DEFAULT_PLAYER_POSITION}
           animate={!interactiveMode}

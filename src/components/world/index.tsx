@@ -7,6 +7,7 @@ interface Props {
   rotateWorld?: boolean;
   interactiveMode?: boolean;
   closeUp?: boolean;
+  showFringe?: boolean;
 }
 
 function World({
@@ -14,6 +15,7 @@ function World({
   rotateWorld = true,
   interactiveMode = false,
   closeUp = false,
+  showFringe = false,
 }: Props) {
   return (
     <Canvas
@@ -51,6 +53,7 @@ function World({
         size={size}
         rotateWorld={rotateWorld}
         interactiveMode={interactiveMode}
+        showFringe={showFringe}
       />
     </Canvas>
   );
