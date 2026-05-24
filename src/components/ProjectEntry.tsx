@@ -99,8 +99,13 @@ export default function ProjectEntry({
     >
       <div className="text-4xl">{title}</div>
       <div className="text-text-faded text-xl">{subtitle}</div>
-      <div className="mt-4 p-4 shadow-2xl bg-bgcolor-light rounded-sm lg:group-odd:text-start lg:group-even:text-end text-start">
-        {description}
+      <div className="mt-4 shadow-2xl bg-bgcolor-light rounded-sm flex flex-col lg:group-odd:text-start lg:group-even:text-end text-start">
+        <div className="p-4">{description}</div>
+        {year != null && (
+          <div className="text-text-highlight font-bold text-xl px-4 py-2 border-t border-text-faded/30 mt-auto">
+            {year}
+          </div>
+        )}
       </div>
       <div className="mt-4 flex justify-evenly flex-wrap gap-3">
         {tags.map((tag, index) => (
@@ -110,11 +115,6 @@ export default function ProjectEntry({
         ))}
       </div>
       <div className="flex flex-row justify-evenly mt-2">{links}</div>
-      {year != null && (
-        <div className="text-text-highlight font-bold text-xl mt-2 lg:group-odd:text-start lg:group-even:text-end text-center">
-          {year}
-        </div>
-      )}
     </div>
   );
 
