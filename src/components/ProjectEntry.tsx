@@ -62,6 +62,7 @@ export default function ProjectEntry({
   image,
   imageHeight,
   imageWidth,
+  year,
 }: Project) {
   const imageContainer = (
     <div
@@ -109,6 +110,11 @@ export default function ProjectEntry({
         ))}
       </div>
       <div className="flex flex-row justify-evenly mt-2">{links}</div>
+      {year != null && (
+        <div className="text-text-highlight font-bold text-xl mt-2 lg:group-odd:text-start lg:group-even:text-end text-center">
+          {year}
+        </div>
+      )}
     </div>
   );
 
