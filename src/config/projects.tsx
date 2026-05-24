@@ -81,7 +81,7 @@ const projects: Project[] = [
         talk about.
       </div>
     ),
-    year: 2022,
+    year: 2024,
   },
 ];
 
