@@ -31,14 +31,25 @@ export function randomPointOnTileEdge(
   }
 }
 
-export function pickWeightedTile(tiles: FringeGridTile[]): FringeGridTile {
-  const totalWeight = tiles.reduce((sum, tile) => sum + tile.emissionWeight, 0);
+export function pickWeightedTile(
+  tiles: FringeGridTile[],
+  weights?: number[]
+): FringeGridTile | null {
+  const totalWeight = weights
+    ? weights.reduce((sum, weight) => sum + weight, 0)
+    : tiles.reduce((sum, tile) => sum + tile.emissionWeight, 0);
+
+  if (totalWeight <= 0) {
+    return null;
+  }
+
   let roll = Math.random() * totalWeight;
 
-  for (const tile of tiles) {
-    roll -= tile.emissionWeight;
+  for (let i = 0; i < tiles.length; i++) {
+    const weight = weights ? weights[i] : tiles[i].emissionWeight;
+    roll -= weight;
     if (roll <= 0) {
-      return tile;
+      return tiles[i];
     }
   }
 

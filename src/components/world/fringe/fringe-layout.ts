@@ -18,10 +18,17 @@ export interface FringeGridTile {
   emissionWeight: number;
 }
 
+export interface FringeFocus {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export interface FringeLayout {
   wireframes: FringeWireframe[];
   gridTiles: FringeGridTile[];
   gridY: number;
+  focus: FringeFocus;
 }
 
 export const FRINGE_CONFIG = {
@@ -32,12 +39,33 @@ export const FRINGE_CONFIG = {
   gridOpacityByRow: [1.0, 0.3, 0.06],
   minOpacity: 0.05,
   particleMinRow: 2,
-  particlePoolSize: 15000,
-  particlesPerSecond: 2700,
+  particlePoolSize: 12000,
+  particlesPerSecond: 2160,
   particleSize: 0.2,
   particleMinLife: 0.8,
   particleMaxLife: 1.6,
   particleGravity: 0.2,
+  lineFade: {
+    backFadeStart: 0.35,
+    backFadeEnd: -0.15,
+    lateralInner: 2.0,
+    lateralOuter: 8.0,
+  },
+  wireframeFade: {
+    backFadeStart: 0.35,
+    backFadeEnd: -0.15,
+    lateralInner: 0.5,
+    lateralOuter: 4.0,
+    radialInner: 4.5,
+    radialOuter: 6.5,
+  },
+  particleFade: {
+    backFadeStart: 0.35,
+    backFadeEnd: -0.15,
+    lateralInner: 1.7,
+    lateralOuter: 7.3,
+  },
+  particleFadeExponent: 1.3,
 } as const;
 
 type FringeAxis = "x" | "z";
@@ -331,5 +359,10 @@ export function computeFringeLayout(world: VoxelWorld): FringeLayout {
     wireframes: Array.from(wireframes.values()),
     gridTiles: Array.from(gridTiles.values()),
     gridY: FRINGE_CONFIG.gridY,
+    focus: {
+      x: centerX,
+      y: FRINGE_CONFIG.gridY,
+      z: centerZ,
+    },
   };
 }

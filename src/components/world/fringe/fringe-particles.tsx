@@ -3,6 +3,7 @@ import { useMemo, useRef } from "react";
 import {
   BufferAttribute,
   BufferGeometry,
+  type Object3D,
   type Points,
   ShaderMaterial,
 } from "three";
@@ -11,7 +12,12 @@ import {
   randomInRange,
   randomPointOnTileEdge,
 } from "./fringe-animation";
-import { FRINGE_CONFIG, type FringeGridTile } from "./fringe-layout";
+import {
+  FRINGE_CONFIG,
+  type FringeFocus,
+  type FringeGridTile,
+} from "./fringe-layout";
+import { computeTileSpawnWeights } from "./fringe-view-fade";
 
 interface Particle {
   life: number;
@@ -24,6 +30,7 @@ interface Particle {
 interface Props {
   tiles: FringeGridTile[];
   y: number;
+  focus: FringeFocus;
 }
 
 const particleVertexShader = `
@@ -49,11 +56,13 @@ const particleFragmentShader = `
   }
 `;
 
-export default function FringeParticleField({ tiles, y }: Props) {
+export default function FringeParticleField({ tiles, y, focus }: Props) {
   const pointsRef = useRef<Points>(null);
+  const focusRef = useRef<Object3D>(null);
   const spawnBudgetRef = useRef(0);
   const activeIndicesRef = useRef<number[]>([]);
   const freeIndicesRef = useRef<number[]>([]);
+  const spawnWeightsRef = useRef<number[]>([]);
 
   const { poolSize, positions, opacities, particles } = useMemo(() => {
     const size = FRINGE_CONFIG.particlePoolSize;
@@ -113,12 +122,7 @@ export default function FringeParticleField({ tiles, y }: Props) {
     freeIndicesRef.current.push(index);
   }
 
-  function spawnParticle(index: number): void {
-    if (tiles.length === 0) {
-      return;
-    }
-
-    const tile = pickWeightedTile(tiles);
+  function spawnParticle(index: number, tile: FringeGridTile): void {
     const [px, , pz] = randomPointOnTileEdge(tile.x, tile.z);
     const [ox, oz] = tile.outward;
     const speed = randomInRange(0.3, 0.6);
@@ -139,19 +143,42 @@ export default function FringeParticleField({ tiles, y }: Props) {
     opacities[index] = 1;
   }
 
-  useFrame((_, delta) => {
-    if (tiles.length === 0) {
+  useFrame(({ camera }, delta) => {
+    if (tiles.length === 0 || !focusRef.current?.parent) {
       return;
     }
+
+    if (spawnWeightsRef.current.length !== tiles.length) {
+      spawnWeightsRef.current = Array.from({ length: tiles.length }, () => 0);
+    }
+
+    const totalSpawnWeight = computeTileSpawnWeights(
+      tiles,
+      y,
+      focusRef.current.parent,
+      camera,
+      focusRef.current,
+      spawnWeightsRef.current
+    );
 
     let needsUpdate = false;
 
     spawnBudgetRef.current += delta * FRINGE_CONFIG.particlesPerSecond;
     while (spawnBudgetRef.current >= 1) {
       spawnBudgetRef.current -= 1;
+
+      if (totalSpawnWeight <= 0) {
+        continue;
+      }
+
+      const tile = pickWeightedTile(tiles, spawnWeightsRef.current);
+      if (!tile) {
+        continue;
+      }
+
       const index = acquireSlot();
       const wasActive = particles[index].life > 0;
-      spawnParticle(index);
+      spawnParticle(index, tile);
       if (!wasActive) {
         activeIndicesRef.current.push(index);
       }
@@ -190,5 +217,10 @@ export default function FringeParticleField({ tiles, y }: Props) {
     }
   });
 
-  return <points ref={pointsRef} geometry={geometry} material={material} />;
+  return (
+    <>
+      <object3D ref={focusRef} position={[focus.x, focus.y, focus.z]} />
+      <points ref={pointsRef} geometry={geometry} material={material} />
+    </>
+  );
 }
