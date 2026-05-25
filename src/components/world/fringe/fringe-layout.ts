@@ -54,10 +54,8 @@ export const FRINGE_CONFIG = {
   wireframeFade: {
     backFadeStart: 0.35,
     backFadeEnd: -0.15,
-    lateralInner: 0.5,
-    lateralOuter: 4.0,
-    radialInner: 4.5,
-    radialOuter: 6.5,
+    lateralInner: 3.0,
+    lateralOuter: 6.5,
   },
   particleFade: {
     backFadeStart: 0.35,

@@ -32,8 +32,6 @@ const lineFragmentShader = `
   uniform float uLateralOuter;
   uniform float uWireframeLateralInner;
   uniform float uWireframeLateralOuter;
-  uniform float uWireframeRadialInner;
-  uniform float uWireframeRadialOuter;
 
   varying float vBaseOpacity;
   varying float vLineKind;
@@ -56,12 +54,7 @@ const lineFragmentShader = `
     float lateralOuter = mix(uWireframeLateralOuter, uLateralOuter, vLineKind);
     float lateralFade = 1.0 - smoothstep(lateralInner, lateralOuter, lateralDist);
 
-    float radialDist = length(toPoint.xz);
-    float wireframeRadialFade =
-      1.0 - smoothstep(uWireframeRadialInner, uWireframeRadialOuter, radialDist);
-    float radialFade = mix(wireframeRadialFade, 1.0, vLineKind);
-
-    float opacity = vBaseOpacity * backFade * lateralFade * radialFade;
+    float opacity = vBaseOpacity * backFade * lateralFade;
     if (opacity < 0.001) {
       discard;
     }
@@ -90,8 +83,6 @@ export default function FringeLineField({ layout }: Props) {
         uLateralOuter: { value: lineFade.lateralOuter },
         uWireframeLateralInner: { value: wireframeFade.lateralInner },
         uWireframeLateralOuter: { value: wireframeFade.lateralOuter },
-        uWireframeRadialInner: { value: wireframeFade.radialInner },
-        uWireframeRadialOuter: { value: wireframeFade.radialOuter },
       },
       vertexShader: lineVertexShader,
       fragmentShader: lineFragmentShader,
