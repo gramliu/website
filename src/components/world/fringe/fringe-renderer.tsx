@@ -1,5 +1,4 @@
-import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import type { VoxelWorld } from "../../../game/world/world";
 import { computeFringeLayout, FRINGE_CONFIG } from "./fringe-layout";
 import FringeParticleField from "./fringe-particles";
@@ -19,12 +18,6 @@ export default function FringeRenderer({ world }: Props) {
       ),
     [layout.gridTiles]
   );
-  const dashOffsetRef = useRef(0);
-
-  useFrame((_, delta) => {
-    dashOffsetRef.current += delta * FRINGE_CONFIG.dashSpeed;
-  });
-
   return (
     <>
       {layout.wireframes.map(({ x, y, z, opacity }) => (
@@ -36,16 +29,13 @@ export default function FringeRenderer({ world }: Props) {
           opacity={opacity}
         />
       ))}
-      {layout.gridTiles.map(({ x, z, opacity, row }) => (
+      {layout.gridTiles.map(({ x, z, opacity }) => (
         <GridTile
           key={`gt-${x}-${z}`}
           x={x}
           z={z}
           y={layout.gridY}
           opacity={opacity}
-          row={row}
-          dashOffsetRef={dashOffsetRef}
-          rowDashStagger={FRINGE_CONFIG.rowDashStagger}
         />
       ))}
       <FringeParticleField tiles={particleTiles} y={layout.gridY} />

@@ -1,20 +1,10 @@
-import { useFrame } from "@react-three/fiber";
-import { type MutableRefObject, useLayoutEffect, useRef } from "react";
-import {
-  BufferGeometry,
-  Float32BufferAttribute,
-  type LineDashedMaterial,
-  type LineSegments,
-} from "three";
+import { BufferGeometry, Float32BufferAttribute } from "three";
 
 interface Props {
   x: number;
   z: number;
   y: number;
   opacity: number;
-  row: number;
-  dashOffsetRef: MutableRefObject<number>;
-  rowDashStagger: number;
 }
 
 function createTileGeometry(): BufferGeometry {
@@ -30,35 +20,11 @@ function createTileGeometry(): BufferGeometry {
 
 const tileGeometry = createTileGeometry();
 
-export default function GridTile({
-  x,
-  z,
-  y,
-  opacity,
-  row,
-  dashOffsetRef,
-  rowDashStagger,
-}: Props) {
-  const lineRef = useRef<LineSegments>(null);
-  const materialRef = useRef<LineDashedMaterial>(null);
-
-  useLayoutEffect(() => {
-    lineRef.current?.computeLineDistances();
-  }, []);
-
-  useFrame(() => {
-    if (materialRef.current) {
-      materialRef.current.scale = dashOffsetRef.current + row * rowDashStagger;
-    }
-  });
-
+export default function GridTile({ x, z, y, opacity }: Props) {
   return (
-    <lineSegments ref={lineRef} geometry={tileGeometry} position={[x, y, z]}>
-      <lineDashedMaterial
-        ref={materialRef}
+    <lineSegments geometry={tileGeometry} position={[x, y, z]}>
+      <lineBasicMaterial
         color="#ffffff"
-        dashSize={0.12}
-        gapSize={0.08}
         transparent
         opacity={opacity}
         depthWrite={false}

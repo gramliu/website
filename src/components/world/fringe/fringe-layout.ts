@@ -31,8 +31,6 @@ export const FRINGE_CONFIG = {
   wireframeOpacityByRow: [1.0],
   gridOpacityByRow: [1.0, 0.3, 0.06],
   minOpacity: 0.05,
-  dashSpeed: 0.4,
-  rowDashStagger: 0.05,
   particleMinRow: 2,
   particlePoolSize: 15000,
   particlesPerSecond: 2700,
