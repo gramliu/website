@@ -25,6 +25,7 @@ function cellKey(x: number, y: number, z: number): string {
 export class VoxelWorld {
   private readonly blockIds = new Map<string, number>();
   private readonly renderableCells: LoadedWorldCell[];
+  private readonly exposedRenderableCells: LoadedWorldCell[];
   private readonly bounds: WorldBounds;
 
   constructor(cells: LoadedWorldCell[]) {
@@ -41,6 +42,10 @@ export class VoxelWorld {
       maxZ = Math.max(maxZ, cell.z);
     }
 
+    this.exposedRenderableCells = cells.filter((cell) =>
+      this.hasExposedFace(cell.x, cell.y, cell.z)
+    );
+
     this.bounds = {
       min: { x: 0, y: 0, z: 0 },
       max: { x: maxX, y: maxY, z: maxZ },
@@ -53,6 +58,21 @@ export class VoxelWorld {
 
   public getRenderableCells(): LoadedWorldCell[] {
     return this.renderableCells;
+  }
+
+  public getExposedRenderableCells(): LoadedWorldCell[] {
+    return this.exposedRenderableCells;
+  }
+
+  private hasExposedFace(x: number, y: number, z: number): boolean {
+    return (
+      this.getBlockIdAtCell(x + 1, y, z) === 0 ||
+      this.getBlockIdAtCell(x - 1, y, z) === 0 ||
+      this.getBlockIdAtCell(x, y + 1, z) === 0 ||
+      this.getBlockIdAtCell(x, y - 1, z) === 0 ||
+      this.getBlockIdAtCell(x, y, z + 1) === 0 ||
+      this.getBlockIdAtCell(x, y, z - 1) === 0
+    );
   }
 
   public getBlockIdAtCell(x: number, y: number, z: number): number {

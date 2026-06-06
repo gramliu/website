@@ -3,6 +3,7 @@ import { createBodyAABB } from "../core/math/aabb";
 import { vec3 } from "../core/math/vec3";
 import { PLAYER_COLLIDER } from "../rules/constants";
 import { VoxelWorld } from "./world";
+import type { LoadedWorldCell } from "./world-loader";
 
 describe("VoxelWorld", () => {
   it("treats water as fluid but not solid", () => {
@@ -30,6 +31,29 @@ describe("VoxelWorld", () => {
       south: false,
       east: true,
       west: false,
+    });
+  });
+
+  it("returns only exposed cells for preview rendering", () => {
+    const cells: LoadedWorldCell[] = [];
+
+    for (let x = 0; x < 3; x++) {
+      for (let y = 0; y < 3; y++) {
+        for (let z = 0; z < 3; z++) {
+          cells.push({ x, y, z, id: 1 });
+        }
+      }
+    }
+
+    const world = new VoxelWorld(cells);
+
+    expect(world.getRenderableCells()).toHaveLength(27);
+    expect(world.getExposedRenderableCells()).toHaveLength(26);
+    expect(world.getExposedRenderableCells()).not.toContainEqual({
+      x: 1,
+      y: 1,
+      z: 1,
+      id: 1,
     });
   });
 

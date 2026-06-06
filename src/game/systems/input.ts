@@ -9,7 +9,7 @@ import {
   FIXED_TIMESTEP,
   PLAYER_MOVE_SPEED,
 } from "../rules/constants";
-import type { VoxelWorld } from "../world/world";
+import type { WorldQuery } from "../world/world-query";
 
 export function createPlayerInputFrame(
   input: Partial<PlayerInputFrame> = {}
@@ -24,7 +24,7 @@ export function createPlayerInputFrame(
 
 export function createAutoplayInputFrame(
   player: PlayerState,
-  world: VoxelWorld
+  world: WorldQuery
 ): PlayerInputFrame {
   const direction =
     player.position.z <= AUTOPLAY_MIN_Z + 0.25
@@ -52,7 +52,7 @@ export function createAutoplayInputFrame(
 
 function shouldAutoplayJump(
   player: PlayerState,
-  world: VoxelWorld,
+  world: WorldQuery,
   input: PlayerInputFrame
 ): boolean {
   if (!player.grounded) {

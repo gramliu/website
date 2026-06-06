@@ -1,12 +1,15 @@
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import { useKeyboardState } from "../../adapters/input/keyboard";
 import WorldRenderer from "../../adapters/three/world-renderer";
 import { vec3 } from "../../game/core/math/vec3";
 import { createGameState, type GameState } from "../../game/game";
+import type { ProceduralRuntimeMode } from "../../game/world/procedural/lod-policy";
+import { ProceduralVoxelWorld } from "../../game/world/procedural/procedural-world";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
+import type { RenderableWorldQuery } from "../../game/world/world-query";
 import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
 import worldData from "./world-data";
@@ -20,11 +23,14 @@ const DEFAULT_PLAYER_STATE_POSITION = vec3(9.5, 6, 1.5);
 const DEFAULT_PLAYER_ROTATION: Vec3 = [0, 0, 0];
 const DEFAULT_WORLD_ROTATION: Vec3 = [0, 0, 0];
 
+export type WorldMode = "static" | "procedural";
+
 interface Props {
   size?: number;
   rotateWorld?: boolean;
   interactiveMode?: boolean;
   showFringe?: boolean;
+  worldMode?: WorldMode;
 }
 
 /**
@@ -35,25 +41,54 @@ export default function Map({
   rotateWorld,
   interactiveMode = false,
   showFringe = false,
+  worldMode = "static",
 }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
   const keyControlsRef = useKeyboardState();
+  const [, setRenderVersion] = useState(0);
+  const proceduralWorld = useMemo(
+    () => new ProceduralVoxelWorld({ seed: 2026, mode: "preview" }),
+    []
+  );
+  const isProcedural = worldMode === "procedural";
+  const activeWorld: RenderableWorldQuery = isProcedural
+    ? proceduralWorld
+    : world;
+  const proceduralSpawn = proceduralWorld.findSpawnColumn(0, 0);
+  const playerPosition = useMemo<Vec3>(
+    () =>
+      isProcedural
+        ? [proceduralSpawn.x, proceduralSpawn.y, proceduralSpawn.z]
+        : DEFAULT_PLAYER_POSITION,
+    [isProcedural, proceduralSpawn.x, proceduralSpawn.y, proceduralSpawn.z]
+  );
+  const playerStatePosition = useMemo(
+    () =>
+      isProcedural
+        ? vec3(
+            proceduralSpawn.x + 0.5,
+            proceduralSpawn.y,
+            proceduralSpawn.z + 0.5
+          )
+        : DEFAULT_PLAYER_STATE_POSITION,
+    [isProcedural, proceduralSpawn.x, proceduralSpawn.y, proceduralSpawn.z]
+  );
+  const runtimeMode: ProceduralRuntimeMode = interactiveMode
+    ? "interactive"
+    : "preview";
   const gameStateRef = useRef<GameState>(
-    createGameState(world, DEFAULT_PLAYER_STATE_POSITION)
+    createGameState(activeWorld, playerStatePosition)
   );
 
   function resetPlayer() {
-    gameStateRef.current = createGameState(
-      world,
-      DEFAULT_PLAYER_STATE_POSITION
-    );
+    gameStateRef.current = createGameState(activeWorld, playerStatePosition);
 
     if (playerRef.current) {
       playerRef.current.position.set(
-        DEFAULT_PLAYER_STATE_POSITION.x,
-        DEFAULT_PLAYER_STATE_POSITION.y,
-        DEFAULT_PLAYER_STATE_POSITION.z
+        playerStatePosition.x,
+        playerStatePosition.y,
+        playerStatePosition.z
       );
       playerRef.current.rotation.set(
         DEFAULT_PLAYER_ROTATION[0],
@@ -96,6 +131,18 @@ export default function Map({
     if (worldRef.current && rotateWorld && !interactiveMode) {
       worldRef.current.rotation.y += delta * ROTATION_SPEED;
     }
+
+    if (isProcedural) {
+      const { position } = gameStateRef.current.player;
+      const changed = proceduralWorld.updateFocus(
+        position.x,
+        position.z,
+        runtimeMode
+      );
+      if (changed) {
+        setRenderVersion((version) => version + 1);
+      }
+    }
   });
 
   useEffect(() => {
@@ -103,13 +150,32 @@ export default function Map({
     resetWorld();
   }, [interactiveMode]);
 
+  useEffect(() => {
+    gameStateRef.current = createGameState(activeWorld, playerStatePosition);
+    proceduralWorld.updateFocus(
+      playerStatePosition.x,
+      playerStatePosition.z,
+      runtimeMode
+    );
+    resetPlayer();
+  }, [activeWorld, playerStatePosition, proceduralWorld, runtimeMode]);
+
   return (
     <group ref={worldRef} scale={[size, size, size]}>
       <group position={[-4.5, 0, -4.5]}>
-        <WorldRenderer world={world} />
-        {showFringe ? <FringeRenderer world={world} /> : null}
+        <WorldRenderer
+          world={activeWorld}
+          detail={interactiveMode ? "full" : "preview"}
+        />
+        {showFringe ? (
+          <FringeRenderer
+            world={activeWorld}
+            enableParticles={interactiveMode}
+            procedural={isProcedural}
+          />
+        ) : null}
         <Player
-          position={DEFAULT_PLAYER_POSITION}
+          position={playerPosition}
           animate={!interactiveMode}
           gameStateRef={gameStateRef}
           ref={playerRef}
