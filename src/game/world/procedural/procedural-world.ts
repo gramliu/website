@@ -10,16 +10,10 @@ import {
 import type { FluidAdjacency } from "../world";
 import type { LoadedWorldCell } from "../world-loader";
 import type { RenderableWorldQuery } from "../world-query";
-import { columnIndex } from "./chunk";
-import {
-  CHUNK_SIZE_XZ,
-  chunkOrigin,
-  WORLD_MIN_Y,
-  worldToChunkCoord,
-} from "./chunk-coords";
+import { WORLD_MIN_Y, worldToChunkCoord } from "./chunk-coords";
 import { ChunkStore } from "./chunk-store";
 import {
-  chunkChebyshevDistance,
+  FULL_DETAIL_SIZE_XZ,
   type LodBudget,
   PROCEDURAL_LOD_BUDGETS,
   type ProceduralRuntimeMode,
@@ -49,6 +43,8 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
   private mode: ProceduralRuntimeMode;
   private centerChunkX = 0;
   private centerChunkZ = 0;
+  private focusCellX = 0;
+  private focusCellZ = 0;
 
   constructor(options: ProceduralVoxelWorldOptions = {}) {
     this.mode = options.mode ?? "preview";
@@ -72,11 +68,18 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
     const previousMode = this.mode;
     const previousChunkX = this.centerChunkX;
     const previousChunkZ = this.centerChunkZ;
+    const previousFocusCellX = this.focusCellX;
+    const previousFocusCellZ = this.focusCellZ;
 
     this.mode = mode;
     this.store.setMaxCachedChunks(this.budget.maxCachedChunks);
 
-    const { chunkX, chunkZ } = worldToChunkCoord(Math.floor(x), Math.floor(z));
+    this.focusCellX = Math.floor(x);
+    this.focusCellZ = Math.floor(z);
+    const { chunkX, chunkZ } = worldToChunkCoord(
+      this.focusCellX,
+      this.focusCellZ
+    );
     this.centerChunkX = chunkX;
     this.centerChunkZ = chunkZ;
     const residentRenderRadius = Math.max(
@@ -89,7 +92,9 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
     return (
       previousMode !== mode ||
       previousChunkX !== chunkX ||
-      previousChunkZ !== chunkZ
+      previousChunkZ !== chunkZ ||
+      previousFocusCellX !== this.focusCellX ||
+      previousFocusCellZ !== this.focusCellZ
     );
   }
 
@@ -99,27 +104,22 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
   }
 
   public getBounds(): WorldBounds {
-    const chunks = this.store.getLoadedChunks();
-    if (chunks.length === 0) {
-      return {
-        min: { x: 0, y: WORLD_MIN_Y, z: 0 },
-        max: { x: 0, y: WORLD_MIN_Y, z: 0 },
-      };
-    }
+    return this.getFullDetailBounds();
+  }
 
-    let minX = Number.POSITIVE_INFINITY;
-    let minZ = Number.POSITIVE_INFINITY;
-    let maxX = Number.NEGATIVE_INFINITY;
+  public getFullDetailBounds(): WorldBounds {
+    const halfSize = Math.floor(FULL_DETAIL_SIZE_XZ / 2);
+    const minX = this.focusCellX - halfSize;
+    const minZ = this.focusCellZ - halfSize;
+    const maxX = minX + FULL_DETAIL_SIZE_XZ - 1;
+    const maxZ = minZ + FULL_DETAIL_SIZE_XZ - 1;
     let maxY = WORLD_MIN_Y;
-    let maxZ = Number.NEGATIVE_INFINITY;
 
-    for (const chunk of chunks) {
-      const [originX, originZ] = chunkOrigin(chunk.chunkX, chunk.chunkZ);
-      minX = Math.min(minX, originX);
-      minZ = Math.min(minZ, originZ);
-      maxX = Math.max(maxX, originX + CHUNK_SIZE_XZ - 1);
-      maxY = Math.max(maxY, chunk.maxY);
-      maxZ = Math.max(maxZ, originZ + CHUNK_SIZE_XZ - 1);
+    for (let z = minZ; z <= maxZ; z++) {
+      for (let x = minX; x <= maxX; x++) {
+        const column = this.generator.getColumn(x, z);
+        maxY = Math.max(maxY, column.fluidLevel ?? column.height);
+      }
     }
 
     return {
@@ -227,49 +227,32 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
   private getCellsForActiveWindow(
     detail: "full" | "preview"
   ): LoadedWorldCell[] {
+    const bounds = this.getFullDetailBounds();
     const cells: LoadedWorldCell[] = [];
+
     for (const chunk of this.store.getLoadedChunks()) {
-      const distance = chunkChebyshevDistance(
-        chunk.chunkX,
-        chunk.chunkZ,
-        this.centerChunkX,
-        this.centerChunkZ
-      );
-
-      if (distance <= this.budget.highDetailRadius) {
-        cells.push(...chunk.exposedCells);
-        continue;
-      }
-
-      if (detail === "preview" && distance <= this.budget.midDetailRadius) {
-        cells.push(
-          ...this.getHeightmapSurfaceCells(chunk.chunkX, chunk.chunkZ)
-        );
+      const sourceCells = detail === "full" ? chunk.cells : chunk.exposedCells;
+      for (const cell of sourceCells) {
+        if (this.isWithinFullDetailFootprint(cell.x, cell.z, bounds)) {
+          cells.push(cell);
+        }
       }
     }
 
     return cells;
   }
 
-  private getHeightmapSurfaceCells(
-    chunkX: number,
-    chunkZ: number
-  ): LoadedWorldCell[] {
-    const chunk = this.store.ensureChunk(chunkX, chunkZ);
-    const [originX, originZ] = chunkOrigin(chunkX, chunkZ);
-    const cells: LoadedWorldCell[] = [];
-
-    for (let localZ = 0; localZ < CHUNK_SIZE_XZ; localZ++) {
-      for (let localX = 0; localX < CHUNK_SIZE_XZ; localX++) {
-        const index = columnIndex(localX, localZ);
-        const x = originX + localX;
-        const z = originZ + localZ;
-        const y = chunk.heightmap[index];
-        cells.push({ x, y, z, id: this.getBlockIdAtCell(x, y, z) });
-      }
-    }
-
-    return cells;
+  private isWithinFullDetailFootprint(
+    x: number,
+    z: number,
+    bounds = this.getFullDetailBounds()
+  ): boolean {
+    return (
+      x >= bounds.min.x &&
+      x <= bounds.max.x &&
+      z >= bounds.min.z &&
+      z <= bounds.max.z
+    );
   }
 
   private ensureCollisionChunks(aabb: AABB): void {

@@ -1,4 +1,3 @@
-import { CHUNK_SIZE_XZ } from "../../../game/world/procedural/chunk-coords";
 import type { RenderableWorldQuery } from "../../../game/world/world-query";
 import { computeOutwardVector } from "./fringe-animation";
 import {
@@ -67,32 +66,41 @@ export function computeProceduralFringeLayout(
   const bounds = world.getBounds();
   const centerX = (bounds.min.x + bounds.max.x) / 2;
   const centerZ = (bounds.min.z + bounds.max.z) / 2;
-  const minX = bounds.min.x + CHUNK_SIZE_XZ;
-  const maxX = bounds.max.x - CHUNK_SIZE_XZ;
-  const minZ = bounds.min.z + CHUNK_SIZE_XZ;
-  const maxZ = bounds.max.z - CHUNK_SIZE_XZ;
+  const minX = bounds.min.x;
+  const maxX = bounds.max.x;
+  const minZ = bounds.min.z;
+  const maxZ = bounds.max.z;
+  const wireMinX = minX - 1;
+  const wireMaxX = maxX + 1;
+  const wireMinZ = minZ - 1;
+  const wireMaxZ = maxZ + 1;
   const wireframes = new Map<string, FringeWireframe>();
   const gridTiles = new Map<string, FringeGridTile>();
 
-  for (let x = minX; x <= maxX; x++) {
-    addWireColumn(wireframes, world, x, minZ, 0.9);
-    addWireColumn(wireframes, world, x, maxZ, 0.9);
+  for (let x = wireMinX; x <= wireMaxX; x++) {
+    addWireColumn(wireframes, world, x, wireMinZ, 0.9);
+    addWireColumn(wireframes, world, x, wireMaxZ, 0.9);
   }
 
-  for (let z = minZ; z <= maxZ; z++) {
-    addWireColumn(wireframes, world, minX, z, 0.9);
-    addWireColumn(wireframes, world, maxX, z, 0.9);
+  for (let z = wireMinZ; z <= wireMaxZ; z++) {
+    addWireColumn(wireframes, world, wireMinX, z, 0.9);
+    addWireColumn(wireframes, world, wireMaxX, z, 0.9);
   }
 
   for (let row = 1; row <= FRINGE_CONFIG.gridRows; row++) {
-    for (let x = minX - row; x <= maxX + row; x++) {
-      addGridTile(gridTiles, x, minZ - row, row, centerX, centerZ);
-      addGridTile(gridTiles, x, maxZ + row, row, centerX, centerZ);
+    const gridMinX = wireMinX - row;
+    const gridMaxX = wireMaxX + row;
+    const gridMinZ = wireMinZ - row;
+    const gridMaxZ = wireMaxZ + row;
+
+    for (let x = gridMinX; x <= gridMaxX; x++) {
+      addGridTile(gridTiles, x, gridMinZ, row, centerX, centerZ);
+      addGridTile(gridTiles, x, gridMaxZ, row, centerX, centerZ);
     }
 
-    for (let z = minZ - row; z <= maxZ + row; z++) {
-      addGridTile(gridTiles, minX - row, z, row, centerX, centerZ);
-      addGridTile(gridTiles, maxX + row, z, row, centerX, centerZ);
+    for (let z = gridMinZ; z <= gridMaxZ; z++) {
+      addGridTile(gridTiles, gridMinX, z, row, centerX, centerZ);
+      addGridTile(gridTiles, gridMaxX, z, row, centerX, centerZ);
     }
   }
 

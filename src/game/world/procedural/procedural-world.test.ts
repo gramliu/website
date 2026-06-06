@@ -5,7 +5,11 @@ import { PLAYER_COLLIDER } from "../../rules/constants";
 import { columnIndex } from "./chunk";
 import { CHUNK_SIZE_XZ } from "./chunk-coords";
 import { ChunkStore } from "./chunk-store";
-import { classifyChunkLod, PROCEDURAL_LOD_BUDGETS } from "./lod-policy";
+import {
+  classifyChunkLod,
+  FULL_DETAIL_SIZE_XZ,
+  PROCEDURAL_LOD_BUDGETS,
+} from "./lod-policy";
 import { ProceduralVoxelWorld } from "./procedural-world";
 import { TerrainGenerator } from "./terrain-generator";
 
@@ -63,6 +67,28 @@ describe("ProceduralVoxelWorld", () => {
     expect(world.isCellSolid(CHUNK_SIZE_XZ, rightHeight as number, 0)).toBe(
       true
     );
+  });
+
+  it("keeps the fully rendered procedural footprint at 10x10 columns", () => {
+    const world = new ProceduralVoxelWorld({ seed: 17, mode: "interactive" });
+    const bounds = world.getBounds();
+    const cells = world.getRenderableCells();
+    const renderedColumns = new Set(cells.map((cell) => `${cell.x},${cell.z}`));
+
+    expect(bounds.max.x - bounds.min.x + 1).toBe(FULL_DETAIL_SIZE_XZ);
+    expect(bounds.max.z - bounds.min.z + 1).toBe(FULL_DETAIL_SIZE_XZ);
+    expect(renderedColumns.size).toBe(
+      FULL_DETAIL_SIZE_XZ * FULL_DETAIL_SIZE_XZ
+    );
+    expect(
+      cells.every(
+        (cell) =>
+          cell.x >= bounds.min.x &&
+          cell.x <= bounds.max.x &&
+          cell.z >= bounds.min.z &&
+          cell.z <= bounds.max.z
+      )
+    ).toBe(true);
   });
 
   it("places spawn above generated terrain", () => {

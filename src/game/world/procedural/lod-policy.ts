@@ -1,4 +1,5 @@
 export type ChunkLod = "high" | "mid" | "wire" | "horizon" | "unloaded";
+export const FULL_DETAIL_SIZE_XZ = 10;
 export type ProceduralRuntimeMode = "preview" | "interactive";
 
 export interface LodBudget {
