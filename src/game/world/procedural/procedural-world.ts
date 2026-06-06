@@ -20,15 +20,14 @@ import {
 } from "./lod-policy";
 import { TerrainGenerator } from "./terrain-generator";
 
-const AIR = 0;
 const STONE = 1;
-const WATER = 9;
 
 export interface ProceduralVoxelWorldOptions {
   seed?: number;
   mode?: ProceduralRuntimeMode;
   centerX?: number;
   centerZ?: number;
+  seedCells?: LoadedWorldCell[];
 }
 
 export interface SpawnColumn {
@@ -45,10 +44,17 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
   private centerChunkZ = 0;
   private focusCellX = 0;
   private focusCellZ = 0;
+  private readonly previewFocusCellX: number;
+  private readonly previewFocusCellZ: number;
 
   constructor(options: ProceduralVoxelWorldOptions = {}) {
     this.mode = options.mode ?? "preview";
-    this.generator = new TerrainGenerator({ seed: options.seed });
+    this.previewFocusCellX = Math.floor(options.centerX ?? 0);
+    this.previewFocusCellZ = Math.floor(options.centerZ ?? 0);
+    this.generator = new TerrainGenerator({
+      seed: options.seed,
+      seedCells: options.seedCells,
+    });
     this.store = new ChunkStore({
       generator: this.generator,
       maxCachedChunks: this.budget.maxCachedChunks,
@@ -74,8 +80,10 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
     this.mode = mode;
     this.store.setMaxCachedChunks(this.budget.maxCachedChunks);
 
-    this.focusCellX = Math.floor(x);
-    this.focusCellZ = Math.floor(z);
+    this.focusCellX =
+      mode === "preview" ? this.previewFocusCellX : Math.floor(x);
+    this.focusCellZ =
+      mode === "preview" ? this.previewFocusCellZ : Math.floor(z);
     const { chunkX, chunkZ } = worldToChunkCoord(
       this.focusCellX,
       this.focusCellZ
@@ -141,20 +149,7 @@ export class ProceduralVoxelWorld implements RenderableWorldQuery {
       return STONE;
     }
 
-    const column = this.generator.getColumn(x, z);
-    if (y <= column.height) {
-      if (y === column.height) {
-        return column.surfaceBlockId;
-      }
-
-      return y >= column.height - 3 ? column.subsurfaceBlockId : STONE;
-    }
-
-    if (column.fluidLevel !== null && y <= column.fluidLevel) {
-      return WATER;
-    }
-
-    return AIR;
+    return this.generator.getBlockIdAtCell(x, y, z);
   }
 
   public getBlockAtCell(x: number, y: number, z: number): BlockDefinition {

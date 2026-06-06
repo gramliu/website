@@ -1,3 +1,4 @@
+import { isBlockSolid } from "../block-registry";
 import type { LoadedWorldCell } from "../world-loader";
 import {
   type BiomeId,
@@ -18,6 +19,7 @@ const WATER_LEVEL = 5;
 
 export interface TerrainGeneratorOptions {
   seed?: number;
+  seedCells?: LoadedWorldCell[];
 }
 
 function fract(value: number): number {
@@ -72,14 +74,59 @@ function biomeForHeight(height: number, slopeSignal: number): BiomeId {
   return "grassland";
 }
 
+function cellKey(x: number, y: number, z: number): string {
+  return `${x},${y},${z}`;
+}
+
+function columnKey(x: number, z: number): string {
+  return `${x},${z}`;
+}
+
 export class TerrainGenerator {
   private readonly seed: number;
+  private readonly seedBlockIds = new Map<string, number>();
+  private readonly seedColumns = new Map<string, LoadedWorldCell[]>();
+  private readonly seedSolidHeights = new Map<string, number>();
 
   constructor(options: TerrainGeneratorOptions = {}) {
     this.seed = options.seed ?? 1337;
+
+    for (const cell of options.seedCells ?? []) {
+      const key = columnKey(cell.x, cell.z);
+      this.seedBlockIds.set(cellKey(cell.x, cell.y, cell.z), cell.id);
+      const column = this.seedColumns.get(key) ?? [];
+      column.push(cell);
+      this.seedColumns.set(key, column);
+
+      if (isBlockSolid(cell.id)) {
+        this.seedSolidHeights.set(
+          key,
+          Math.max(this.seedSolidHeights.get(key) ?? WORLD_MIN_Y, cell.y)
+        );
+      }
+    }
+
+    for (const column of Array.from(this.seedColumns.values())) {
+      column.sort((a, b) => a.y - b.y);
+    }
   }
 
   public getColumn(x: number, z: number): GeneratedColumn {
+    const seededHeight = this.seedSolidHeights.get(columnKey(x, z));
+    if (seededHeight !== undefined) {
+      const surfaceBlockId = this.getBlockIdAtCell(x, seededHeight, z);
+      const subsurfaceBlockId =
+        this.getBlockIdAtCell(x, seededHeight - 1, z) || surfaceBlockId;
+
+      return {
+        height: seededHeight,
+        biome: surfaceBlockId === SAND ? "beach" : "grassland",
+        surfaceBlockId,
+        subsurfaceBlockId,
+        fluidLevel: null,
+      };
+    }
+
     const noise = terrainNoise(x, z, this.seed);
     const slopeSignal = valueNoise(x / 10, z / 10, this.seed + 101);
     const height = clampWorldY(Math.round(7 + noise));
@@ -114,6 +161,32 @@ export class TerrainGenerator {
     };
   }
 
+  public getBlockIdAtCell(x: number, y: number, z: number): number {
+    const seededColumn = this.seedColumns.get(columnKey(x, z));
+    if (seededColumn) {
+      return this.seedBlockIds.get(cellKey(x, y, z)) ?? 0;
+    }
+
+    const column = this.getColumn(x, z);
+    if (y < WORLD_MIN_Y) {
+      return STONE;
+    }
+
+    if (y <= column.height) {
+      if (y === column.height) {
+        return column.surfaceBlockId;
+      }
+
+      return y >= column.height - 3 ? column.subsurfaceBlockId : STONE;
+    }
+
+    if (column.fluidLevel !== null && y <= column.fluidLevel) {
+      return WATER;
+    }
+
+    return 0;
+  }
+
   public generateChunk(chunkX: number, chunkZ: number): VoxelChunk {
     const [originX, originZ] = chunkOrigin(chunkX, chunkZ);
     const cells: LoadedWorldCell[] = [];
@@ -128,6 +201,12 @@ export class TerrainGenerator {
         const index = columnIndex(localX, localZ);
         heightmap[index] = column.height;
         biomes[index] = column.biome;
+
+        const seededColumn = this.seedColumns.get(columnKey(worldX, worldZ));
+        if (seededColumn) {
+          cells.push(...seededColumn);
+          continue;
+        }
 
         for (let y = WORLD_MIN_Y; y <= column.height; y++) {
           const id =
@@ -183,12 +262,7 @@ export class TerrainGenerator {
         return false;
       }
 
-      const neighbor = this.getColumn(cell.x + dx, cell.z + dz);
-      if (neighborY <= neighbor.height) {
-        return false;
-      }
-
-      return neighbor.fluidLevel === null || neighborY > neighbor.fluidLevel;
+      return this.getBlockIdAtCell(cell.x + dx, neighborY, cell.z + dz) === 0;
     });
   }
 }

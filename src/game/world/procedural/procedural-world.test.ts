@@ -1,7 +1,9 @@
 import { describe, expect, it } from "bun:test";
+import worldData from "../../../components/world/world-data";
 import { createBodyAABB } from "../../core/math/aabb";
 import { vec3 } from "../../core/math/vec3";
 import { PLAYER_COLLIDER } from "../../rules/constants";
+import { loadWorldCellsFromString } from "../world-loader";
 import { columnIndex } from "./chunk";
 import { CHUNK_SIZE_XZ } from "./chunk-coords";
 import { ChunkStore } from "./chunk-store";
@@ -89,6 +91,41 @@ describe("ProceduralVoxelWorld", () => {
           cell.z <= bounds.max.z
       )
     ).toBe(true);
+  });
+
+  it("keeps preview bounds anchored even as focus updates", () => {
+    const world = new ProceduralVoxelWorld({
+      seed: 17,
+      mode: "preview",
+      centerX: 5,
+      centerZ: 5,
+    });
+    const initialBounds = world.getBounds();
+
+    world.updateFocus(100, 100, "preview");
+
+    expect(world.getBounds()).toEqual(initialBounds);
+  });
+
+  it("uses the existing static map as the initial 10x10 seed area", () => {
+    const seedCells = loadWorldCellsFromString(worldData);
+    const world = new ProceduralVoxelWorld({
+      seed: 17,
+      mode: "preview",
+      centerX: 5,
+      centerZ: 5,
+      seedCells,
+    });
+    const bounds = world.getBounds();
+
+    expect(bounds.min.x).toBe(0);
+    expect(bounds.min.z).toBe(0);
+    expect(bounds.max.x).toBe(9);
+    expect(bounds.max.z).toBe(9);
+
+    for (const cell of seedCells) {
+      expect(world.getBlockIdAtCell(cell.x, cell.y, cell.z)).toBe(cell.id);
+    }
   });
 
   it("places spawn above generated terrain", () => {

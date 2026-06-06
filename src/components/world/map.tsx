@@ -14,7 +14,8 @@ import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
 import worldData from "./world-data";
 
-const world = new VoxelWorld(loadWorldCellsFromString(worldData));
+const worldCells = loadWorldCellsFromString(worldData);
+const world = new VoxelWorld(worldCells);
 const ROTATION_SPEED = 0.3;
 
 type Vec3 = [number, number, number];
@@ -48,7 +49,14 @@ export default function Map({
   const keyControlsRef = useKeyboardState();
   const [, setRenderVersion] = useState(0);
   const proceduralWorld = useMemo(
-    () => new ProceduralVoxelWorld({ seed: 2026, mode: "preview" }),
+    () =>
+      new ProceduralVoxelWorld({
+        seed: 2026,
+        mode: "preview",
+        centerX: 5,
+        centerZ: 5,
+        seedCells: worldCells,
+      }),
     []
   );
   const isProcedural = worldMode === "procedural";
