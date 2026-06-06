@@ -3,6 +3,7 @@ import worldData from "../../../components/world/world-data";
 import { createBodyAABB } from "../../core/math/aabb";
 import { vec3 } from "../../core/math/vec3";
 import { PLAYER_COLLIDER } from "../../rules/constants";
+import { VoxelWorld } from "../world";
 import { loadWorldCellsFromString } from "../world-loader";
 import { columnIndex } from "./chunk";
 import { CHUNK_SIZE_XZ } from "./chunk-coords";
@@ -126,6 +127,30 @@ describe("ProceduralVoxelWorld", () => {
     for (const cell of seedCells) {
       expect(world.getBlockIdAtCell(cell.x, cell.y, cell.z)).toBe(cell.id);
     }
+  });
+
+  it("matches the static map exposed cells for the seeded 10x10 preview", () => {
+    const seedCells = loadWorldCellsFromString(worldData);
+    const staticWorld = new VoxelWorld(seedCells);
+    const proceduralWorld = new ProceduralVoxelWorld({
+      seed: 17,
+      mode: "preview",
+      centerX: 5,
+      centerZ: 5,
+      seedCells,
+    });
+    const staticKeys = new Set(
+      staticWorld
+        .getExposedRenderableCells()
+        .map((cell) => `${cell.x},${cell.y},${cell.z},${cell.id}`)
+    );
+    const proceduralKeys = new Set(
+      proceduralWorld
+        .getExposedRenderableCells()
+        .map((cell) => `${cell.x},${cell.y},${cell.z},${cell.id}`)
+    );
+
+    expect(proceduralKeys).toEqual(staticKeys);
   });
 
   it("places spawn above generated terrain", () => {

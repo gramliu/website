@@ -247,6 +247,7 @@ export class TerrainGenerator {
   }
 
   private hasExposedFace(cell: LoadedWorldCell): boolean {
+    const isSeededCell = this.seedColumns.has(columnKey(cell.x, cell.z));
     const neighborOffsets = [
       [1, 0, 0],
       [-1, 0, 0],
@@ -257,12 +258,19 @@ export class TerrainGenerator {
     ] as const;
 
     return neighborOffsets.some(([dx, dy, dz]) => {
+      const neighborX = cell.x + dx;
       const neighborY = cell.y + dy;
+      const neighborZ = cell.z + dz;
+
+      if (isSeededCell) {
+        return !this.seedBlockIds.has(cellKey(neighborX, neighborY, neighborZ));
+      }
+
       if (neighborY < WORLD_MIN_Y) {
         return false;
       }
 
-      return this.getBlockIdAtCell(cell.x + dx, neighborY, cell.z + dz) === 0;
+      return this.getBlockIdAtCell(neighborX, neighborY, neighborZ) === 0;
     });
   }
 }

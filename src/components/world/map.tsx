@@ -63,25 +63,8 @@ export default function Map({
   const activeWorld: RenderableWorldQuery = isProcedural
     ? proceduralWorld
     : world;
-  const proceduralSpawn = proceduralWorld.findSpawnColumn(0, 0);
-  const playerPosition = useMemo<Vec3>(
-    () =>
-      isProcedural
-        ? [proceduralSpawn.x, proceduralSpawn.y, proceduralSpawn.z]
-        : DEFAULT_PLAYER_POSITION,
-    [isProcedural, proceduralSpawn.x, proceduralSpawn.y, proceduralSpawn.z]
-  );
-  const playerStatePosition = useMemo(
-    () =>
-      isProcedural
-        ? vec3(
-            proceduralSpawn.x + 0.5,
-            proceduralSpawn.y,
-            proceduralSpawn.z + 0.5
-          )
-        : DEFAULT_PLAYER_STATE_POSITION,
-    [isProcedural, proceduralSpawn.x, proceduralSpawn.y, proceduralSpawn.z]
-  );
+  const playerPosition = DEFAULT_PLAYER_POSITION;
+  const playerStatePosition = DEFAULT_PLAYER_STATE_POSITION;
   const runtimeMode: ProceduralRuntimeMode = interactiveMode
     ? "interactive"
     : "preview";
