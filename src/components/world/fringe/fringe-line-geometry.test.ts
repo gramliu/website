@@ -26,6 +26,8 @@ describe("buildFringeLineGeometry", () => {
     expect(positions.count).toBe(expectedVertexCount);
     expect(baseOpacity.count).toBe(expectedVertexCount);
     expect(geometry.getAttribute("lineKind").count).toBe(expectedVertexCount);
+    expect(geometry.getAttribute("fidelity").count).toBe(expectedVertexCount);
+    expect(geometry.getAttribute("lodOpacity").count).toBe(expectedVertexCount);
   });
 
   it("tags wireframe vertices as kind 0 and grid vertices as kind 1", () => {

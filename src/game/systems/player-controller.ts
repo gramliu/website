@@ -12,7 +12,7 @@ import {
   PLAYER_JUMP_VELOCITY,
   PLAYER_MOVE_SPEED,
 } from "../rules/constants";
-import type { VoxelWorld } from "../world/world";
+import type { WorldQuery } from "../world/world-query";
 
 type Axis = "x" | "y" | "z";
 
@@ -22,7 +22,7 @@ interface AxisResolution {
 }
 
 function resolveAxis(
-  world: VoxelWorld,
+  world: WorldQuery,
   aabb: ReturnType<typeof createBodyAABB>,
   axis: Axis,
   amount: number
@@ -113,7 +113,7 @@ function createMoveResult(previousGrounded: boolean): MoveResult {
 export function simulatePlayerStep(
   player: PlayerState,
   input: PlayerInputFrame,
-  world: VoxelWorld,
+  world: WorldQuery,
   dt: number
 ): PlayerState {
   const moveResult = createMoveResult(player.grounded);

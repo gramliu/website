@@ -1,5 +1,5 @@
 import type { WorldBounds } from "../../../game/core/types";
-import type { VoxelWorld } from "../../../game/world/world";
+import type { RenderableWorldQuery } from "../../../game/world/world-query";
 import { computeOutwardVector } from "./fringe-animation";
 
 export interface FringeWireframe {
@@ -7,6 +7,8 @@ export interface FringeWireframe {
   y: number;
   z: number;
   opacity: number;
+  fidelity?: number;
+  distanceBand?: number;
 }
 
 export interface FringeGridTile {
@@ -16,6 +18,8 @@ export interface FringeGridTile {
   row: number;
   outward: [number, number];
   emissionWeight: number;
+  fidelity?: number;
+  distanceBand?: number;
 }
 
 export interface FringeFocus {
@@ -79,7 +83,7 @@ interface EdgeFringeConfig {
 }
 
 function getHighestGrassY(
-  world: VoxelWorld,
+  world: RenderableWorldQuery,
   x: number,
   z: number
 ): number | null {
@@ -94,7 +98,7 @@ function getHighestGrassY(
 }
 
 function getHighestSolidExcludingLeaves(
-  world: VoxelWorld,
+  world: RenderableWorldQuery,
   x: number,
   z: number
 ): number | null {
@@ -115,7 +119,7 @@ function getHighestSolidExcludingLeaves(
 }
 
 function getColumnTopY(
-  world: VoxelWorld,
+  world: RenderableWorldQuery,
   x: number,
   z: number,
   useGrassHeight: boolean
@@ -195,7 +199,7 @@ function addGridTile(
 }
 
 function addEdgeFringe(
-  world: VoxelWorld,
+  world: RenderableWorldQuery,
   wireframes: Map<string, FringeWireframe>,
   gridTiles: Map<string, FringeGridTile>,
   config: EdgeFringeConfig,
@@ -280,7 +284,7 @@ function addCornerFringe(
   }
 }
 
-export function computeFringeLayout(world: VoxelWorld): FringeLayout {
+export function computeFringeLayout(world: RenderableWorldQuery): FringeLayout {
   const bounds = world.getBounds();
   const centerX = (bounds.min.x + bounds.max.x + 1) / 2;
   const centerZ = (bounds.min.z + bounds.max.z + 1) / 2;

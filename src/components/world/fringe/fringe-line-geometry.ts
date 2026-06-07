@@ -22,10 +22,14 @@ function appendWireframeBlock(
   positions: number[],
   opacities: number[],
   lineKinds: number[],
+  fidelities: number[],
+  lodOpacities: number[],
   x: number,
   y: number,
   z: number,
-  opacity: number
+  opacity: number,
+  fidelity = 0,
+  lodOpacity = 1
 ): void {
   const ox = x + 0.5;
   const oy = y + 0.5;
@@ -39,6 +43,8 @@ function appendWireframeBlock(
     );
     opacities.push(opacity);
     lineKinds.push(0);
+    fidelities.push(fidelity);
+    lodOpacities.push(lodOpacity);
   }
 }
 
@@ -46,10 +52,14 @@ function appendGridTile(
   positions: number[],
   opacities: number[],
   lineKinds: number[],
+  fidelities: number[],
+  lodOpacities: number[],
   x: number,
   y: number,
   z: number,
-  opacity: number
+  opacity: number,
+  fidelity = 0,
+  lodOpacity = 1
 ): void {
   for (let i = 0; i < gridTileVertices.length; i += 3) {
     positions.push(
@@ -59,6 +69,8 @@ function appendGridTile(
     );
     opacities.push(opacity);
     lineKinds.push(1);
+    fidelities.push(fidelity);
+    lodOpacities.push(lodOpacity);
   }
 }
 
@@ -74,20 +86,36 @@ export function buildFringeLineGeometry(layout: FringeLayout): BufferGeometry {
   const positions: number[] = [];
   const opacities: number[] = [];
   const lineKinds: number[] = [];
+  const fidelities: number[] = [];
+  const lodOpacities: number[] = [];
 
-  for (const { x, y, z, opacity } of layout.wireframes) {
-    appendWireframeBlock(positions, opacities, lineKinds, x, y, z, opacity);
+  for (const { x, y, z, opacity, fidelity } of layout.wireframes) {
+    appendWireframeBlock(
+      positions,
+      opacities,
+      lineKinds,
+      fidelities,
+      lodOpacities,
+      x,
+      y,
+      z,
+      opacity,
+      fidelity ?? 0
+    );
   }
 
-  for (const { x, z, opacity } of layout.gridTiles) {
+  for (const { x, z, opacity, fidelity } of layout.gridTiles) {
     appendGridTile(
       positions,
       opacities,
       lineKinds,
+      fidelities,
+      lodOpacities,
       x,
       layout.gridY,
       z,
-      opacity
+      opacity,
+      fidelity ?? 0
     );
   }
 
@@ -103,6 +131,14 @@ export function buildFringeLineGeometry(layout: FringeLayout): BufferGeometry {
   geometry.setAttribute(
     "lineKind",
     new BufferAttribute(new Float32Array(lineKinds), 1)
+  );
+  geometry.setAttribute(
+    "fidelity",
+    new BufferAttribute(new Float32Array(fidelities), 1)
+  );
+  geometry.setAttribute(
+    "lodOpacity",
+    new BufferAttribute(new Float32Array(lodOpacities), 1)
   );
 
   return geometry;

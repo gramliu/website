@@ -1,30 +1,30 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
-import type { Group } from "three";
+import { type Group, Vector3 } from "three";
 import { useKeyboardState } from "../../adapters/input/keyboard";
+import ProceduralMidDetailRenderer from "../../adapters/three/procedural-mid-detail-renderer";
 import WorldRenderer from "../../adapters/three/world-renderer";
-import { vec3 } from "../../game/core/math/vec3";
 import { createGameState, type GameState } from "../../game/game";
-import { VoxelWorld } from "../../game/world/world";
-import { loadWorldCellsFromString } from "../../game/world/world-loader";
 import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
-import worldData from "./world-data";
+import PlayerCameraFollow from "./player-camera-follow";
+import {
+  DEFAULT_PLAYER_ROTATION,
+  DEFAULT_WORLD_ROTATION,
+  useWorldRuntime,
+  type WorldMode,
+} from "./use-world-runtime";
 
-const world = new VoxelWorld(loadWorldCellsFromString(worldData));
 const ROTATION_SPEED = 0.3;
 
-type Vec3 = [number, number, number];
-const DEFAULT_PLAYER_POSITION: Vec3 = [9, 6, 1];
-const DEFAULT_PLAYER_STATE_POSITION = vec3(9.5, 6, 1.5);
-const DEFAULT_PLAYER_ROTATION: Vec3 = [0, 0, 0];
-const DEFAULT_WORLD_ROTATION: Vec3 = [0, 0, 0];
+export type { WorldMode } from "./use-world-runtime";
 
 interface Props {
   size?: number;
   rotateWorld?: boolean;
   interactiveMode?: boolean;
   showFringe?: boolean;
+  worldMode?: WorldMode;
 }
 
 /**
@@ -35,25 +35,33 @@ export default function Map({
   rotateWorld,
   interactiveMode = false,
   showFringe = false,
+  worldMode = "static",
 }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
   const keyControlsRef = useKeyboardState();
+  const {
+    activeWorld,
+    isProcedural,
+    runtimeMode,
+    updateFocus,
+    renderSnapshot,
+    playerPosition,
+    playerStatePosition,
+  } = useWorldRuntime({ worldMode, interactiveMode });
   const gameStateRef = useRef<GameState>(
-    createGameState(world, DEFAULT_PLAYER_STATE_POSITION)
+    createGameState(activeWorld, playerStatePosition)
   );
 
   function resetPlayer() {
-    gameStateRef.current = createGameState(
-      world,
-      DEFAULT_PLAYER_STATE_POSITION
-    );
+    gameStateRef.current = createGameState(activeWorld, playerStatePosition);
+    updateFocus(playerStatePosition);
 
     if (playerRef.current) {
       playerRef.current.position.set(
-        DEFAULT_PLAYER_STATE_POSITION.x,
-        DEFAULT_PLAYER_STATE_POSITION.y,
-        DEFAULT_PLAYER_STATE_POSITION.z
+        playerStatePosition.x,
+        playerStatePosition.y,
+        playerStatePosition.z
       );
       playerRef.current.rotation.set(
         DEFAULT_PLAYER_ROTATION[0],
@@ -89,12 +97,31 @@ export default function Map({
       window.removeEventListener("keydown", handleKeyDown, {
         capture: true,
       });
-  }, []);
+  }, [resetPlayer]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     // Rotate the world
     if (worldRef.current && rotateWorld && !interactiveMode) {
       worldRef.current.rotation.y += delta * ROTATION_SPEED;
+    }
+
+    if (isProcedural) {
+      const cameraPosition = new Vector3();
+      const cameraForward = new Vector3();
+      state.camera.getWorldPosition(cameraPosition);
+      state.camera.getWorldDirection(cameraForward);
+      updateFocus(gameStateRef.current.player.position, {
+        position: {
+          x: cameraPosition.x,
+          y: cameraPosition.y,
+          z: cameraPosition.z,
+        },
+        forward: {
+          x: cameraForward.x,
+          y: cameraForward.y,
+          z: cameraForward.z,
+        },
+      });
     }
   });
 
@@ -103,13 +130,39 @@ export default function Map({
     resetWorld();
   }, [interactiveMode]);
 
+  useEffect(() => {
+    gameStateRef.current = createGameState(activeWorld, playerStatePosition);
+    updateFocus(playerStatePosition);
+    resetPlayer();
+  }, [activeWorld, playerStatePosition, runtimeMode, updateFocus]);
+
   return (
     <group ref={worldRef} scale={[size, size, size]}>
+      <PlayerCameraFollow
+        enabled={interactiveMode}
+        gameStateRef={gameStateRef}
+      />
       <group position={[-4.5, 0, -4.5]}>
-        <WorldRenderer world={world} />
-        {showFringe ? <FringeRenderer world={world} /> : null}
+        {isProcedural && renderSnapshot ? (
+          <ProceduralMidDetailRenderer
+            columns={renderSnapshot.midDetailColumns}
+          />
+        ) : null}
+        <WorldRenderer
+          world={activeWorld}
+          detail={interactiveMode ? "full" : "preview"}
+          cells={isProcedural ? renderSnapshot?.highDetailCells : undefined}
+        />
+        {showFringe ? (
+          <FringeRenderer
+            world={activeWorld}
+            enableParticles={interactiveMode}
+            procedural={isProcedural}
+            snapshot={renderSnapshot}
+          />
+        ) : null}
         <Player
-          position={DEFAULT_PLAYER_POSITION}
+          position={playerPosition}
           animate={!interactiveMode}
           gameStateRef={gameStateRef}
           ref={playerRef}

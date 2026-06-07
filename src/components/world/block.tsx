@@ -14,6 +14,7 @@ export interface BlockProps extends CommonProps {
   };
   id: number;
   adjacentBlocks: WaterBlockAdjacency;
+  opacity?: number;
 }
 
 export default function Block({
@@ -23,10 +24,21 @@ export default function Block({
   texture: { top, side },
   id,
   adjacentBlocks,
+  opacity = 1,
 }: BlockProps) {
   const isWater = id === 9;
-  const topTexture = useTextureMaterial(top);
-  const sideTexture = useTextureMaterial(side);
+  const renderedTop = {
+    ...top,
+    translucent: top.translucent || opacity < 1,
+    opacity: (top.opacity ?? 1) * opacity,
+  };
+  const renderedSide = {
+    ...side,
+    translucent: side.translucent || opacity < 1,
+    opacity: (side.opacity ?? 1) * opacity,
+  };
+  const topTexture = useTextureMaterial(renderedTop);
+  const sideTexture = useTextureMaterial(renderedSide);
   const meshRef = useRef<Mesh>(null);
 
   // Function to determine if a face should be rendered
@@ -40,7 +52,7 @@ export default function Block({
       <mesh
         ref={meshRef}
         position={[0.5, 0.5, 0.5]}
-        castShadow
+        castShadow={opacity >= 0.95}
         receiveShadow
         material={
           [

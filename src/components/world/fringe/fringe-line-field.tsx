@@ -11,13 +11,19 @@ interface Props {
 const lineVertexShader = `
   attribute float baseOpacity;
   attribute float lineKind;
+  attribute float fidelity;
+  attribute float lodOpacity;
   varying float vBaseOpacity;
   varying float vLineKind;
+  varying float vFidelity;
+  varying float vLodOpacity;
   varying vec3 vWorldPos;
 
   void main() {
     vBaseOpacity = baseOpacity;
     vLineKind = lineKind;
+    vFidelity = fidelity;
+    vLodOpacity = lodOpacity;
     vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
@@ -35,6 +41,8 @@ const lineFragmentShader = `
 
   varying float vBaseOpacity;
   varying float vLineKind;
+  varying float vFidelity;
+  varying float vLodOpacity;
   varying vec3 vWorldPos;
 
   void main() {
@@ -54,7 +62,8 @@ const lineFragmentShader = `
     float lateralOuter = mix(uWireframeLateralOuter, uLateralOuter, vLineKind);
     float lateralFade = 1.0 - smoothstep(lateralInner, lateralOuter, lateralDist);
 
-    float opacity = vBaseOpacity * backFade * lateralFade;
+    float fidelityPulse = mix(1.0, 0.82 + 0.18 * vFidelity, 1.0 - vLineKind);
+    float opacity = vBaseOpacity * vLodOpacity * fidelityPulse * backFade * lateralFade;
     if (opacity < 0.001) {
       discard;
     }

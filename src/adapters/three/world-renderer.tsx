@@ -1,10 +1,19 @@
 import Block from "../../components/world/block";
 import { getRenderableBlockTextures } from "../../components/world/blocks";
 import { getBlockDefinition } from "../../game/world/block-registry";
-import type { VoxelWorld } from "../../game/world/world";
+import type { LoadedWorldCell } from "../../game/world/world-loader";
+import type { RenderableWorldQuery } from "../../game/world/world-query";
+
+export type WorldRenderDetail = "full" | "preview";
+
+export interface RenderableCellWithOpacity extends LoadedWorldCell {
+  opacity?: number;
+}
 
 interface Props {
-  world: VoxelWorld;
+  world: RenderableWorldQuery;
+  detail?: WorldRenderDetail;
+  cells?: RenderableCellWithOpacity[];
 }
 
 const emptyFluidAdjacency = {
@@ -16,10 +25,20 @@ const emptyFluidAdjacency = {
   west: false,
 };
 
-export default function WorldRenderer({ world }: Props) {
+export default function WorldRenderer({
+  world,
+  detail = "full",
+  cells,
+}: Props) {
+  const renderedCells: RenderableCellWithOpacity[] =
+    cells ??
+    (detail === "preview"
+      ? world.getExposedRenderableCells()
+      : world.getRenderableCells());
+
   return (
     <>
-      {world.getRenderableCells().map((cell) => {
+      {renderedCells.map((cell) => {
         const block = getBlockDefinition(cell.id);
         const texture = getRenderableBlockTextures(block.renderKey);
 
@@ -33,6 +52,7 @@ export default function WorldRenderer({ world }: Props) {
             position={[cell.x, cell.y, cell.z]}
             texture={texture}
             id={cell.id}
+            opacity={cell.opacity}
             adjacentBlocks={
               block.renderKey === "water"
                 ? world.getFluidAdjacency(cell.x, cell.y, cell.z)
