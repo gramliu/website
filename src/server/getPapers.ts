@@ -32,20 +32,37 @@ export default async function getPapers(): Promise<ResearchPaper[]> {
     return [];
   }
 
-  const { data } = await axios.get(url, {
-    headers: {
-      Authorization: `Bearer ${env.ZOTERO_API_KEY}`,
-    },
-  });
+  try {
+    const { data } = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${env.ZOTERO_API_KEY}`,
+      },
+    });
 
-  const papers: ResearchPaper[] = data.map((paper: RawPaper) => ({
-    title: paper.data.title,
-    authorSummary: paper.meta.creatorSummary ?? "",
-    url: paper.data.url,
-    year: dateStringToYear(paper.meta.parsedDate),
-  }));
+    const papers: ResearchPaper[] = data.map((paper: RawPaper) => ({
+      title: paper.data.title,
+      authorSummary: paper.meta.creatorSummary ?? "",
+      url: paper.data.url,
+      year: dateStringToYear(paper.meta.parsedDate),
+    }));
 
-  return papers;
+    return papers;
+  } catch (error) {
+    console.error(
+      `Failed to fetch Zotero papers (${formatRequestError(error)}); falling back to an empty papers list.`
+    );
+    return [];
+  }
+}
+
+function formatRequestError(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    return error.response
+      ? `status ${error.response.status}`
+      : (error.code ?? error.message);
+  }
+
+  return error instanceof Error ? error.message : String(error);
 }
 
 function dateStringToYear(dateString: string): string {

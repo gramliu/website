@@ -67,6 +67,20 @@ function normalizeSnapshotBooks(snapshotBooks: SnapshotBook[]): Book[] {
   }));
 }
 
+export function getFallbackBooks(): Book[] {
+  return normalizeSnapshotBooks(fallbackBooksData as SnapshotBook[]);
+}
+
+function formatError(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    return error.response
+      ? `status ${error.response.status}`
+      : (error.code ?? error.message);
+  }
+
+  return error instanceof Error ? error.message : String(error);
+}
+
 /**
  * Convert manual book entries to full Book format with colors
  */
@@ -118,41 +132,45 @@ export default async function getBooks(): Promise<Book[]> {
   //   return booksCached;
   // }
 
-  // Fetch both currently reading and read books in parallel, plus process manual books
-  const [currentlyReadingBooks, readBooks, manualBooks] = await Promise.all([
-    fetchBooksFromShelf(currentlyReadingUrl),
-    fetchBooksFromShelf(readUrl),
-    processManualBooks(manualBooksData as ManualBook[]),
-  ]);
+  try {
+    // Fetch both currently reading and read books in parallel, plus process manual books
+    const [currentlyReadingBooks, readBooks, manualBooks] = await Promise.all([
+      fetchBooksFromShelf(currentlyReadingUrl),
+      fetchBooksFromShelf(readUrl),
+      processManualBooks(manualBooksData as ManualBook[]),
+    ]);
 
-  // Combine with currently reading books first
-  const allGoodreadsBooks = [...currentlyReadingBooks, ...readBooks];
+    // Combine with currently reading books first
+    const allGoodreadsBooks = [...currentlyReadingBooks, ...readBooks];
 
-  if (allGoodreadsBooks.length === 0) {
-    console.warn(
-      "Goodreads shelves returned no books; falling back to public/books.json."
-    );
-    return [
-      ...manualBooks,
-      ...normalizeSnapshotBooks(fallbackBooksData as SnapshotBook[]),
-    ];
-  }
-
-  // Get image colors for Goodreads books
-  const goodreadsBooksWithColors = await Promise.all(
-    allGoodreadsBooks.map(async (book) => {
-      const { fgColor, bgColor, hasValidImage } = await getImageColors(
-        book.imageUrl
+    if (allGoodreadsBooks.length === 0) {
+      console.warn(
+        "Goodreads shelves returned no books; falling back to public/books.json."
       );
-      return {
-        ...book,
-        fgColor,
-        bgColor,
-        hasValidImage,
-      };
-    })
-  );
+      return [...manualBooks, ...getFallbackBooks()];
+    }
 
-  // Manual books go first (most recently read), then Goodreads books
-  return [...manualBooks, ...goodreadsBooksWithColors];
+    // Get image colors for Goodreads books
+    const goodreadsBooksWithColors = await Promise.all(
+      allGoodreadsBooks.map(async (book) => {
+        const { fgColor, bgColor, hasValidImage } = await getImageColors(
+          book.imageUrl
+        );
+        return {
+          ...book,
+          fgColor,
+          bgColor,
+          hasValidImage,
+        };
+      })
+    );
+
+    // Manual books go first (most recently read), then Goodreads books
+    return [...manualBooks, ...goodreadsBooksWithColors];
+  } catch (error) {
+    console.error(
+      `Failed to build Goodreads bookshelf (${formatError(error)}); falling back to public/books.json.`
+    );
+    return getFallbackBooks();
+  }
 }
