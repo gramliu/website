@@ -26,15 +26,16 @@ Why second:
 - low risk,
 - does not block deeper architecture.
 
-### 3. Seed-transition terrain fix
+### 3. Corrective terrain/fringe pass
 
-Implement the transition-skirt terrain plan in `7-seed-transition-terrain.md` before expanding farther from the seed.
+Implement the immediate corrective plan in `10-corrective-terrain-fringe-plan.md` before expanding farther from the seed. This includes the smaller fringe, player/camera occlusion mask, ground-only seed sampling, water support rules, material transition bands, and Perlin/simplex-family terrain fields.
 
 Why third:
 
-- fixes the visible cliffs/material jumps immediately adjacent to the authored map,
-- keeps the seed exact while making generated terrain respect seed-edge boundary conditions,
-- can be tested as pure height/material field logic.
+- fixes the oversized fringe and player-obscuring faded terrain,
+- fixes visible cliffs/material jumps immediately adjacent to the authored map,
+- keeps the seed exact while making generated terrain respect ground-only seed-edge boundary conditions,
+- can be tested as pure height/material/hydrology field logic.
 
 ### 4. LOD policy and render snapshot
 
@@ -102,9 +103,12 @@ Why eighth:
 
 ### Milestone C: Seed-transition terrain
 
-- [ ] Seed edge samples are available from `StarterRegion`.
-- [ ] Generated columns near the seed blend toward seed-edge heights.
+- [ ] Seed edge samples use ground blocks only.
+- [ ] Generated columns near the seed blend toward seed-edge ground heights.
 - [ ] Generated materials near the seed blend toward seed-edge material weights.
+- [ ] Water has ground/shore support and does not float.
+- [ ] Fringe/proxy bands are capped to 1-2 columns outside high detail.
+- [ ] Player/camera occlusion masks hide proxy/fade layers near the player.
 - [ ] Seed cells remain exact and immutable.
 
 ### Milestone D: LOD/fringe/fade
@@ -118,9 +122,11 @@ Why eighth:
 
 ### Milestone E: Terrain quality
 
-- [ ] Heightfield smoothing implemented.
-- [ ] Biome transitions are gradual.
-- [ ] Seed transition skirt implemented.
+- [ ] Perlin/simplex-family fBm fields implemented.
+- [ ] Heightfield smoothing clamps non-cliff adjacent ground deltas.
+- [ ] Biome/material transitions are gradual bands.
+- [ ] Seed transition skirt implemented with ground-only samples.
+- [ ] Hydrology support tests pass.
 - [ ] Chunk boundary tests pass.
 
 ### Milestone F: Render quality
