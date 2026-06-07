@@ -51,12 +51,15 @@ export function useTextureMaterial(texture: MaterialTextureProps): Material {
       metalness: 0,
     };
 
-    if (texture.translucent) {
+    const opacity = texture.opacity ?? 1;
+
+    if (texture.translucent || opacity < 1) {
       materialProps.transparent = true;
-      materialProps.alphaTest = 0.2;
+      materialProps.alphaTest = opacity < 1 ? 0 : 0.2;
+      materialProps.depthWrite = opacity >= 0.95;
     }
 
-    if (texture.opacity) {
+    if (texture.opacity !== undefined) {
       materialProps.opacity = texture.opacity;
     }
 

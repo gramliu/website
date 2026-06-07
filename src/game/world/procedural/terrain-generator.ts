@@ -8,16 +8,13 @@ import {
   type VoxelChunk,
 } from "./chunk";
 import { CHUNK_SIZE_XZ, chunkOrigin, WORLD_MIN_Y } from "./chunk-coords";
+import { DIRT, GRASS, SAND, STONE, WATER } from "./ground-blocks";
 import { StarterRegion } from "./starter-region";
 
-const STONE = 1;
-const GRASS = 2;
-const DIRT = 3;
-const WATER = 9;
-const SAND = 12;
 const WATER_LEVEL = 5;
 const SEED_HEIGHT_BLEND_RADIUS = 10;
 const SEED_MATERIAL_BLEND_RADIUS = 6;
+const MAX_NEIGHBOR_GROUND_DELTA = 1;
 
 export interface TerrainGeneratorOptions {
   seed?: number;
@@ -32,6 +29,67 @@ function fract(value: number): number {
 function hash2d(x: number, z: number, seed: number): number {
   const n = Math.sin(x * 127.1 + z * 311.7 + seed * 74.7) * 43758.5453;
   return fract(n);
+}
+
+function gradientVector(
+  ix: number,
+  iz: number,
+  seed: number
+): [number, number] {
+  const angle = hash2d(ix, iz, seed) * Math.PI * 2;
+  return [Math.cos(angle), Math.sin(angle)];
+}
+
+function fade(value: number): number {
+  return value * value * value * (value * (value * 6 - 15) + 10);
+}
+
+function gradientNoise(x: number, z: number, seed: number): number {
+  const x0 = Math.floor(x);
+  const z0 = Math.floor(z);
+  const x1 = x0 + 1;
+  const z1 = z0 + 1;
+  const sx = fade(x - x0);
+  const sz = fade(z - z0);
+  const [g00x, g00z] = gradientVector(x0, z0, seed);
+  const [g10x, g10z] = gradientVector(x1, z0, seed);
+  const [g01x, g01z] = gradientVector(x0, z1, seed);
+  const [g11x, g11z] = gradientVector(x1, z1, seed);
+  const n00 = g00x * (x - x0) + g00z * (z - z0);
+  const n10 = g10x * (x - x1) + g10z * (z - z0);
+  const n01 = g01x * (x - x0) + g01z * (z - z1);
+  const n11 = g11x * (x - x1) + g11z * (z - z1);
+  const ix0 = lerp(n00, n10, sx);
+  const ix1 = lerp(n01, n11, sx);
+
+  return lerp(ix0, ix1, sz) * Math.SQRT2;
+}
+
+function fbmNoise(
+  x: number,
+  z: number,
+  seed: number,
+  octaves: number,
+  frequency = 1
+): number {
+  let value = 0;
+  let amplitude = 0.5;
+  let totalAmplitude = 0;
+  let currentFrequency = frequency;
+
+  for (let octave = 0; octave < octaves; octave++) {
+    value +=
+      gradientNoise(
+        x * currentFrequency,
+        z * currentFrequency,
+        seed + octave * 53
+      ) * amplitude;
+    totalAmplitude += amplitude;
+    amplitude *= 0.5;
+    currentFrequency *= 2;
+  }
+
+  return value / totalAmplitude;
 }
 
 function smoothstep(value: number): number {
@@ -63,10 +121,15 @@ function valueNoise(x: number, z: number, seed: number): number {
 }
 
 function terrainNoise(x: number, z: number, seed: number): number {
-  const broad = valueNoise(x / 48, z / 48, seed) * 2 - 1;
-  const rolling = valueNoise(x / 18, z / 18, seed + 13) * 2 - 1;
-  const detail = valueNoise(x / 7, z / 7, seed + 29) * 2 - 1;
-  return broad * 5 + rolling * 2.5 + detail * 0.8;
+  const warpX = fbmNoise(x / 40, z / 40, seed + 200, 2) * 3;
+  const warpZ = fbmNoise(x / 40, z / 40, seed + 260, 2) * 3;
+  const sampleX = x + warpX;
+  const sampleZ = z + warpZ;
+  const continentalness = fbmNoise(sampleX / 42, sampleZ / 42, seed, 4);
+  const erosion = fbmNoise(sampleX / 24, sampleZ / 24, seed + 13, 3);
+  const detail = fbmNoise(sampleX / 9, sampleZ / 9, seed + 29, 2);
+
+  return continentalness * 4 - erosion * 1.25 + detail * 0.55;
 }
 
 function biomeForHeight(height: number, slopeSignal: number): BiomeId {
@@ -118,16 +181,21 @@ export class TerrainGenerator {
   private getRawColumn(x: number, z: number): GeneratedColumn {
     const noise = terrainNoise(x, z, this.seed);
     const slopeSignal = valueNoise(x / 10, z / 10, this.seed + 101);
-    const height = clampWorldY(Math.round(7 + noise));
+    const height = this.smoothGeneratedHeight(
+      x,
+      z,
+      clampWorldY(Math.round(7 + noise))
+    );
     const biome = biomeForHeight(height, slopeSignal);
 
     if (biome === "shallows" || biome === "beach") {
+      const supportedWaterLevel = this.getSupportedWaterLevel(x, z, height);
       return {
         height,
         biome,
         surfaceBlockId: SAND,
         subsurfaceBlockId: SAND,
-        fluidLevel: height < WATER_LEVEL ? WATER_LEVEL : null,
+        fluidLevel: supportedWaterLevel,
       };
     }
 
@@ -201,8 +269,61 @@ export class TerrainGenerator {
       surfaceBlockId,
       subsurfaceBlockId,
       fluidLevel:
-        surfaceBlockId === SAND && height < WATER_LEVEL ? WATER_LEVEL : null,
+        surfaceBlockId === SAND
+          ? this.getSupportedWaterLevel(x, z, height)
+          : null,
     };
+  }
+
+  private smoothGeneratedHeight(
+    x: number,
+    z: number,
+    rawHeight: number
+  ): number {
+    const neighborRawHeights = [
+      this.getRawHeightOnly(x + 1, z),
+      this.getRawHeightOnly(x - 1, z),
+      this.getRawHeightOnly(x, z + 1),
+      this.getRawHeightOnly(x, z - 1),
+    ];
+    const averageNeighborHeight = Math.round(
+      neighborRawHeights.reduce((sum, height) => sum + height, 0) /
+        neighborRawHeights.length
+    );
+    return clampWorldY(
+      Math.max(
+        averageNeighborHeight - MAX_NEIGHBOR_GROUND_DELTA,
+        Math.min(averageNeighborHeight + MAX_NEIGHBOR_GROUND_DELTA, rawHeight)
+      )
+    );
+  }
+
+  private getRawHeightOnly(x: number, z: number): number {
+    return clampWorldY(Math.round(7 + terrainNoise(x, z, this.seed)));
+  }
+
+  private getSupportedWaterLevel(
+    x: number,
+    z: number,
+    groundHeight: number
+  ): number | null {
+    if (groundHeight >= WATER_LEVEL) {
+      return null;
+    }
+
+    const neighborHeights = [
+      this.getRawHeightOnly(x + 1, z),
+      this.getRawHeightOnly(x - 1, z),
+      this.getRawHeightOnly(x, z + 1),
+      this.getRawHeightOnly(x, z - 1),
+    ];
+    const minNeighborHeight = Math.min(...neighborHeights);
+
+    if (minNeighborHeight < groundHeight - 1) {
+      return null;
+    }
+
+    return WATER_LEVEL;
   }
 
   private pickTransitionSurfaceBlock(
@@ -222,11 +343,11 @@ export class TerrainGenerator {
     }
 
     if (seedSurfaceBlockId === GRASS || seedSurfaceBlockId === DIRT) {
-      if (height <= WATER_LEVEL) {
-        return SAND;
+      if (materialBlend > 0.2) {
+        return GRASS;
       }
 
-      return materialBlend > 0.2 ? GRASS : rawColumn.surfaceBlockId;
+      return height <= WATER_LEVEL ? SAND : rawColumn.surfaceBlockId;
     }
 
     if (seedSurfaceBlockId === STONE) {

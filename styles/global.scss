@@ -15,6 +15,9 @@ body {
 }
 
 body {
+  --font-open-sans: "Open Sans", Arial, Helvetica, sans-serif;
+  --font-noto-sans-mono: "Noto Sans Mono", "SFMono-Regular", Consolas, monospace;
+  --font-roboto-slab: "Roboto Slab", Georgia, serif;
   color: $text-primary;
   background-color: $background-color;
   overflow-x: hidden;

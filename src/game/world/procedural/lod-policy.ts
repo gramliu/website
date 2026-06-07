@@ -105,15 +105,15 @@ export function sampleColumnLod(
   x: number,
   z: number,
   bounds: WorldBounds,
-  budget: LodBudget
+  _budget: LodBudget
 ): LodSample {
   const distanceFromFullDetail = columnDistanceFromBounds(x, z, bounds);
-  const midEnd = Math.max(3, budget.midDetailRadius * 4);
-  const wireEnd = Math.max(midEnd + 4, budget.wireRadius * 4 + 2);
-  const horizonEnd = Math.max(wireEnd + 4, budget.horizonRadius * 4 + 4);
+  const midEnd = 1;
+  const wireEnd = 2;
+  const horizonEnd = 4;
   const fidelity = 1 - smoothstep(0, wireEnd, distanceFromFullDetail);
   const blockOpacity =
-    distanceFromFullDetail === 0 ? 1 : smoothstep(0.62, 0.98, fidelity);
+    distanceFromFullDetail === 0 ? 1 : smoothstep(0.15, 1, fidelity);
   const midOpacity = clamp01(1 - Math.abs(fidelity - 0.55) / 0.45);
   const wireOpacity = 1 - smoothstep(0.25, 0.72, fidelity);
   const particleOpacity = 1 - smoothstep(0, 0.25, fidelity);
@@ -140,8 +140,8 @@ export function sampleColumnLod(
   };
 }
 
-export function getColumnLodSearchRadius(budget: LodBudget): number {
-  return Math.max(8, budget.horizonRadius * 4 + 4);
+export function getColumnLodSearchRadius(_budget: LodBudget): number {
+  return 4;
 }
 
 export function chunkChebyshevDistance(

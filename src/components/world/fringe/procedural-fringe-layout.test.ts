@@ -4,6 +4,26 @@ import { ProceduralWorldRuntime } from "../../../game/world/procedural/procedura
 import { ProceduralVoxelWorld } from "../../../game/world/procedural/procedural-world";
 import { computeProceduralFringeLayout } from "./procedural-fringe-layout";
 
+function distanceFromBounds(
+  x: number,
+  z: number,
+  bounds: { min: { x: number; z: number }; max: { x: number; z: number } }
+): number {
+  const dx =
+    x < bounds.min.x
+      ? bounds.min.x - x
+      : x > bounds.max.x
+        ? x - bounds.max.x
+        : 0;
+  const dz =
+    z < bounds.min.z
+      ? bounds.min.z - z
+      : z > bounds.max.z
+        ? z - bounds.max.z
+        : 0;
+  return Math.max(dx, dz);
+}
+
 describe("computeProceduralFringeLayout", () => {
   it("starts wireframes immediately outside the 10x10 rendered footprint", () => {
     const world = new ProceduralVoxelWorld({ seed: 23, mode: "preview" });
@@ -50,5 +70,27 @@ describe("computeProceduralFringeLayout", () => {
     );
 
     expect(secondMinX).toBeGreaterThan(firstMinX);
+  });
+
+  it("keeps snapshot wireframes within two blocks of the rendered footprint", () => {
+    const runtime = new ProceduralWorldRuntime({
+      seed: 23,
+      mode: "interactive",
+      previewCenterX: 5,
+      previewCenterZ: 5,
+    });
+
+    runtime.updateFocus({ x: 5, y: 0, z: 5 }, "interactive");
+    const snapshot = runtime.createSnapshot();
+    const layout = computeProceduralFringeLayout(runtime.world, snapshot);
+
+    expect(layout.wireframes.length).toBeGreaterThan(0);
+    expect(
+      Math.max(
+        ...layout.wireframes.map((wire) =>
+          distanceFromBounds(wire.x, wire.z, snapshot.fullDetailBounds)
+        )
+      )
+    ).toBeLessThanOrEqual(2);
   });
 });

@@ -86,6 +86,58 @@ function normalize2d(x: number, z: number): { x: number; z: number } {
   return { x: x / length, z: z / length };
 }
 
+function distancePointToSegment2d(
+  pointX: number,
+  pointZ: number,
+  start: RenderOrigin,
+  end: RenderOrigin
+): { distance: number; onSegment: boolean } {
+  const segmentX = end.x - start.x;
+  const segmentZ = end.z - start.z;
+  const lengthSquared = segmentX * segmentX + segmentZ * segmentZ;
+
+  if (lengthSquared === 0) {
+    return {
+      distance: Math.hypot(pointX - end.x, pointZ - end.z),
+      onSegment: false,
+    };
+  }
+
+  const t =
+    ((pointX - start.x) * segmentX + (pointZ - start.z) * segmentZ) /
+    lengthSquared;
+  const clampedT = Math.max(0, Math.min(1, t));
+  const closestX = start.x + segmentX * clampedT;
+  const closestZ = start.z + segmentZ * clampedT;
+
+  return {
+    distance: Math.hypot(pointX - closestX, pointZ - closestZ),
+    onSegment: t >= 0 && t <= 1,
+  };
+}
+
+function playerVisibilityMultiplier(
+  x: number,
+  z: number,
+  focus: RenderOrigin,
+  camera: CameraSnapshotContext | null | undefined
+): number {
+  if (Math.hypot(x - focus.x, z - focus.z) <= 1.75) {
+    return 0;
+  }
+
+  if (!camera) {
+    return 1;
+  }
+
+  const occlusion = distancePointToSegment2d(x, z, camera.position, focus);
+  if (occlusion.onSegment && occlusion.distance <= 1.1) {
+    return 0.1;
+  }
+
+  return 1;
+}
+
 function viewRelevance(
   x: number,
   z: number,
@@ -134,7 +186,8 @@ export function createProceduralRenderSnapshot({
         continue;
       }
 
-      const relevance = viewRelevance(x, z, focus, camera);
+      const visibility = playerVisibilityMultiplier(x, z, focus, camera);
+      const relevance = viewRelevance(x, z, focus, camera) * visibility;
       lodSamples.push({ x, z, ...sample });
 
       if (sample.blockOpacity > 0.03) {
@@ -145,7 +198,10 @@ export function createProceduralRenderSnapshot({
         highDetailCells.push(
           ...world.getRenderableColumnCells(x, z, "preview").map((cell) => ({
             ...cell,
-            opacity,
+            opacity:
+              sample.distanceFromFullDetail === 0
+                ? opacity
+                : opacity * visibility,
             fidelity: sample.fidelity,
           }))
         );
@@ -154,19 +210,28 @@ export function createProceduralRenderSnapshot({
       const height = world.getHighestSolidCell(x, z) ?? WORLD_MIN_Y;
       const surfaceBlockId = world.getBlockIdAtCell(x, height, z);
 
-      if (sample.midOpacity > 0.03) {
+      if (
+        sample.midOpacity > 0.03 &&
+        sample.distanceFromFullDetail > 0 &&
+        visibility > 0
+      ) {
         midDetailColumns.push({
           x,
           z,
           y: WORLD_MIN_Y,
           height,
           surfaceBlockId,
-          opacity: sample.midOpacity,
+          opacity: sample.midOpacity * visibility,
           fidelity: sample.fidelity,
         });
       }
 
-      if (sample.wireOpacity > 0.03) {
+      if (
+        sample.wireOpacity > 0.03 &&
+        sample.distanceFromFullDetail > 1 &&
+        sample.distanceFromFullDetail <= 2 &&
+        visibility > 0
+      ) {
         wireColumns.push({
           x,
           z,
@@ -178,7 +243,11 @@ export function createProceduralRenderSnapshot({
         });
       }
 
-      if (sample.lod === "horizon" && sample.particleOpacity > 0.03) {
+      if (
+        sample.lod === "horizon" &&
+        sample.particleOpacity > 0.03 &&
+        visibility > 0
+      ) {
         const tile = {
           x,
           z,

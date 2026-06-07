@@ -1,6 +1,6 @@
-import { isBlockSolid } from "../block-registry";
 import type { LoadedWorldCell } from "../world-loader";
 import { WORLD_MIN_Y } from "./chunk-coords";
+import { DIRT, GRASS, isGroundBlockId, SAND, WATER } from "./ground-blocks";
 
 function cellKey(x: number, y: number, z: number): string {
   return `${x},${y},${z}`;
@@ -41,13 +41,13 @@ function clamp(value: number, min: number, max: number): number {
 
 function weightsForBlockId(blockId: number): MaterialWeights {
   switch (blockId) {
-    case 2:
+    case GRASS:
       return { ...emptyMaterialWeights, grass: 1 };
-    case 3:
+    case DIRT:
       return { ...emptyMaterialWeights, dirt: 1 };
-    case 9:
+    case WATER:
       return { ...emptyMaterialWeights, water: 1 };
-    case 12:
+    case SAND:
       return { ...emptyMaterialWeights, sand: 1 };
     default:
       return { ...emptyMaterialWeights, stone: 1 };
@@ -83,7 +83,7 @@ export class StarterRegion {
       column.push(cell);
       this.columns.set(key, column);
 
-      if (isBlockSolid(cell.id)) {
+      if (isGroundBlockId(cell.id)) {
         this.solidHeights.set(
           key,
           Math.max(this.solidHeights.get(key) ?? WORLD_MIN_Y, cell.y)
@@ -170,6 +170,10 @@ export class StarterRegion {
   }
 
   public getHighestSolidCell(x: number, z: number): number | null {
+    return this.getHighestGroundCell(x, z);
+  }
+
+  public getHighestGroundCell(x: number, z: number): number | null {
     return this.solidHeights.get(columnKey(x, z)) ?? null;
   }
 

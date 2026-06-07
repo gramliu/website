@@ -39,6 +39,10 @@ export default function WorldRenderer({
   return (
     <>
       {renderedCells.map((cell) => {
+        if (cell.opacity !== undefined && cell.opacity <= 0.01) {
+          return null;
+        }
+
         const block = getBlockDefinition(cell.id);
         const texture = getRenderableBlockTextures(block.renderKey);
 

@@ -1,9 +1,6 @@
 import clsx from "clsx";
-import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import World from "../src/components/world";
-
-const inter = Inter({ subsets: ["latin"] });
 
 type MobileControlKey = "KeyW" | "KeyA" | "KeyS" | "KeyD";
 
@@ -85,7 +82,7 @@ export default function WorldPage() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <main className={`flex h-screen w-screen ${inter.className} relative`}>
+    <main className="relative flex h-screen w-screen font-sans">
       <World
         rotateWorld={false}
         interactiveMode={isPlaying}

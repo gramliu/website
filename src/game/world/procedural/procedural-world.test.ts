@@ -8,6 +8,7 @@ import { loadWorldCellsFromString } from "../world-loader";
 import { columnIndex } from "./chunk";
 import { CHUNK_SIZE_XZ } from "./chunk-coords";
 import { ChunkStore } from "./chunk-store";
+import { GRASS, isGroundBlockId, SAND, WATER } from "./ground-blocks";
 import {
   classifyChunkLod,
   FULL_DETAIL_SIZE_XZ,
@@ -34,6 +35,26 @@ describe("StarterRegion", () => {
       expect(starterRegion.getBlockIdAtCell(cell.x, cell.y, cell.z)).toBe(
         cell.id
       );
+    }
+  });
+
+  it("derives seed heights only from ground blocks, not trees or leaves", () => {
+    const seedCells = loadWorldCellsFromString(worldData);
+    const starterRegion = new StarterRegion(seedCells);
+    const bounds = starterRegion.getBounds();
+
+    for (let z = bounds.min.z; z <= bounds.max.z; z++) {
+      for (let x = bounds.min.x; x <= bounds.max.x; x++) {
+        const height = starterRegion.getHighestGroundCell(x, z);
+
+        if (height === null) {
+          continue;
+        }
+
+        expect(
+          isGroundBlockId(starterRegion.getBlockIdAtCell(x, height, z))
+        ).toBe(true);
+      }
     }
   });
 });
@@ -71,7 +92,83 @@ describe("TerrainGenerator", () => {
     for (let z = 0; z < CHUNK_SIZE_XZ; z++) {
       const leftBoundary = left.heightmap[columnIndex(CHUNK_SIZE_XZ - 1, z)];
       const rightBoundary = right.heightmap[columnIndex(0, z)];
-      expect(Math.abs(leftBoundary - rightBoundary)).toBeLessThanOrEqual(4);
+      expect(Math.abs(leftBoundary - rightBoundary)).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it("limits adjacent ground elevation deltas in every direction", () => {
+    const generator = new TerrainGenerator({ seed: 29 });
+
+    for (let z = -12; z <= 12; z++) {
+      for (let x = -12; x <= 12; x++) {
+        const height = generator.getColumn(x, z).height;
+        expect(
+          Math.abs(height - generator.getColumn(x + 1, z).height)
+        ).toBeLessThanOrEqual(2);
+        expect(
+          Math.abs(height - generator.getColumn(x, z + 1).height)
+        ).toBeLessThanOrEqual(2);
+      }
+    }
+  });
+
+  it("does not generate elevated water over air", () => {
+    const generator = new TerrainGenerator({ seed: 37 });
+    const chunk = generator.generateChunk(-1, 1);
+
+    for (const cell of chunk.cells) {
+      if (cell.id !== WATER) {
+        continue;
+      }
+
+      expect(generator.getBlockIdAtCell(cell.x, cell.y - 1, cell.z)).not.toBe(
+        0
+      );
+    }
+  });
+
+  it("uses transition bands before switching from grass seed edges to sand", () => {
+    const seedCells = loadWorldCellsFromString(worldData);
+    const starterRegion = new StarterRegion(seedCells);
+    const generator = new TerrainGenerator({ seed: 17, starterRegion });
+    const bounds = starterRegion.getBounds();
+    const grassEdgeTransitions: Array<{
+      fromX: number;
+      fromZ: number;
+      toX: number;
+      toZ: number;
+    }> = [];
+    const maybeAddGrassEdge = (
+      fromX: number,
+      fromZ: number,
+      toX: number,
+      toZ: number
+    ) => {
+      const height = starterRegion.getHighestGroundCell(fromX, fromZ);
+      if (height === null) {
+        return;
+      }
+
+      if (starterRegion.getBlockIdAtCell(fromX, height, fromZ) === GRASS) {
+        grassEdgeTransitions.push({ fromX, fromZ, toX, toZ });
+      }
+    };
+
+    for (let x = bounds.min.x; x <= bounds.max.x; x++) {
+      maybeAddGrassEdge(x, bounds.min.z, x, bounds.min.z - 1);
+      maybeAddGrassEdge(x, bounds.max.z, x, bounds.max.z + 1);
+    }
+
+    for (let z = bounds.min.z; z <= bounds.max.z; z++) {
+      maybeAddGrassEdge(bounds.min.x, z, bounds.min.x - 1, z);
+      maybeAddGrassEdge(bounds.max.x, z, bounds.max.x + 1, z);
+    }
+
+    expect(grassEdgeTransitions.length).toBeGreaterThan(0);
+
+    for (const transition of grassEdgeTransitions.slice(0, 12)) {
+      const generated = generator.getColumn(transition.toX, transition.toZ);
+      expect(generated.surfaceBlockId).not.toBe(SAND);
     }
   });
 });
@@ -132,9 +229,43 @@ describe("ProceduralWorldRuntime", () => {
     );
     expect(snapshot.midDetailColumns.length).toBeGreaterThan(0);
     expect(snapshot.wireColumns.length).toBeGreaterThan(0);
+    expect(snapshot.wireColumns.every((column) => column.opacity <= 1)).toBe(
+      true
+    );
     expect(
-      new Set(snapshot.wireColumns.map((column) => column.opacity)).size
-    ).toBeGreaterThan(1);
+      Math.max(...snapshot.wireColumns.map((column) => column.distanceBand))
+    ).toBeLessThanOrEqual(2);
+  });
+
+  it("keeps faded proxy terrain from blocking the player or camera corridor", () => {
+    const runtime = new ProceduralWorldRuntime({
+      seed: 19,
+      mode: "interactive",
+      previewCenterX: 5,
+      previewCenterZ: 5,
+      seedCells: loadWorldCellsFromString(worldData),
+    });
+
+    runtime.updateFocus({ x: 5, y: 0, z: 5 }, "interactive", {
+      position: { x: 15, y: 9, z: 5 },
+      forward: { x: -1, y: 0, z: 0 },
+    });
+    const snapshot = runtime.createSnapshot();
+    const corridorColumns = snapshot.midDetailColumns.filter(
+      (column) => column.x >= 10 && column.z >= 4 && column.z <= 6
+    );
+
+    expect(corridorColumns.length).toBeGreaterThan(0);
+    expect(
+      Math.max(...corridorColumns.map((column) => column.opacity))
+    ).toBeLessThanOrEqual(0.15);
+    expect(
+      snapshot.wireColumns.every(
+        (column) =>
+          Math.hypot(column.x - snapshot.focus.x, column.z - snapshot.focus.z) >
+          1.75
+      )
+    ).toBe(true);
   });
 });
 
@@ -279,7 +410,7 @@ describe("procedural LOD policy", () => {
       PROCEDURAL_LOD_BUDGETS.interactive
     );
     const far = sampleColumnLod(
-      18,
+      11,
       5,
       bounds,
       PROCEDURAL_LOD_BUDGETS.interactive
@@ -287,5 +418,6 @@ describe("procedural LOD policy", () => {
 
     expect(near.blockOpacity).toBeGreaterThan(far.blockOpacity);
     expect(far.wireOpacity).toBeGreaterThan(near.wireOpacity);
+    expect(far.distanceFromFullDetail).toBeLessThanOrEqual(2);
   });
 });
