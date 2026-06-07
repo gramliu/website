@@ -111,6 +111,7 @@ export default function Hero() {
               interactiveMode={isPlaying}
               closeUp
               showFringe={isDesktop}
+              worldMode="procedural"
             />
           </div>
           <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-32">

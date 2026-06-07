@@ -3,28 +3,27 @@ import { useEffect, useRef } from "react";
 import type { Group } from "three";
 import { useKeyboardState } from "../../adapters/input/keyboard";
 import WorldRenderer from "../../adapters/three/world-renderer";
-import { vec3 } from "../../game/core/math/vec3";
 import { createGameState, type GameState } from "../../game/game";
-import { VoxelWorld } from "../../game/world/world";
-import { loadWorldCellsFromString } from "../../game/world/world-loader";
 import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
-import worldData from "./world-data";
+import PlayerCameraFollow from "./player-camera-follow";
+import {
+  DEFAULT_PLAYER_ROTATION,
+  DEFAULT_WORLD_ROTATION,
+  useWorldRuntime,
+  type WorldMode,
+} from "./use-world-runtime";
 
-const world = new VoxelWorld(loadWorldCellsFromString(worldData));
 const ROTATION_SPEED = 0.3;
 
-type Vec3 = [number, number, number];
-const DEFAULT_PLAYER_POSITION: Vec3 = [9, 6, 1];
-const DEFAULT_PLAYER_STATE_POSITION = vec3(9.5, 6, 1.5);
-const DEFAULT_PLAYER_ROTATION: Vec3 = [0, 0, 0];
-const DEFAULT_WORLD_ROTATION: Vec3 = [0, 0, 0];
+export type { WorldMode } from "./use-world-runtime";
 
 interface Props {
   size?: number;
   rotateWorld?: boolean;
   interactiveMode?: boolean;
   showFringe?: boolean;
+  worldMode?: WorldMode;
 }
 
 /**
@@ -35,25 +34,32 @@ export default function Map({
   rotateWorld,
   interactiveMode = false,
   showFringe = false,
+  worldMode = "static",
 }: Props) {
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
   const keyControlsRef = useKeyboardState();
+  const {
+    activeWorld,
+    isProcedural,
+    runtimeMode,
+    updateFocus,
+    playerPosition,
+    playerStatePosition,
+  } = useWorldRuntime({ worldMode, interactiveMode });
   const gameStateRef = useRef<GameState>(
-    createGameState(world, DEFAULT_PLAYER_STATE_POSITION)
+    createGameState(activeWorld, playerStatePosition)
   );
 
   function resetPlayer() {
-    gameStateRef.current = createGameState(
-      world,
-      DEFAULT_PLAYER_STATE_POSITION
-    );
+    gameStateRef.current = createGameState(activeWorld, playerStatePosition);
+    updateFocus(playerStatePosition);
 
     if (playerRef.current) {
       playerRef.current.position.set(
-        DEFAULT_PLAYER_STATE_POSITION.x,
-        DEFAULT_PLAYER_STATE_POSITION.y,
-        DEFAULT_PLAYER_STATE_POSITION.z
+        playerStatePosition.x,
+        playerStatePosition.y,
+        playerStatePosition.z
       );
       playerRef.current.rotation.set(
         DEFAULT_PLAYER_ROTATION[0],
@@ -89,12 +95,16 @@ export default function Map({
       window.removeEventListener("keydown", handleKeyDown, {
         capture: true,
       });
-  }, []);
+  }, [resetPlayer]);
 
   useFrame((_, delta) => {
     // Rotate the world
     if (worldRef.current && rotateWorld && !interactiveMode) {
       worldRef.current.rotation.y += delta * ROTATION_SPEED;
+    }
+
+    if (isProcedural) {
+      updateFocus(gameStateRef.current.player.position);
     }
   });
 
@@ -103,13 +113,32 @@ export default function Map({
     resetWorld();
   }, [interactiveMode]);
 
+  useEffect(() => {
+    gameStateRef.current = createGameState(activeWorld, playerStatePosition);
+    updateFocus(playerStatePosition);
+    resetPlayer();
+  }, [activeWorld, playerStatePosition, runtimeMode, updateFocus]);
+
   return (
     <group ref={worldRef} scale={[size, size, size]}>
+      <PlayerCameraFollow
+        enabled={interactiveMode}
+        gameStateRef={gameStateRef}
+      />
       <group position={[-4.5, 0, -4.5]}>
-        <WorldRenderer world={world} />
-        {showFringe ? <FringeRenderer world={world} /> : null}
+        <WorldRenderer
+          world={activeWorld}
+          detail={interactiveMode ? "full" : "preview"}
+        />
+        {showFringe ? (
+          <FringeRenderer
+            world={activeWorld}
+            enableParticles={interactiveMode}
+            procedural={isProcedural}
+          />
+        ) : null}
         <Player
-          position={DEFAULT_PLAYER_POSITION}
+          position={playerPosition}
           animate={!interactiveMode}
           gameStateRef={gameStateRef}
           ref={playerRef}

@@ -1,6 +1,6 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import Map from "./map";
+import Map, { type WorldMode } from "./map";
 
 interface Props {
   size?: number;
@@ -8,6 +8,7 @@ interface Props {
   interactiveMode?: boolean;
   closeUp?: boolean;
   showFringe?: boolean;
+  worldMode?: WorldMode;
 }
 
 function World({
@@ -16,6 +17,7 @@ function World({
   interactiveMode = false,
   closeUp = false,
   showFringe = false,
+  worldMode = "static",
 }: Props) {
   return (
     <Canvas
@@ -26,13 +28,13 @@ function World({
       style={{
         height: closeUp ? "900px" : "100%",
       }}
-      shadows
+      shadows={interactiveMode}
     >
       <ambientLight intensity={0.5} />
       <directionalLight
         position={[1, 10, 5]}
         intensity={1}
-        castShadow
+        castShadow={interactiveMode}
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
         shadow-camera-near={0.5}
@@ -54,6 +56,7 @@ function World({
         rotateWorld={rotateWorld}
         interactiveMode={interactiveMode}
         showFringe={showFringe}
+        worldMode={worldMode}
       />
     </Canvas>
   );
