@@ -2,6 +2,15 @@
 
 ## Goal
 
+## Seed invariant
+
+The authored static map remains the source of truth for the preview/starter area. The procedural generator must branch off that map rather than regenerate it. In practice:
+
+- every existing `worldData` cell in the 10x10 seed must remain exact,
+- seeded column heights and block IDs must be read from the authored map,
+- smoothing and biome generation may only affect non-seeded columns,
+- generated columns adjacent to the seed should blend toward the seed edge instead of altering the seed.
+
 Replace the current simple column noise with a staged, Minecraft-like terrain pipeline that produces smoother height transitions and more coherent block/biome changes.
 
 Adjacent blocks should not abruptly change height or material unless the terrain intentionally enters a cliff/mountain feature.
@@ -112,7 +121,7 @@ Add or update tests in `src/game/world/procedural/procedural-world.test.ts`:
 - deterministic generation with same seed,
 - chunk boundary continuity,
 - neighboring generated column height delta stays within configured threshold,
-- seed cells remain exact,
+- seed cells remain exact and are never smoothed/replaced,
 - seed transition skirt does not create abrupt cliffs,
 - beach/grass/stone transitions do not create one-column spikes,
 - water level remains stable across adjacent columns.
@@ -121,5 +130,5 @@ Add or update tests in `src/game/world/procedural/procedural-world.test.ts`:
 
 - Adjacent generated columns rarely differ by more than 1-2 blocks except in classified cliffs.
 - Biome/material changes happen in bands rather than isolated cells.
-- The starter 10x10 map remains exact.
+- The starter 10x10 map remains exact and is the visible preview seed.
 - Terrain outside the starter map blends smoothly into the authored seed area.

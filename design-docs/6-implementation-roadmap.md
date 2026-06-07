@@ -2,6 +2,10 @@
 
 ## Recommended order
 
+## Global invariant
+
+All milestones must preserve this invariant: the current static `worldData` map is the exact preview/starter seed, and procedural generation branches outward from it. The seed must remain exact for rendering, collision, block lookup, LOD classification, and fringe placement.
+
 ### 1. Runtime refactor
 
 Implement `useWorldRuntime`, `ProceduralWorldRuntime`, `StarterRegion`, and `RenderSnapshot`.
@@ -73,7 +77,7 @@ Why seventh:
 
 ### Milestone A: Architecture foundation
 
-- [ ] `StarterRegion` owns seeded 10x10 map.
+- [ ] `StarterRegion` owns seeded 10x10 map and preserves it exactly.
 - [ ] `ProceduralWorldRuntime` owns mode/focus/chunk window.
 - [ ] `RenderSnapshot` exists.
 - [ ] `Map` consumes runtime output.
@@ -119,7 +123,7 @@ Manual validation:
 
 - preview mode remains stable,
 - interactive player stays framed,
-- seeded 10x10 area matches current map,
+- seeded 10x10 area exactly matches current static map,
 - generated terrain does not cliff abruptly near seed,
 - wireframes fade from horizon into higher-fidelity terrain,
 - mobile WASD still controls the player on `/world`.

@@ -2,6 +2,10 @@
 
 ## Goal
 
+## Preview seed invariant
+
+Preview presentation must keep the authored static seed as the stable visual anchor. The player/autoplay can move within that fixed seed scene, while procedural terrain branches outward beyond the seed. Interactive camera-follow or render-origin behavior must not change the authored preview seed layout.
+
 Prevent the player from going off screen in interactive mode while preserving the current portfolio-style preview behavior.
 
 Preview and interactive mode should have different presentation rules.
@@ -96,7 +100,7 @@ Interactive mode should keep the player visible:
 
 ## Acceptance criteria
 
-- In preview mode, the world looks like a fixed portfolio scene.
+- In preview mode, the world looks like a fixed portfolio scene rooted in the authored static seed.
 - In interactive mode, the player stays in frame.
 - Procedural chunk focus follows the player only in interactive mode.
 - The system is ready for render-origin recentering without rewriting physics.

@@ -2,6 +2,10 @@
 
 ## Goal
 
+## Seed/fringe invariant
+
+Procedural fringe bands must begin outside the authored static seed footprint. The current 10x10 map remains the high-fidelity seed in preview mode; wireframes, mid-detail terrain, and horizon effects are continuations that branch outward from that seed rather than replacements for it.
+
 Fix procedural fringe behavior so wireframes actually represent a low-fidelity frontier that resolves into higher-fidelity terrain near the render zone.
 
 The current procedural fringe is effectively a fixed perimeter around the 10x10 footprint. It does not fade out of fidelity at the edge or become higher fidelity as it approaches the rendered area.
@@ -104,6 +108,6 @@ Update `src/components/world/fringe/procedural-fringe-layout.test.ts`:
 ## Acceptance criteria
 
 - Wireframes are not visually fixed around the map.
-- Near terrain resolves into blocks/mid-detail rather than staying wireframe.
+- Near generated terrain resolves into blocks/mid-detail while the authored seed remains high fidelity.
 - Far terrain fades to grid/particles.
 - Static fringe behavior remains unchanged.

@@ -2,6 +2,17 @@
 
 ## Goal
 
+## Non-negotiable preview seed invariant
+
+Preview mode must continue to render the current authored static map definition as the canonical seed. Procedural terrain is allowed to branch outward from that seed, but it must not replace, reinterpret, smooth, or mutate the authored 10x10 starter area. Any runtime/refactor work must preserve this rule:
+
+```text
+preview = authored static worldData seed + procedural continuation outside seed bounds
+interactive = same seed as origin + procedural continuation as player explores
+```
+
+This invariant applies to block lookup, render snapshots, collision, fringe layout, terrain blending, and camera/presentation behavior.
+
 Create a cleaner architecture for the procedural world so future changes do not keep accumulating inside `Map`, `ProceduralVoxelWorld`, and the fringe renderer.
 
 The current prototype proves that a procedural mode can work, but several responsibilities are mixed together:
@@ -117,6 +128,7 @@ This keeps seed logic out of the terrain generator internals.
 ## Acceptance criteria
 
 - `Map` no longer directly constructs `ProceduralVoxelWorld`.
+- Preview/starter rendering still uses the authored static `worldData` seed exactly.
 - `ProceduralVoxelWorld` only answers gameplay/world queries.
 - Preview anchoring and interactive following live in runtime/presentation modules.
 - Renderers consume explicit render snapshots instead of calling procedural world render helpers directly.

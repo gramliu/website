@@ -2,6 +2,10 @@
 
 ## Goal
 
+## Seed/render invariant
+
+The high-detail preview/starter footprint is the authored static 10x10 map. Render snapshots must treat those seed cells as canonical high-detail cells and build mid-detail, wireframe, grid, and particle bands outward from that seed footprint. The LOD system should never swap the seed for generated terrain in preview mode.
+
 Make LOD the single source of truth for what gets rendered as full blocks, mid-detail terrain, wireframes, grid, and particles.
 
 The current procedural path has high-detail blocks and a fringe perimeter, but it does not yet model a continuous fidelity transition.
@@ -116,7 +120,7 @@ Wireframe and grid should come from the same snapshot, not an independent perime
 
 ## Acceptance criteria
 
-- Full blocks render only inside the high-detail footprint.
+- Full blocks render only inside the high-detail footprint, and the preview high-detail footprint is the authored static seed.
 - Mid-detail terrain appears outside full-detail blocks.
 - Wireframes appear outside mid-detail terrain.
 - Opacity/fidelity changes by distance instead of fixed hardcoded rows.
