@@ -19,7 +19,7 @@ export default function Document() {
           property="og:description"
           content="Hi! I'm Gram and I build things, from web apps to full stack to IoT. I'm a senior at Carnegie Mellon University pursuing a major in Electrical and Computer Engineering. I am a big fan of technology and how it changes the way we think about and address problems from education to health care, consistently pushing the boundaries of what we think is possible."
         />
-        <meta property="og:image" content="/images/profilePhoto.jpg" />
+        <meta property="og:image" content="/images/portrait.png" />
 
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://gramliu.com/" />
@@ -28,7 +28,7 @@ export default function Document() {
           property="twitter:description"
           content="Hi! I'm Gram and I build things, from web apps to full stack to IoT. I'm a senior at Carnegie Mellon University pursuing a major in Electrical and Computer Engineering. I am a big fan of technology and how it changes the way we think about and address problems from education to health care, consistently pushing the boundaries of what we think is possible."
         />
-        <meta property="twitter:image" content="/images/profilePhoto.jpg" />
+        <meta property="twitter:image" content="/images/portrait.png" />
         <link rel="icon" href="/images/logo.png" />
       </Head>
       <body>

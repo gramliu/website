@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import ProfilePhoto from "../../public/images/profilePhoto.jpg";
+import Portrait from "../../public/images/portrait.png";
 import social from "../config/social";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 import World from "./world";
@@ -12,7 +12,7 @@ function HeroContent() {
     <div className="flex items-center md:flex-row flex-col">
       <div className="rounded-full border-highlight border-[5px] p-2 overflow-hidden">
         <Image
-          src={ProfilePhoto}
+          src={Portrait}
           alt="Picture of me"
           className="h-[20vh] w-auto rounded-full"
           height={512}
