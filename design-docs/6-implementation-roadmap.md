@@ -26,49 +26,60 @@ Why second:
 - low risk,
 - does not block deeper architecture.
 
-### 3. LOD policy and render snapshot
+### 3. Seed-transition terrain fix
 
-Make LOD classification and fidelity values shared between renderers and fringe.
+Implement the transition-skirt terrain plan in `7-seed-transition-terrain.md` before expanding farther from the seed.
 
 Why third:
 
-- fixes the fixed-fringe problem,
-- prepares mid-detail rendering,
-- makes procedural rendering deterministic and testable.
+- fixes the visible cliffs/material jumps immediately adjacent to the authored map,
+- keeps the seed exact while making generated terrain respect seed-edge boundary conditions,
+- can be tested as pure height/material field logic.
 
-### 4. Fringe fidelity refactor
+### 4. LOD policy and render snapshot
 
-Use snapshot/LOD data to drive wireframe and grid opacity.
+Make LOD classification and fidelity values shared between renderers and fringe. Use the continuous opacity model in `9-seamless-fidelity-transitions.md`.
 
 Why fourth:
 
-- depends on LOD policy,
-- removes hardcoded procedural perimeter behavior.
+- fixes block pop-in/pop-out,
+- prepares mid-detail rendering,
+- makes procedural rendering deterministic and testable.
 
-### 5. Minecraft-like terrain pipeline
+### 5. Camera-relative fringe refactor
 
-Refactor terrain generation into climate, heightfield, biome, surface, and seed-transition stages.
+Use snapshot/LOD/camera data to drive wireframe and grid placement as described in `8-camera-relative-fringe.md`.
 
 Why fifth:
 
+- depends on LOD policy,
+- removes hardcoded procedural perimeter behavior,
+- makes the frontier move with the interactive player/camera.
+
+### 6. Minecraft-like terrain pipeline
+
+Refactor terrain generation into climate, heightfield, biome, surface, and seed-transition stages.
+
+Why sixth:
+
 - larger change,
 - easier once the runtime/snapshot boundaries exist,
-- can be tested mostly as pure functions.
+- extends the seed-transition fix to the full world.
 
-### 6. Mid-detail terrain renderer
+### 7. Mid-detail terrain renderer
 
 Add simplified terrain columns between full-detail blocks and wireframes.
 
-Why sixth:
+Why seventh:
 
 - depends on render snapshots and LOD fidelity,
 - completes the visual transition from wireframe to blocks.
 
-### 7. Player-centered render origin
+### 8. Player-centered render origin
 
 Replace or augment follow camera with render-origin recentering for infinite interactive terrain.
 
-Why seventh:
+Why eighth:
 
 - best long-term architecture,
 - easier after snapshots separate simulation and presentation coordinates.
@@ -89,21 +100,30 @@ Why seventh:
 - [ ] Preview mode remains fixed.
 - [ ] Reset key resets player and presentation state.
 
-### Milestone C: LOD/fringe
+### Milestone C: Seed-transition terrain
+
+- [ ] Seed edge samples are available from `StarterRegion`.
+- [ ] Generated columns near the seed blend toward seed-edge heights.
+- [ ] Generated materials near the seed blend toward seed-edge material weights.
+- [ ] Seed cells remain exact and immutable.
+
+### Milestone D: LOD/fringe/fade
 
 - [ ] `LodPolicy` returns discrete LOD and continuous fidelity.
-- [ ] Procedural fringe consumes LOD/snapshot data.
-- [ ] Wireframe opacity changes by distance.
+- [ ] Render snapshots include opacity for high/mid/wire/particle layers.
+- [ ] Procedural fringe consumes LOD/snapshot/camera data.
+- [ ] Wireframe opacity changes by distance and camera relevance.
+- [ ] Blocks and wireframes overlap during fade transitions.
 - [ ] Particles only emit in far/horizon band.
 
-### Milestone D: Terrain quality
+### Milestone E: Terrain quality
 
 - [ ] Heightfield smoothing implemented.
 - [ ] Biome transitions are gradual.
 - [ ] Seed transition skirt implemented.
 - [ ] Chunk boundary tests pass.
 
-### Milestone E: Render quality
+### Milestone F: Render quality
 
 - [ ] Mid-detail renderer exists.
 - [ ] High/mid/wire/horizon bands transition smoothly.
