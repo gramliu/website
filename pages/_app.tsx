@@ -4,6 +4,7 @@ import "../styles/shadcn.css";
 import "../styles/global.scss";
 import clsx from "clsx";
 import { Noto_Sans_Mono, Open_Sans, Roboto_Slab } from "next/font/google";
+import { GoogleAnalytics } from "../src/components/GoogleAnalytics";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       >
         <Component {...pageProps} />
       </main>
+      <GoogleAnalytics />
     </>
   );
 }

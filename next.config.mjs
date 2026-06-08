@@ -11,6 +11,9 @@ const withMdx = nextMdx({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  env: {
+    NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID,
+  },
   images: {
     remotePatterns: [
       {
