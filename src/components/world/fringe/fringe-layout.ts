@@ -49,10 +49,10 @@ export const FRINGE_CONFIG = {
   // Depth thresholds (world units behind the focus, relative to the camera)
   // controlling the LOD fade: solid blocks -> wireframes -> tiles/particles.
   depthBands: {
-    solidFadeStart: 0.75,
-    solidFadeEnd: 2.0,
-    wireframeFadeStart: 2.5,
-    wireframeFadeEnd: 4.0,
+    solidFadeStart: 1.5,
+    solidFadeEnd: 5.5,
+    wireframeFadeStart: 4,
+    wireframeFadeEnd: 6.0,
   },
   lineFade: {
     lateralInner: 2.0,
