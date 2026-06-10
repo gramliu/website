@@ -11,6 +11,10 @@ import type {
   EntityTexture,
   EntityTextureProps,
 } from "../components/world/entities";
+import {
+  depthFadeParsGlsl,
+  fringeDepthFadeUniforms,
+} from "../components/world/fringe/fringe-depth-fade";
 
 export interface MaterialTextureProps {
   path: string;
@@ -42,7 +46,45 @@ export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
   }, [baseTexture, offsetX, offsetY, repeat]);
 }
 
-export function useTextureMaterial(texture: MaterialTextureProps): Material {
+/**
+ * Patches a standard material so its alpha is multiplied by the "solid" band
+ * weight of the camera-distance LOD fade. Far-away fragments dissolve,
+ * letting the fringe wireframes/tiles show through.
+ */
+function applyDepthFade(material: MeshStandardMaterial): void {
+  material.transparent = true;
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, fringeDepthFadeUniforms);
+
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        "#include <common>",
+        "#include <common>\nvarying vec3 vFringeWorldPos;"
+      )
+      .replace(
+        "#include <project_vertex>",
+        "#include <project_vertex>\nvFringeWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;"
+      );
+
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        "#include <common>",
+        `#include <common>\nvarying vec3 vFringeWorldPos;\n${depthFadeParsGlsl}`
+      )
+      .replace(
+        "vec4 diffuseColor = vec4( diffuse, opacity );",
+        `vec4 diffuseColor = vec4( diffuse, opacity );
+        diffuseColor.a *= fringeDepthBandWeights(vFringeWorldPos).x;
+        if (diffuseColor.a < 0.004) discard;`
+      );
+  };
+  material.customProgramCacheKey = () => "fringe-depth-fade";
+}
+
+export function useTextureMaterial(
+  texture: MaterialTextureProps,
+  depthFade = false
+): Material {
   const textureMap = useRepeatedTexture(texture);
   return useMemo(() => {
     const materialProps: MeshStandardMaterialParameters = {
@@ -60,8 +102,13 @@ export function useTextureMaterial(texture: MaterialTextureProps): Material {
       materialProps.opacity = texture.opacity;
     }
 
-    return new MeshStandardMaterial(materialProps);
-  }, [textureMap, texture.opacity, texture.translucent]);
+    const material = new MeshStandardMaterial(materialProps);
+    if (depthFade) {
+      applyDepthFade(material);
+    }
+
+    return material;
+  }, [textureMap, texture.opacity, texture.translucent, depthFade]);
 }
 
 export function useEntityTexture(

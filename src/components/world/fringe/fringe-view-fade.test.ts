@@ -5,15 +5,11 @@ import type { FringeGridTile } from "./fringe-layout";
 import { computeFringeViewFadeWeight } from "./fringe-view-fade";
 
 const lineFade = {
-  backFadeStart: 0.35,
-  backFadeEnd: -0.15,
   lateralInner: 2.0,
   lateralOuter: 8.0,
 };
 
 const particleFade = {
-  backFadeStart: 0.35,
-  backFadeEnd: -0.15,
   lateralInner: 1.7,
   lateralOuter: 7.3,
 };
@@ -22,27 +18,26 @@ describe("computeFringeViewFadeWeight", () => {
   const focus = new Vector3(5, 0, 5);
   const camera = new Vector3(15, 10, 15);
 
-  it("returns full weight for points on the camera-facing side near focus", () => {
+  it("returns zero weight for points on the camera-facing side of focus", () => {
     const point = new Vector3(8, 0, 8);
-    expect(
-      computeFringeViewFadeWeight(point, camera, focus, lineFade)
-    ).toBeCloseTo(1, 1);
-  });
-
-  it("returns zero weight for points on the opposite side of focus", () => {
-    const point = new Vector3(2, 0, 2);
     expect(computeFringeViewFadeWeight(point, camera, focus, lineFade)).toBe(0);
   });
 
-  it("returns intermediate weight between front and back hemispheres", () => {
-    const point = new Vector3(5, 0, 9);
+  it("returns positive weight for points far behind the focus", () => {
+    const point = new Vector3(0, 0, 0);
     const weight = computeFringeViewFadeWeight(point, camera, focus, lineFade);
     expect(weight).toBeGreaterThan(0);
     expect(weight).toBeLessThan(1);
   });
 
+  it("returns full weight for far points directly behind the focus", () => {
+    const point = new Vector3(-2, -7, -2);
+    const weight = computeFringeViewFadeWeight(point, camera, focus, lineFade);
+    expect(weight).toBeCloseTo(1, 1);
+  });
+
   it("fades peripheral points more aggressively with particle fade", () => {
-    const point = new Vector3(10, 0, 10);
+    const point = new Vector3(0, 0, 0);
     const lineWeight = computeFringeViewFadeWeight(
       point,
       camera,
