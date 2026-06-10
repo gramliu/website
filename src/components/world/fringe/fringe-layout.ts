@@ -1,4 +1,5 @@
 import type { WorldBounds } from "../../../game/core/types";
+import { getBlockDefinition } from "../../../game/world/block-registry";
 import type { VoxelWorld } from "../../../game/world/world";
 import { computeOutwardVector } from "./fringe-animation";
 
@@ -45,21 +46,25 @@ export const FRINGE_CONFIG = {
   particleMinLife: 0.8,
   particleMaxLife: 1.6,
   particleGravity: 0.2,
+  // Depth thresholds (world units behind the focus, relative to the camera)
+  // controlling the LOD fade: solid blocks -> wireframes -> tiles/particles.
+  depthBands: {
+    solidFadeStart: 0.75,
+    solidFadeEnd: 2.0,
+    wireframeFadeStart: 2.5,
+    wireframeFadeEnd: 4.0,
+  },
   lineFade: {
-    backFadeStart: 0.35,
-    backFadeEnd: -0.15,
     lateralInner: 2.0,
     lateralOuter: 8.0,
   },
+  // Wireframes live on the island itself (plus one ring row), so the lateral
+  // bounds are generous: the fade zone sits well off the camera-focus axis.
   wireframeFade: {
-    backFadeStart: 0.35,
-    backFadeEnd: -0.15,
-    lateralInner: 3.0,
-    lateralOuter: 6.5,
+    lateralInner: 7.0,
+    lateralOuter: 11.0,
   },
   particleFade: {
-    backFadeStart: 0.35,
-    backFadeEnd: -0.15,
     lateralInner: 1.7,
     lateralOuter: 7.3,
   },
@@ -280,12 +285,49 @@ function addCornerFringe(
   }
 }
 
+function isExposedCell(
+  world: VoxelWorld,
+  x: number,
+  y: number,
+  z: number
+): boolean {
+  return (
+    !world.isCellSolid(x + 1, y, z) ||
+    !world.isCellSolid(x - 1, y, z) ||
+    !world.isCellSolid(x, y + 1, z) ||
+    !world.isCellSolid(x, y - 1, z) ||
+    !world.isCellSolid(x, y, z + 1) ||
+    !world.isCellSolid(x, y, z - 1)
+  );
+}
+
+function addIslandWireframes(
+  world: VoxelWorld,
+  wireframes: Map<string, FringeWireframe>
+): void {
+  for (const cell of world.getRenderableCells()) {
+    if (getBlockDefinition(cell.id).renderKey === "water") {
+      continue;
+    }
+
+    // Only surface cells get wireframes; interior cells would render as a
+    // dense lattice once the solid blocks fade out.
+    if (!isExposedCell(world, cell.x, cell.y, cell.z)) {
+      continue;
+    }
+
+    addWireframe(wireframes, cell.x, cell.y, cell.z, 1.0);
+  }
+}
+
 export function computeFringeLayout(world: VoxelWorld): FringeLayout {
   const bounds = world.getBounds();
   const centerX = (bounds.min.x + bounds.max.x + 1) / 2;
   const centerZ = (bounds.min.z + bounds.max.z + 1) / 2;
   const wireframes = new Map<string, FringeWireframe>();
   const gridTiles = new Map<string, FringeGridTile>();
+
+  addIslandWireframes(world, wireframes);
 
   addEdgeFringe(
     world,

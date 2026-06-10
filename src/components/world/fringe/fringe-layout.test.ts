@@ -74,6 +74,17 @@ describe("computeFringeLayout", () => {
     }
   });
 
+  it("includes wireframes for the island's own non-water cells", () => {
+    const layout = computeFringeLayout(world);
+
+    // Stone at the island base and grass on the surface get wireframes.
+    expect(hasWireframe(layout, 0, 0, 0)).toBe(true);
+    expect(hasWireframe(layout, 0, 4, 0)).toBe(true);
+
+    // Water cells never get wireframes (pond at y=1, z=9).
+    expect(hasWireframe(layout, 5, 1, 9)).toBe(false);
+  });
+
   it("limits back-edge wireframe height to top grass, ignoring leaves", () => {
     const layout = computeFringeLayout(world);
     const backWireframeYs = layout.wireframes

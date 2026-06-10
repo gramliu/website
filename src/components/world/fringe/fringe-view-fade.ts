@@ -1,9 +1,8 @@
 import { type Object3D, Vector3 } from "three";
+import { computeDepthBandWeights } from "./fringe-depth-fade";
 import { FRINGE_CONFIG, type FringeGridTile } from "./fringe-layout";
 
 export interface FringeViewFadeConfig {
-  backFadeStart: number;
-  backFadeEnd: number;
   lateralInner: number;
   lateralOuter: number;
 }
@@ -29,28 +28,30 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
   return t * t * (3 - 2 * t);
 }
 
+/**
+ * Weight for tile/particle visibility at a world-space point: the "tile"
+ * depth-band weight (far side of the camera fade) attenuated by the lateral
+ * falloff that bounds the fringe radius.
+ */
 export function computeFringeViewFadeWeight(
   pointWorld: Vector3,
   cameraWorldPosition: Vector3,
   focusWorldPosition: Vector3,
-  fade: FringeViewFadeConfig = FRINGE_CONFIG.lineFade
+  fade: FringeViewFadeConfig = FRINGE_CONFIG.particleFade
 ): number {
   toPoint.subVectors(pointWorld, focusWorldPosition);
   toCamera.subVectors(cameraWorldPosition, focusWorldPosition);
 
-  const pointDistance = toPoint.length();
   const cameraDistance = toCamera.length();
-  if (pointDistance < 1e-6 || cameraDistance < 1e-6) {
+  if (cameraDistance < 1e-6) {
     return 1;
   }
 
-  const viewAlignment =
-    toPoint.dot(toCamera) / (pointDistance * cameraDistance);
-  const backFade = smoothstep(
-    fade.backFadeEnd,
-    fade.backFadeStart,
-    viewAlignment
-  );
+  const bandFade = computeDepthBandWeights(
+    pointWorld,
+    cameraWorldPosition,
+    focusWorldPosition
+  ).tile;
 
   viewDir.copy(toCamera).multiplyScalar(1 / cameraDistance);
   cross.crossVectors(toPoint, viewDir);
@@ -58,7 +59,7 @@ export function computeFringeViewFadeWeight(
   const lateralFade =
     1 - smoothstep(fade.lateralInner, fade.lateralOuter, lateralDist);
 
-  return backFade * lateralFade;
+  return bandFade * lateralFade;
 }
 
 function applyFadeExponent(weight: number, exponent: number): number {
@@ -107,30 +108,6 @@ function computeTileViewFadeWeight(
   return applyFadeExponent(blendedFade, exponent);
 }
 
-export function computeLocalViewFadeWeight(
-  localX: number,
-  localY: number,
-  localZ: number,
-  transformRoot: Object3D,
-  cameraWorldPosition: Vector3,
-  focusWorldPosition: Vector3,
-  fade: FringeViewFadeConfig = FRINGE_CONFIG.particleFade,
-  exponent = FRINGE_CONFIG.particleFadeExponent
-): number {
-  samplePoint.set(localX, localY, localZ);
-  transformRoot.localToWorld(samplePoint);
-
-  return applyFadeExponent(
-    computeFringeViewFadeWeight(
-      samplePoint,
-      cameraWorldPosition,
-      focusWorldPosition,
-      fade
-    ),
-    exponent
-  );
-}
-
 export function computeTileSpawnWeights(
   tiles: FringeGridTile[],
   tileY: number,
@@ -163,16 +140,4 @@ export function computeTileSpawnWeights(
   }
 
   return totalWeight;
-}
-
-export function updateFringeViewFadeContext(
-  camera: { getWorldPosition: (target: Vector3) => Vector3 },
-  focusObject: Object3D
-): {
-  cameraWorld: Vector3;
-  focusWorld: Vector3;
-} {
-  camera.getWorldPosition(cameraWorld);
-  focusObject.getWorldPosition(focusWorld);
-  return { cameraWorld, focusWorld };
 }

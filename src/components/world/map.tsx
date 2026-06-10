@@ -7,6 +7,7 @@ import { vec3 } from "../../game/core/math/vec3";
 import { createGameState, type GameState } from "../../game/game";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
+import { FringeFadeContext } from "./fringe/fringe-fade-context";
 import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
 import worldData from "./world-data";
@@ -104,19 +105,21 @@ export default function Map({
   }, [interactiveMode]);
 
   return (
-    <group ref={worldRef} scale={[size, size, size]}>
-      <group position={[-4.5, 0, -4.5]}>
-        <WorldRenderer world={world} />
-        {showFringe ? <FringeRenderer world={world} /> : null}
-        <Player
-          position={DEFAULT_PLAYER_POSITION}
-          animate={!interactiveMode}
-          gameStateRef={gameStateRef}
-          ref={playerRef}
-          interactiveMode={interactiveMode}
-          keyControlsRef={keyControlsRef}
-        />
+    <FringeFadeContext.Provider value={showFringe}>
+      <group ref={worldRef} scale={[size, size, size]}>
+        <group position={[-4.5, 0, -4.5]}>
+          <WorldRenderer world={world} />
+          {showFringe ? <FringeRenderer world={world} /> : null}
+          <Player
+            position={DEFAULT_PLAYER_POSITION}
+            animate={!interactiveMode}
+            gameStateRef={gameStateRef}
+            ref={playerRef}
+            interactiveMode={interactiveMode}
+            keyControlsRef={keyControlsRef}
+          />
+        </group>
       </group>
-    </group>
+    </FringeFadeContext.Provider>
   );
 }

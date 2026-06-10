@@ -1,10 +1,11 @@
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import type { Material, Mesh } from "three";
 import {
   type MaterialTextureProps,
   useTextureMaterial,
 } from "../../lib/texture";
 import type { CommonProps } from "../common/types";
+import { FringeFadeContext } from "./fringe/fringe-fade-context";
 import type { WaterBlockAdjacency } from "./world";
 
 export interface BlockProps extends CommonProps {
@@ -25,8 +26,9 @@ export default function Block({
   adjacentBlocks,
 }: BlockProps) {
   const isWater = id === 9;
-  const topTexture = useTextureMaterial(top);
-  const sideTexture = useTextureMaterial(side);
+  const depthFade = useContext(FringeFadeContext);
+  const topTexture = useTextureMaterial(top, depthFade);
+  const sideTexture = useTextureMaterial(side, depthFade);
   const meshRef = useRef<Mesh>(null);
 
   // Function to determine if a face should be rendered
