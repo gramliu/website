@@ -25,21 +25,35 @@ export default function FringeRenderer({
     };
   }, [radialFade]);
 
+  // Grid tiles and particles sit on a fixed y=0 plane. In interactive mode the
+  // render window moves in XZ while terrain sits several blocks higher, so that
+  // plane projects as detached wireframes at the bottom of the screen. The
+  // block wireframe fringe (line kind 0) still covers the solid→wireframe LOD.
+  const lineLayout = useMemo(
+    () => (radialFade ? { ...layout, gridTiles: [] } : layout),
+    [layout, radialFade]
+  );
+
   const particleTiles = useMemo(
     () =>
-      layout.gridTiles.filter(
-        (tile) => tile.row >= FRINGE_CONFIG.particleMinRow
-      ),
-    [layout.gridTiles]
+      radialFade
+        ? []
+        : layout.gridTiles.filter(
+            (tile) => tile.row >= FRINGE_CONFIG.particleMinRow
+          ),
+    [layout.gridTiles, radialFade]
   );
+
   return (
     <>
-      <FringeLineField layout={layout} focusSourceRef={focusSourceRef} />
-      <FringeParticleField
-        tiles={particleTiles}
-        y={layout.gridY}
-        focus={layout.focus}
-      />
+      <FringeLineField layout={lineLayout} focusSourceRef={focusSourceRef} />
+      {particleTiles.length > 0 ? (
+        <FringeParticleField
+          tiles={particleTiles}
+          y={layout.gridY}
+          focus={layout.focus}
+        />
+      ) : null}
     </>
   );
 }

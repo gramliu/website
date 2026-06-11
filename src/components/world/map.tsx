@@ -31,7 +31,7 @@ const ROTATION_SPEED = 0.3;
  * mount/unmount fully faded: the window can shift with the player without
  * any visible pop.
  */
-const RENDER_RADIUS = 8;
+const RENDER_RADIUS = 11;
 /** Chunks are pre-generated this many blocks ahead of the player. */
 const PREFETCH_RADIUS = 24;
 /** Per-frame budget for background chunk generation. */

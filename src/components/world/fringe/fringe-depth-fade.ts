@@ -25,8 +25,8 @@ export const fringeDepthFadeUniforms = {
   uWireframeFadeEnd: {
     value: FRINGE_CONFIG.depthBands.wireframeFadeEnd as number,
   },
-  // 0: camera-relative fade (static preview island). 1: radial fade around
-  // the focus (interactive mode), symmetric in every walk direction.
+  // 0: camera-relative solid fade (preview). 1: radial solid fade around the
+  // focus (interactive mode). Wireframe/tile bands always use camera depth.
   uRadialFade: { value: 0 },
 };
 
@@ -65,26 +65,32 @@ export const depthFadeParsGlsl = `
   uniform float uWireframeFadeEnd;
   uniform float uRadialFade;
 
-  float fringeFadeDepth(vec3 worldPos) {
+  float fringeCameraDepth(vec3 worldPos) {
     float pointDist = length(worldPos.xz - uCameraWorld.xz);
     float focusDist = length(uFocusWorld.xz - uCameraWorld.xz);
-    float cameraDepth = pointDist - focusDist;
-    float radialDepth = length(worldPos.xz - uFocusWorld.xz);
-    return mix(cameraDepth, radialDepth, uRadialFade);
+    return pointDist - focusDist;
+  }
+
+  float fringeRadialDepth(vec3 worldPos) {
+    return length(worldPos.xz - uFocusWorld.xz);
   }
 
   vec3 fringeDepthBandWeights(vec3 worldPos) {
-    float depth = fringeFadeDepth(worldPos);
-    float solidOut = smoothstep(uSolidFadeStart, uSolidFadeEnd, depth);
+    float cameraDepth = fringeCameraDepth(worldPos);
+    float radialDepth = fringeRadialDepth(worldPos);
+    float solidDepth = mix(cameraDepth, radialDepth, uRadialFade);
+
+    float solidOut = smoothstep(uSolidFadeStart, uSolidFadeEnd, solidDepth);
     float wireframeOut = smoothstep(
       uWireframeFadeStart,
       uWireframeFadeEnd,
-      depth
+      cameraDepth
     );
+    float behindFocus = step(uSolidFadeStart, cameraDepth);
     return vec3(
       1.0 - solidOut,
-      solidOut * (1.0 - wireframeOut),
-      wireframeOut
+      solidOut * (1.0 - wireframeOut) * behindFocus,
+      wireframeOut * behindFocus
     );
   }
 `;
@@ -94,25 +100,12 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
   return t * t * (3 - 2 * t);
 }
 
-/**
- * Horizontal (XZ) distance behind the focus, relative to the camera (or, in
- * radial mode, around the focus itself). Using the horizontal distance keeps
- * the fade front vertical, so whole columns of blocks dissolve together
- * regardless of camera elevation.
- */
-export function computeFadeDepth(
+/** Camera-relative depth: positive behind the focus along the view axis. */
+export function computeCameraFadeDepth(
   pointWorld: Vector3,
   cameraWorldPosition: Vector3,
-  focusWorldPosition: Vector3,
-  radial = isFringeRadialFadeEnabled()
+  focusWorldPosition: Vector3
 ): number {
-  if (radial) {
-    return Math.hypot(
-      pointWorld.x - focusWorldPosition.x,
-      pointWorld.z - focusWorldPosition.z
-    );
-  }
-
   const pointDist = Math.hypot(
     pointWorld.x - cameraWorldPosition.x,
     pointWorld.z - cameraWorldPosition.z
@@ -122,6 +115,52 @@ export function computeFadeDepth(
     focusWorldPosition.z - cameraWorldPosition.z
   );
   return pointDist - focusDist;
+}
+
+/** Radial depth from the focus in XZ. */
+export function computeRadialFadeDepth(
+  pointWorld: Vector3,
+  focusWorldPosition: Vector3
+): number {
+  return Math.hypot(
+    pointWorld.x - focusWorldPosition.x,
+    pointWorld.z - focusWorldPosition.z
+  );
+}
+
+/**
+ * Depth used for the solid band. Radial in interactive mode, camera-relative
+ * in preview. Using horizontal distance keeps the fade front vertical.
+ */
+export function computeSolidFadeDepth(
+  pointWorld: Vector3,
+  cameraWorldPosition: Vector3,
+  focusWorldPosition: Vector3,
+  radial = isFringeRadialFadeEnabled()
+): number {
+  if (radial) {
+    return computeRadialFadeDepth(pointWorld, focusWorldPosition);
+  }
+  return computeCameraFadeDepth(
+    pointWorld,
+    cameraWorldPosition,
+    focusWorldPosition
+  );
+}
+
+/** @deprecated Use {@link computeSolidFadeDepth} or {@link computeCameraFadeDepth}. */
+export function computeFadeDepth(
+  pointWorld: Vector3,
+  cameraWorldPosition: Vector3,
+  focusWorldPosition: Vector3,
+  radial = isFringeRadialFadeEnabled()
+): number {
+  return computeSolidFadeDepth(
+    pointWorld,
+    cameraWorldPosition,
+    focusWorldPosition,
+    radial
+  );
 }
 
 /**
@@ -145,27 +184,33 @@ export function computeDepthBandWeights(
   const resolvedBands =
     bands ??
     (radial ? FRINGE_CONFIG.radialDepthBands : FRINGE_CONFIG.depthBands);
-  const depth = computeFadeDepth(
+  const solidDepth = computeSolidFadeDepth(
     pointWorld,
     cameraWorldPosition,
     focusWorldPosition,
     radial
   );
+  const wireframeDepth = computeCameraFadeDepth(
+    pointWorld,
+    cameraWorldPosition,
+    focusWorldPosition
+  );
   const solidOut = smoothstep(
     resolvedBands.solidFadeStart,
     resolvedBands.solidFadeEnd,
-    depth
+    solidDepth
   );
   const wireframeOut = smoothstep(
     resolvedBands.wireframeFadeStart,
     resolvedBands.wireframeFadeEnd,
-    depth
+    wireframeDepth
   );
+  const behindFocus = wireframeDepth >= resolvedBands.solidFadeStart ? 1 : 0;
 
   return {
     solid: 1 - solidOut,
-    wireframe: solidOut * (1 - wireframeOut),
-    tile: wireframeOut,
+    wireframe: solidOut * (1 - wireframeOut) * behindFocus,
+    tile: wireframeOut * behindFocus,
   };
 }
 

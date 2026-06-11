@@ -60,10 +60,10 @@ export const FRINGE_CONFIG = {
   // than the camera-relative bands so the solid disc around the player spans
   // roughly the island footprint before dissolving into wireframes.
   radialDepthBands: {
-    solidFadeStart: 4.0,
-    solidFadeEnd: 7.0,
-    wireframeFadeStart: 5.0,
-    wireframeFadeEnd: 9.0,
+    solidFadeStart: 3.0,
+    solidFadeEnd: 10.0,
+    wireframeFadeStart: 8.0,
+    wireframeFadeEnd: 13.0,
   },
   lineFade: {
     lateralInner: 2.0,
