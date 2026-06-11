@@ -2,16 +2,16 @@ import type { Vec3 } from "./core/math/vec3";
 import type { PlayerInputFrame } from "./core/types";
 import { createPlayerState, type PlayerState } from "./entities/player";
 import { simulatePlayerStep } from "./systems/player-controller";
-import type { VoxelWorld } from "./world/world";
+import type { WorldQuery } from "./world/world";
 
 export interface GameState {
-  world: VoxelWorld;
+  world: WorldQuery;
   player: PlayerState;
   elapsedTime: number;
 }
 
 export function createGameState(
-  world: VoxelWorld,
+  world: WorldQuery,
   playerStartPosition: Vec3
 ): GameState {
   return {

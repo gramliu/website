@@ -1,10 +1,16 @@
 import Block from "../../components/world/block";
 import { getRenderableBlockTextures } from "../../components/world/blocks";
 import { getBlockDefinition } from "../../game/world/block-registry";
-import type { VoxelWorld } from "../../game/world/world";
+import type { WorldQuery } from "../../game/world/world";
+import type { LoadedWorldCell } from "../../game/world/world-loader";
 
 interface Props {
-  world: VoxelWorld;
+  world: WorldQuery;
+  /**
+   * Cells to render: the full static map in preview mode, or the moving
+   * player-centered window (already exposure-culled) in interactive mode.
+   */
+  cells: LoadedWorldCell[];
 }
 
 const emptyFluidAdjacency = {
@@ -16,10 +22,10 @@ const emptyFluidAdjacency = {
   west: false,
 };
 
-export default function WorldRenderer({ world }: Props) {
+export default function WorldRenderer({ world, cells }: Props) {
   return (
     <>
-      {world.getRenderableCells().map((cell) => {
+      {cells.map((cell) => {
         const block = getBlockDefinition(cell.id);
         const texture = getRenderableBlockTextures(block.renderKey);
 

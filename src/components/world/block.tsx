@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { memo, useContext, useRef } from "react";
 import type { Material, Mesh } from "three";
 import {
   type MaterialTextureProps,
@@ -17,7 +17,7 @@ export interface BlockProps extends CommonProps {
   adjacentBlocks: WaterBlockAdjacency;
 }
 
-export default function Block({
+function Block({
   position = [0, 0, 0],
   size = 1,
   rotation = [0, 0, 0],
@@ -60,3 +60,40 @@ export default function Block({
     </group>
   );
 }
+
+function vec3Equal(
+  a: [number, number, number] = [0, 0, 0],
+  b: [number, number, number] = [0, 0, 0]
+): boolean {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+}
+
+function adjacencyEqual(
+  a: WaterBlockAdjacency,
+  b: WaterBlockAdjacency
+): boolean {
+  return (
+    a.top === b.top &&
+    a.bottom === b.bottom &&
+    a.north === b.north &&
+    a.south === b.south &&
+    a.east === b.east &&
+    a.west === b.west
+  );
+}
+
+/**
+ * Memoized so that render-window updates (which recreate the cell list every
+ * time the player crosses a cell boundary) only re-render blocks that
+ * actually changed.
+ */
+export default memo(Block, (previous, next) => {
+  return (
+    previous.id === next.id &&
+    previous.size === next.size &&
+    previous.texture === next.texture &&
+    vec3Equal(previous.position, next.position) &&
+    vec3Equal(previous.rotation, next.rotation) &&
+    adjacencyEqual(previous.adjacentBlocks, next.adjacentBlocks)
+  );
+});
