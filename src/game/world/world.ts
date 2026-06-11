@@ -18,11 +18,49 @@ export interface FluidAdjacency {
   west: boolean;
 }
 
+/**
+ * Query surface shared by every world implementation (static island,
+ * infinite procedural world). Physics, input, and renderers depend on this
+ * interface rather than a concrete world class.
+ */
+export interface WorldQuery {
+  getBlockIdAtCell(x: number, y: number, z: number): number;
+  getBlockAtCell(x: number, y: number, z: number): BlockDefinition;
+  getCollisionKind(x: number, y: number, z: number): CollisionKind;
+  isCellSolid(x: number, y: number, z: number): boolean;
+  isCellFluid(x: number, y: number, z: number): boolean;
+  getFluidAdjacency(x: number, y: number, z: number): FluidAdjacency;
+  getHighestSolidCell(x: number, z: number): number | null;
+  getOverlappingCells(aabb: AABB): CellCoord[];
+  collidesAABB(aabb: AABB): boolean;
+}
+
 function cellKey(x: number, y: number, z: number): string {
   return `${x},${y},${z}`;
 }
 
-export class VoxelWorld {
+/** Integer cells overlapped by an AABB (pure geometry, shared by worlds). */
+export function getCellsOverlappingAABB(aabb: AABB): CellCoord[] {
+  const minX = Math.floor(aabb.min.x + COLLISION_EPSILON);
+  const maxX = Math.floor(aabb.max.x - COLLISION_EPSILON);
+  const minY = Math.floor(aabb.min.y + COLLISION_EPSILON);
+  const maxY = Math.floor(aabb.max.y - COLLISION_EPSILON);
+  const minZ = Math.floor(aabb.min.z + COLLISION_EPSILON);
+  const maxZ = Math.floor(aabb.max.z - COLLISION_EPSILON);
+
+  const cells: CellCoord[] = [];
+  for (let x = minX; x <= maxX; x++) {
+    for (let y = minY; y <= maxY; y++) {
+      for (let z = minZ; z <= maxZ; z++) {
+        cells.push({ x, y, z });
+      }
+    }
+  }
+
+  return cells;
+}
+
+export class VoxelWorld implements WorldQuery {
   private readonly blockIds = new Map<string, number>();
   private readonly renderableCells: LoadedWorldCell[];
   private readonly bounds: WorldBounds;
@@ -97,23 +135,7 @@ export class VoxelWorld {
   }
 
   public getOverlappingCells(aabb: AABB): CellCoord[] {
-    const minX = Math.floor(aabb.min.x + COLLISION_EPSILON);
-    const maxX = Math.floor(aabb.max.x - COLLISION_EPSILON);
-    const minY = Math.floor(aabb.min.y + COLLISION_EPSILON);
-    const maxY = Math.floor(aabb.max.y - COLLISION_EPSILON);
-    const minZ = Math.floor(aabb.min.z + COLLISION_EPSILON);
-    const maxZ = Math.floor(aabb.max.z - COLLISION_EPSILON);
-
-    const cells: CellCoord[] = [];
-    for (let x = minX; x <= maxX; x++) {
-      for (let y = minY; y <= maxY; y++) {
-        for (let z = minZ; z <= maxZ; z++) {
-          cells.push({ x, y, z });
-        }
-      }
-    }
-
-    return cells;
+    return getCellsOverlappingAABB(aabb);
   }
 
   public collidesAABB(aabb: AABB): boolean {

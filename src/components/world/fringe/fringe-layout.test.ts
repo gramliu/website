@@ -1,8 +1,17 @@
 import { describe, expect, it } from "bun:test";
+import { InfiniteWorld } from "../../../game/world/infinite-world";
+import {
+  DEFAULT_WORLD_SEED,
+  TerrainGenerator,
+} from "../../../game/world/terrain-generator";
 import { VoxelWorld } from "../../../game/world/world";
 import { loadWorldCellsFromString } from "../../../game/world/world-loader";
 import worldData from "../world-data";
-import { computeFringeLayout, FRINGE_CONFIG } from "./fringe-layout";
+import {
+  computeFringeLayout,
+  computeWindowFringeLayout,
+  FRINGE_CONFIG,
+} from "./fringe-layout";
 
 const world = new VoxelWorld(loadWorldCellsFromString(worldData));
 
@@ -111,5 +120,91 @@ describe("computeFringeLayout", () => {
       expect(tile.row).toBeGreaterThanOrEqual(1);
       expect(tile.row).toBeLessThanOrEqual(FRINGE_CONFIG.gridRows);
     }
+  });
+});
+
+describe("computeWindowFringeLayout", () => {
+  const infiniteWorld = new InfiniteWorld(
+    new TerrainGenerator(
+      DEFAULT_WORLD_SEED,
+      loadWorldCellsFromString(worldData)
+    )
+  );
+
+  function buildLayout(centerX: number, centerZ: number, radius: number) {
+    const cells = infiniteWorld.getCellsInWindow(centerX, centerZ, radius);
+    return {
+      cells,
+      layout: computeWindowFringeLayout(
+        infiniteWorld,
+        centerX,
+        centerZ,
+        radius,
+        cells
+      ),
+    };
+  }
+
+  it("centers the focus on the window and wraps it with a ring", () => {
+    const radius = 6;
+    const { layout } = buildLayout(40, 40, radius);
+
+    expect(layout.focus.x).toBe(40.5);
+    expect(layout.focus.z).toBe(40.5);
+
+    const { wireframeRows } = FRINGE_CONFIG;
+    // Ring wireframe columns sit just past the window edge on all sides.
+    const groundEast = infiniteWorld.getGroundHeight(40 + radius, 40);
+    if (groundEast > 0) {
+      expect(
+        layout.wireframes.some(
+          (wireframe) =>
+            wireframe.x === 40 + radius + wireframeRows && wireframe.z === 40
+        )
+      ).toBe(true);
+    }
+    // Grid tiles extend beyond the wireframe row.
+    expect(
+      layout.gridTiles.some(
+        (tile) => tile.x === 40 + radius + wireframeRows + 1 && tile.z === 40
+      )
+    ).toBe(true);
+    expect(
+      layout.gridTiles.some(
+        (tile) => tile.x === 40 - radius - wireframeRows - 1 && tile.z === 40
+      )
+    ).toBe(true);
+  });
+
+  it("gives window surface cells wireframes but never water", () => {
+    const { cells, layout } = buildLayout(11, 9, 5);
+    const wireframeKeys = new Set(
+      layout.wireframes.map(
+        (wireframe) => `${wireframe.x},${wireframe.y},${wireframe.z}`
+      )
+    );
+
+    let sawWater = false;
+    for (const cell of cells) {
+      const key = `${cell.x},${cell.y},${cell.z}`;
+      if (cell.id === 9) {
+        sawWater = true;
+        expect(wireframeKeys.has(key)).toBe(false);
+      } else {
+        expect(wireframeKeys.has(key)).toBe(true);
+      }
+    }
+    // The pond extension just past the island guarantees water in this window.
+    expect(sawWater).toBe(true);
+  });
+
+  it("moves with the window center", () => {
+    const a = buildLayout(40, 40, 6).layout;
+    const b = buildLayout(41, 40, 6).layout;
+    expect(b.focus.x - a.focus.x).toBe(1);
+
+    const aTiles = new Set(a.gridTiles.map((tile) => `${tile.x},${tile.z}`));
+    const bTiles = new Set(b.gridTiles.map((tile) => `${tile.x},${tile.z}`));
+    expect(aTiles).not.toEqual(bTiles);
   });
 });

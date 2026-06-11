@@ -26,6 +26,13 @@ export interface MaterialTextureProps {
 
 const fallbackTexture = "textures/water_still.png";
 
+// Repeated-texture clones and materials are cached module-wide. Blocks mount
+// and unmount continuously while the infinite world's render window moves, so
+// per-mount clones would leak GPU resources; the cache keeps one instance per
+// distinct configuration (a small bounded set) shared by every block.
+const repeatedTextureCache = new Map<string, Texture>();
+const materialCache = new Map<string, Material>();
+
 export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
   const texture = _texture as MaterialTextureProps;
   const texturePath = texture.path ?? fallbackTexture;
@@ -36,14 +43,21 @@ export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
   const offsetY = texture.offset?.[1] ?? 0;
 
   return useMemo(() => {
+    const cacheKey = `${texturePath}|${repeat}|${offsetX}|${offsetY}`;
+    const cached = repeatedTextureCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const textureMap = baseTexture.clone();
     textureMap.wrapS = RepeatWrapping;
     textureMap.wrapT = RepeatWrapping;
     textureMap.repeat.set(repeat, repeat);
     textureMap.offset.set(offsetX, offsetY);
     textureMap.needsUpdate = true;
+    repeatedTextureCache.set(cacheKey, textureMap);
     return textureMap;
-  }, [baseTexture, offsetX, offsetY, repeat]);
+  }, [baseTexture, offsetX, offsetY, repeat, texturePath]);
 }
 
 /**
@@ -87,6 +101,20 @@ export function useTextureMaterial(
 ): Material {
   const textureMap = useRepeatedTexture(texture);
   return useMemo(() => {
+    const cacheKey = [
+      texture.path ?? fallbackTexture,
+      texture.repeat ?? 1,
+      texture.offset?.[0] ?? 0,
+      texture.offset?.[1] ?? 0,
+      texture.translucent ?? false,
+      texture.opacity ?? 1,
+      depthFade,
+    ].join("|");
+    const cached = materialCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const materialProps: MeshStandardMaterialParameters = {
       map: textureMap,
       roughness: 1,
@@ -107,8 +135,17 @@ export function useTextureMaterial(
       applyDepthFade(material);
     }
 
+    materialCache.set(cacheKey, material);
     return material;
-  }, [textureMap, texture.opacity, texture.translucent, depthFade]);
+  }, [
+    textureMap,
+    texture.path,
+    texture.repeat,
+    texture.offset,
+    texture.opacity,
+    texture.translucent,
+    depthFade,
+  ]);
 }
 
 export function useEntityTexture(

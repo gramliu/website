@@ -1,6 +1,8 @@
-import type { WorldBounds } from "../../../game/core/types";
+import type { CellCoord, WorldBounds } from "../../../game/core/types";
 import { getBlockDefinition } from "../../../game/world/block-registry";
+import type { InfiniteWorld } from "../../../game/world/infinite-world";
 import type { VoxelWorld } from "../../../game/world/world";
+import type { LoadedWorldCell } from "../../../game/world/world-loader";
 import { computeOutwardVector } from "./fringe-animation";
 
 export interface FringeWireframe {
@@ -54,6 +56,15 @@ export const FRINGE_CONFIG = {
     wireframeFadeStart: 4,
     wireframeFadeEnd: 6.0,
   },
+  // Bands for the radial (player-centered) fade in interactive mode. Wider
+  // than the camera-relative bands so the solid disc around the player spans
+  // roughly the island footprint before dissolving into wireframes.
+  radialDepthBands: {
+    solidFadeStart: 4.0,
+    solidFadeEnd: 7.0,
+    wireframeFadeStart: 5.0,
+    wireframeFadeEnd: 9.0,
+  },
   lineFade: {
     lateralInner: 2.0,
     lateralOuter: 8.0,
@@ -69,6 +80,13 @@ export const FRINGE_CONFIG = {
     lateralOuter: 7.3,
   },
   particleFadeExponent: 1.3,
+  // In radial fade mode (interactive infinite world) grid tile opacity is a
+  // smooth function of distance from the focus instead of the row index, so
+  // the ring can shift with the player without visible pops.
+  radialTileFade: {
+    start: 8.5,
+    end: 12.5,
+  },
 } as const;
 
 type FringeAxis = "x" | "z";
@@ -81,6 +99,19 @@ interface EdgeFringeConfig {
   iterateMin: number;
   iterateMax: number;
   useGrassHeight: boolean;
+}
+
+/**
+ * Abstracts where the fringe wraps around: the static island (preview) or a
+ * moving render window centered on the player (interactive infinite world).
+ */
+export interface FringeLayoutSource {
+  /** Footprint of the solid region the ring wraps around. */
+  bounds: WorldBounds;
+  /** Cells that get their own wireframe (already excludes water). */
+  wireframeCells: CellCoord[];
+  /** Top of the ground column used for ring wireframe heights. */
+  getColumnTopY(x: number, z: number, useGrassHeight: boolean): number | null;
 }
 
 function getHighestGrassY(
@@ -200,7 +231,7 @@ function addGridTile(
 }
 
 function addEdgeFringe(
-  world: VoxelWorld,
+  source: FringeLayoutSource,
   wireframes: Map<string, FringeWireframe>,
   gridTiles: Map<string, FringeGridTile>,
   config: EdgeFringeConfig,
@@ -213,7 +244,7 @@ function addEdgeFringe(
   for (let i = iterateMin; i <= iterateMax; i++) {
     const x = axis === "x" ? anchor : i;
     const z = axis === "z" ? anchor : i;
-    const topY = getColumnTopY(world, x, z, useGrassHeight);
+    const topY = source.getColumnTopY(x, z, useGrassHeight);
     if (topY === null) {
       continue;
     }
@@ -301,36 +332,28 @@ function isExposedCell(
   );
 }
 
-function addIslandWireframes(
-  world: VoxelWorld,
+function addSourceWireframes(
+  source: FringeLayoutSource,
   wireframes: Map<string, FringeWireframe>
 ): void {
-  for (const cell of world.getRenderableCells()) {
-    if (getBlockDefinition(cell.id).renderKey === "water") {
-      continue;
-    }
-
-    // Only surface cells get wireframes; interior cells would render as a
-    // dense lattice once the solid blocks fade out.
-    if (!isExposedCell(world, cell.x, cell.y, cell.z)) {
-      continue;
-    }
-
+  for (const cell of source.wireframeCells) {
     addWireframe(wireframes, cell.x, cell.y, cell.z, 1.0);
   }
 }
 
-export function computeFringeLayout(world: VoxelWorld): FringeLayout {
-  const bounds = world.getBounds();
+function computeFringeLayoutFromSource(
+  source: FringeLayoutSource
+): FringeLayout {
+  const { bounds } = source;
   const centerX = (bounds.min.x + bounds.max.x + 1) / 2;
   const centerZ = (bounds.min.z + bounds.max.z + 1) / 2;
   const wireframes = new Map<string, FringeWireframe>();
   const gridTiles = new Map<string, FringeGridTile>();
 
-  addIslandWireframes(world, wireframes);
+  addSourceWireframes(source, wireframes);
 
   addEdgeFringe(
-    world,
+    source,
     wireframes,
     gridTiles,
     {
@@ -345,7 +368,7 @@ export function computeFringeLayout(world: VoxelWorld): FringeLayout {
     centerZ
   );
   addEdgeFringe(
-    world,
+    source,
     wireframes,
     gridTiles,
     {
@@ -360,7 +383,7 @@ export function computeFringeLayout(world: VoxelWorld): FringeLayout {
     centerZ
   );
   addEdgeFringe(
-    world,
+    source,
     wireframes,
     gridTiles,
     {
@@ -375,7 +398,7 @@ export function computeFringeLayout(world: VoxelWorld): FringeLayout {
     centerZ
   );
   addEdgeFringe(
-    world,
+    source,
     wireframes,
     gridTiles,
     {
@@ -405,4 +428,46 @@ export function computeFringeLayout(world: VoxelWorld): FringeLayout {
       z: centerZ,
     },
   };
+}
+
+function isWaterCell(id: number): boolean {
+  return getBlockDefinition(id).renderKey === "water";
+}
+
+/** Fringe around the static island (preview mode). */
+export function computeFringeLayout(world: VoxelWorld): FringeLayout {
+  return computeFringeLayoutFromSource({
+    bounds: world.getBounds(),
+    wireframeCells: world
+      .getRenderableCells()
+      .filter(
+        (cell) =>
+          !isWaterCell(cell.id) && isExposedCell(world, cell.x, cell.y, cell.z)
+      ),
+    getColumnTopY: (x, z, useGrassHeight) =>
+      getColumnTopY(world, x, z, useGrassHeight),
+  });
+}
+
+/**
+ * Fringe around the moving render window (interactive infinite world). The
+ * window cells are already exposure-culled; ring wireframe heights come from
+ * the generator's ground heights, which exclude water and trees, so they
+ * change as gradually as the terrain itself.
+ */
+export function computeWindowFringeLayout(
+  world: InfiniteWorld,
+  centerX: number,
+  centerZ: number,
+  radius: number,
+  windowCells: LoadedWorldCell[]
+): FringeLayout {
+  return computeFringeLayoutFromSource({
+    bounds: {
+      min: { x: centerX - radius, y: 0, z: centerZ - radius },
+      max: { x: centerX + radius, y: 0, z: centerZ + radius },
+    },
+    wireframeCells: windowCells.filter((cell) => !isWaterCell(cell.id)),
+    getColumnTopY: (x, z) => world.getGroundHeight(x, z),
+  });
 }
