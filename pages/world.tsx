@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import { useState } from "react";
-import PlayWorldButton from "../src/components/world/PlayWorldButton";
 import World from "../src/components/world";
+import PlayWorldButton from "../src/components/world/PlayWorldButton";
 
 const inter = Inter({ subsets: ["latin"] });
 

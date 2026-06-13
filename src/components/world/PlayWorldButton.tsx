@@ -72,11 +72,7 @@ export default function PlayWorldButton({
         transition={{ duration: 0.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
-        <PlayButton
-          isPlaying={isPlaying}
-          onToggle={onToggle}
-          bounce={bounce}
-        />
+        <PlayButton isPlaying={isPlaying} onToggle={onToggle} bounce={bounce} />
       </motion.div>
     );
   }

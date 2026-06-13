@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import Portrait from "../../public/images/portrait.png";
 import social from "../config/social";
 import { useIsDesktop } from "../hooks/useIsDesktop";
-import PlayWorldButton from "./world/PlayWorldButton";
 import World from "./world";
+import PlayWorldButton from "./world/PlayWorldButton";
 
 function HeroContent() {
   return (

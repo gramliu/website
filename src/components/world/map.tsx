@@ -47,10 +47,7 @@ function getInfiniteWorld(): InfiniteWorld {
   if (!infiniteWorldSingleton) {
     const seed = Math.floor(Math.random() * 1000000);
     infiniteWorldSingleton = new InfiniteWorld(
-      new TerrainGenerator(
-        seed,
-        loadWorldCellsFromString(worldData)
-      )
+      new TerrainGenerator(seed, loadWorldCellsFromString(worldData))
     );
   }
   return infiniteWorldSingleton;

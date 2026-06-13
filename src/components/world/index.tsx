@@ -1,7 +1,13 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Suspense, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Map from "./map";
+import WorldLoadingIndicator from "./WorldLoadingIndicator";
+
+const MIN_LOADING_DURATION_MS = 1_500;
+const STALL_PROGRESS = 100;
+const PROGRESS_DURATION_MS = 1_800;
 
 interface Props {
   size?: number;
@@ -12,14 +18,14 @@ interface Props {
   onLoaded?: () => void;
 }
 
-function WorldLoadedNotifier({ onLoaded }: { onLoaded: () => void }) {
+function WorldLoadedNotifier({ onReady }: { onReady: () => void }) {
   const notified = useRef(false);
   useFrame(() => {
     if (notified.current) {
       return;
     }
     notified.current = true;
-    onLoaded();
+    onReady();
   });
   return null;
 }
@@ -32,48 +38,128 @@ function World({
   showFringe = false,
   onLoaded,
 }: Props) {
+  const [assetsReady, setAssetsReady] = useState(false);
+  const [minDurationMet, setMinDurationMet] = useState(false);
+  const [displayProgress, setDisplayProgress] = useState(0);
+  const [overlayVisible, setOverlayVisible] = useState(true);
+  const onLoadedCalled = useRef(false);
+  const loadingCompleteRef = useRef(false);
+
+  const notifyLoaded = useCallback(() => {
+    if (!onLoaded || onLoadedCalled.current || !loadingCompleteRef.current) {
+      return;
+    }
+    onLoadedCalled.current = true;
+    onLoaded();
+  }, [onLoaded]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setMinDurationMet(true);
+    }, MIN_LOADING_DURATION_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  const loadingComplete = assetsReady && minDurationMet;
+
+  useEffect(() => {
+    loadingCompleteRef.current = loadingComplete;
+  }, [loadingComplete]);
+
+  useEffect(() => {
+    if (loadingComplete) {
+      setOverlayVisible(false);
+    }
+  }, [loadingComplete]);
+
+  useEffect(() => {
+    if (loadingComplete) {
+      setDisplayProgress(100);
+      return;
+    }
+
+    const startTime = performance.now();
+    let frameId = 0;
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / PROGRESS_DURATION_MS);
+      setDisplayProgress(t * STALL_PROGRESS);
+
+      if (t < 1) {
+        frameId = requestAnimationFrame(animate);
+      }
+    };
+
+    frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
+  }, [loadingComplete]);
+
+  const indicatorProgress = loadingComplete ? 100 : displayProgress;
+
   return (
-    <Canvas
-      camera={{
-        position: [15, 10, 15],
-        fov: closeUp ? 50 : 60,
-      }}
+    <div
+      className="relative"
       style={{
         height: closeUp ? "900px" : "100%",
       }}
-      shadows
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight
-        position={[1, 10, 5]}
-        intensity={1}
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-near={0.5}
-        shadow-camera-far={50}
-        shadow-camera-left={-10}
-        shadow-camera-right={10}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10}
-        shadow-bias={-0.0005}
-        shadow-normalBias={0.02}
-      />
-      {!rotateWorld ? (
-        <>
-          <OrbitControls enabled={!interactiveMode} />
-        </>
-      ) : null}
-      <Suspense fallback={null}>
-        <Map
-          size={size}
-          rotateWorld={rotateWorld}
-          interactiveMode={interactiveMode}
-          showFringe={showFringe}
+      <AnimatePresence onExitComplete={notifyLoaded}>
+        {overlayVisible ? (
+          <motion.div
+            key="world-loading-overlay"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 z-10 flex items-center justify-center bg-bgcolor-primary/80 pointer-events-auto"
+          >
+            <WorldLoadingIndicator progress={indicatorProgress} />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+      <Canvas
+        camera={{
+          position: [15, 10, 15],
+          fov: closeUp ? 50 : 60,
+        }}
+        style={{
+          height: closeUp ? "900px" : "100%",
+        }}
+        shadows
+      >
+        <ambientLight intensity={0.5} />
+        <directionalLight
+          position={[1, 10, 5]}
+          intensity={1}
+          castShadow
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+          shadow-camera-near={0.5}
+          shadow-camera-far={50}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
+          shadow-bias={-0.0005}
+          shadow-normalBias={0.02}
         />
-        {onLoaded ? <WorldLoadedNotifier onLoaded={onLoaded} /> : null}
-      </Suspense>
-    </Canvas>
+        {!rotateWorld ? (
+          <>
+            <OrbitControls enabled={!interactiveMode} />
+          </>
+        ) : null}
+        <Suspense fallback={null}>
+          <Map
+            size={size}
+            rotateWorld={rotateWorld}
+            interactiveMode={interactiveMode}
+            showFringe={showFringe}
+          />
+          <WorldLoadedNotifier onReady={() => setAssetsReady(true)} />
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }
 
