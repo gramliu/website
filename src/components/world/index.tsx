@@ -105,10 +105,8 @@ function World({
 
   return (
     <div
-      className="relative"
-      style={{
-        height: closeUp ? "900px" : "100%",
-      }}
+      className="relative w-full h-full"
+      style={{ height: closeUp ? "900px" : undefined }}
     >
       <AnimatePresence onExitComplete={notifyLoaded}>
         {overlayVisible ? (

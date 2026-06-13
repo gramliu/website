@@ -11,12 +11,14 @@ export default function WorldPage() {
 
   return (
     <main className={`flex h-screen w-screen ${inter.className} relative`}>
-      <World
-        rotateWorld={false}
-        interactiveMode={isPlaying}
-        showFringe
-        onLoaded={() => setWorldLoaded(true)}
-      />
+      <div className="flex-1 w-full h-full min-w-0">
+        <World
+          rotateWorld={false}
+          interactiveMode={isPlaying}
+          showFringe
+          onLoaded={() => setWorldLoaded(true)}
+        />
+      </div>
       <PlayWorldButton
         ready={worldLoaded}
         isPlaying={isPlaying}
