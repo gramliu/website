@@ -26,6 +26,7 @@ export function PlayerMotionHelper({
   interactiveMode = false,
   isMovingRef,
   keyControlsRef,
+  worldRevision = 0,
 }: PlayerMotionHelperProps) {
   const fixedStepRef = useRef(createFixedStepState());
   const previousKeyboardStateRef = useRef(createKeyboardState());
@@ -65,7 +66,7 @@ export function PlayerMotionHelper({
   useEffect(() => {
     fixedStepRef.current.accumulator = 0;
     previousKeyboardStateRef.current = createKeyboardState();
-  }, [interactiveMode]);
+  }, [interactiveMode, worldRevision]);
 
   return null;
 }

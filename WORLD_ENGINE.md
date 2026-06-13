@@ -299,7 +299,7 @@ It is responsible for:
 - creating the initial `GameState`,
 - holding the player and world refs,
 - wiring the keyboard adapter,
-- resetting player/world state on `r`,
+- resetting player/world state on `r` (in interactive mode, also regenerates the infinite world with a new seed),
 - rotating the world in preview mode,
 - mounting `WorldRenderer` and `Player`.
 

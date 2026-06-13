@@ -9,6 +9,7 @@ export interface PlayerProps extends CommonProps {
   gameStateRef: React.MutableRefObject<GameState>;
   interactiveMode?: boolean;
   keyControlsRef: React.MutableRefObject<KeyboardState>;
+  worldRevision?: number;
 }
 
 export interface PlayerHelperProps {
@@ -24,4 +25,5 @@ export interface PlayerMotionHelperProps extends PlayerHelperProps {
   interactiveMode?: boolean;
   isMovingRef: React.MutableRefObject<boolean>;
   keyControlsRef: React.MutableRefObject<KeyboardState>;
+  worldRevision?: number;
 }

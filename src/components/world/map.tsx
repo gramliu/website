@@ -6,10 +6,7 @@ import WorldRenderer from "../../adapters/three/world-renderer";
 import { type Vec3 as GameVec3, vec3 } from "../../game/core/math/vec3";
 import { createGameState, type GameState } from "../../game/game";
 import { InfiniteWorld } from "../../game/world/infinite-world";
-import {
-  DEFAULT_WORLD_SEED,
-  TerrainGenerator,
-} from "../../game/world/terrain-generator";
+import { TerrainGenerator } from "../../game/world/terrain-generator";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
 import { FringeFadeContext } from "./fringe/fringe-fade-context";
@@ -40,16 +37,26 @@ const PREFETCH_CHUNKS_PER_FRAME = 2;
 const FOLLOW_SMOOTHING = 6;
 
 // The infinite world is created lazily on the first interactive session and
-// reused afterwards; generation is deterministic, so the terrain is identical
-// every time.
+// reused until an interactive reset (R) picks a new seed.
 let infiniteWorldSingleton: InfiniteWorld | null = null;
+
+function createInfiniteWorld(
+  seed = Math.floor(Math.random() * 1_000_000)
+): InfiniteWorld {
+  return new InfiniteWorld(
+    new TerrainGenerator(seed, loadWorldCellsFromString(worldData))
+  );
+}
+
 function getInfiniteWorld(): InfiniteWorld {
   if (!infiniteWorldSingleton) {
-    const seed = Math.floor(Math.random() * 1000000);
-    infiniteWorldSingleton = new InfiniteWorld(
-      new TerrainGenerator(seed, loadWorldCellsFromString(worldData))
-    );
+    infiniteWorldSingleton = createInfiniteWorld();
   }
+  return infiniteWorldSingleton;
+}
+
+function resetInfiniteWorld(): InfiniteWorld {
+  infiniteWorldSingleton = createInfiniteWorld();
   return infiniteWorldSingleton;
 }
 
@@ -91,14 +98,9 @@ export default function Map({
   );
   const windowCenterRef = useRef<WindowCenter | null>(null);
   const [windowCenter, setWindowCenter] = useState<WindowCenter | null>(null);
+  const [worldRevision, setWorldRevision] = useState(0);
 
-  function resetPlayer() {
-    const activeWorld = interactiveMode ? getInfiniteWorld() : staticWorld;
-    gameStateRef.current = createGameState(
-      activeWorld,
-      DEFAULT_PLAYER_STATE_POSITION
-    );
-
+  function syncPlayerTransform() {
     if (playerRef.current) {
       playerRef.current.position.set(
         DEFAULT_PLAYER_STATE_POSITION.x,
@@ -111,15 +113,35 @@ export default function Map({
         DEFAULT_PLAYER_ROTATION[2]
       );
     }
+  }
+
+  function resetSession() {
+    resetWorld();
 
     if (interactiveMode) {
+      const world = resetInfiniteWorld();
+      gameStateRef.current = createGameState(
+        world,
+        DEFAULT_PLAYER_STATE_POSITION
+      );
+      followOriginRef.current = { ...DEFAULT_PLAYER_STATE_POSITION };
+      followRef.current?.position.set(0, 0, 0);
       const center = {
         x: Math.floor(DEFAULT_PLAYER_STATE_POSITION.x),
         z: Math.floor(DEFAULT_PLAYER_STATE_POSITION.z),
       };
       windowCenterRef.current = center;
       setWindowCenter(center);
+      world.prefetchAround(center.x, center.z, PREFETCH_RADIUS, Infinity);
+      setWorldRevision((revision) => revision + 1);
+    } else {
+      gameStateRef.current = createGameState(
+        staticWorld,
+        DEFAULT_PLAYER_STATE_POSITION
+      );
     }
+
+    syncPlayerTransform();
   }
 
   function resetWorld() {
@@ -136,8 +158,7 @@ export default function Map({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "r") {
         event.preventDefault();
-        resetPlayer();
-        resetWorld();
+        resetSession();
       }
     };
 
@@ -264,7 +285,7 @@ export default function Map({
       );
     }
     return staticWorld.getRenderableCells();
-  }, [effectiveCenter]);
+  }, [effectiveCenter, worldRevision]);
 
   const fringeLayout = useMemo(() => {
     if (!showFringe) {
@@ -280,14 +301,18 @@ export default function Map({
       );
     }
     return computeFringeLayout(staticWorld);
-  }, [showFringe, effectiveCenter, renderCells]);
+  }, [showFringe, effectiveCenter, renderCells, worldRevision]);
 
   return (
     <FringeFadeContext.Provider value={showFringe}>
       <group ref={worldRef} scale={[size, size, size]}>
         <group ref={followRef}>
           <group position={[-4.5, 0, -4.5]}>
-            <WorldRenderer world={activeWorld} cells={renderCells} />
+            <WorldRenderer
+              key={worldRevision}
+              world={activeWorld}
+              cells={renderCells}
+            />
             {fringeLayout ? (
               <FringeRenderer
                 layout={fringeLayout}
@@ -302,6 +327,7 @@ export default function Map({
               ref={playerRef}
               interactiveMode={interactiveMode}
               keyControlsRef={keyControlsRef}
+              worldRevision={worldRevision}
             />
           </group>
         </group>
