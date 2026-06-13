@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Portrait from "../../public/images/portrait.png";
 import social from "../config/social";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+import PlayWorldButton from "./world/PlayWorldButton";
 import World from "./world";
 
 function HeroContent() {
@@ -52,6 +53,7 @@ function SocialIcons() {
 
 export default function Hero() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [worldLoaded, setWorldLoaded] = useState(false);
   const isDesktop = useIsDesktop();
 
   useEffect(() => {
@@ -111,29 +113,14 @@ export default function Hero() {
               interactiveMode={isPlaying}
               closeUp
               showFringe={isDesktop}
+              onLoaded={() => setWorldLoaded(true)}
             />
           </div>
-          <div className="hidden md:flex flex-col justify-start items-center text-center gap-5 pt-32">
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className={clsx(
-                "z-10 bottom-8 px-4 py-2 bg-yellow-500 text-black rounded-lg shadow-lg hover:bg-yellow-600 transition-all",
-                {
-                  "animate-bounce": !isPlaying,
-                }
-              )}
-            >
-              {isPlaying ? "Stop playing" : "Start playing"}
-            </button>
-            {isPlaying ? (
-              <>
-                {/* Instructions */}
-                <span className="text-center">
-                  Use WASD + Space to move around.
-                </span>
-              </>
-            ) : null}
-          </div>
+          <PlayWorldButton
+            ready={worldLoaded}
+            isPlaying={isPlaying}
+            onToggle={() => setIsPlaying(!isPlaying)}
+          />
         </div>
       </div>
     </>

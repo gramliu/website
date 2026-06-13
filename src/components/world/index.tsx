@@ -1,5 +1,6 @@
 import { OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Suspense, useRef } from "react";
 import Map from "./map";
 
 interface Props {
@@ -8,6 +9,19 @@ interface Props {
   interactiveMode?: boolean;
   closeUp?: boolean;
   showFringe?: boolean;
+  onLoaded?: () => void;
+}
+
+function WorldLoadedNotifier({ onLoaded }: { onLoaded: () => void }) {
+  const notified = useRef(false);
+  useFrame(() => {
+    if (notified.current) {
+      return;
+    }
+    notified.current = true;
+    onLoaded();
+  });
+  return null;
 }
 
 function World({
@@ -16,6 +30,7 @@ function World({
   interactiveMode = false,
   closeUp = false,
   showFringe = false,
+  onLoaded,
 }: Props) {
   return (
     <Canvas
@@ -49,12 +64,15 @@ function World({
           <OrbitControls enabled={!interactiveMode} />
         </>
       ) : null}
-      <Map
-        size={size}
-        rotateWorld={rotateWorld}
-        interactiveMode={interactiveMode}
-        showFringe={showFringe}
-      />
+      <Suspense fallback={null}>
+        <Map
+          size={size}
+          rotateWorld={rotateWorld}
+          interactiveMode={interactiveMode}
+          showFringe={showFringe}
+        />
+        {onLoaded ? <WorldLoadedNotifier onLoaded={onLoaded} /> : null}
+      </Suspense>
     </Canvas>
   );
 }
