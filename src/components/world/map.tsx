@@ -45,9 +45,10 @@ const FOLLOW_SMOOTHING = 6;
 let infiniteWorldSingleton: InfiniteWorld | null = null;
 function getInfiniteWorld(): InfiniteWorld {
   if (!infiniteWorldSingleton) {
+    const seed = Math.floor(Math.random() * 1000000);
     infiniteWorldSingleton = new InfiniteWorld(
       new TerrainGenerator(
-        DEFAULT_WORLD_SEED,
+        seed,
         loadWorldCellsFromString(worldData)
       )
     );
