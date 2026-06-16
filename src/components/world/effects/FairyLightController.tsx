@@ -138,7 +138,10 @@ const FAIRY_LIGHT_PATHS: Record<
   },
 };
 
-function sampleFairyPath(path: FairyLightPathConfig, angle: number): PathSample {
+function sampleFairyPath(
+  path: FairyLightPathConfig,
+  angle: number
+): PathSample {
   return FAIRY_LIGHT_PATHS[path.kind](path, angle);
 }
 
@@ -184,6 +187,21 @@ function getTerrainGroundY(
   return highestSolidY;
 }
 
+function getWaterSurfaceY(
+  world: WorldQuery,
+  x: number,
+  z: number,
+  terrainY: number
+): number | null {
+  for (let y = terrainY + 8; y > terrainY; y -= 1) {
+    if (world.isCellFluid(x, y, z)) {
+      return y;
+    }
+  }
+
+  return null;
+}
+
 function getGroundFollowingY(
   world: WorldQuery,
   x: number,
@@ -197,7 +215,9 @@ function getGroundFollowingY(
     return fallbackY + heightOffset + bob;
   }
 
-  return groundY + FAIRY_SURFACE_CLEARANCE + heightOffset + bob;
+  const surfaceY =
+    getWaterSurfaceY(world, Math.floor(x), Math.floor(z), groundY) ?? groundY;
+  return surfaceY + FAIRY_SURFACE_CLEARANCE + heightOffset + bob;
 }
 
 function collidesAt(world: WorldQuery, position: Vector3): boolean {
@@ -385,10 +405,7 @@ export default function FairyLightController({
           dust.visible = true;
           dust.position.copy(trailPosition).sub(currentPosition);
           dust.scale.setScalar((0.28 - age * 0.18) * twinkle);
-          dustMaterial.opacity = Math.max(
-            0,
-            (1 - age) ** 1.7 * 0.72 * twinkle
-          );
+          dustMaterial.opacity = Math.max(0, (1 - age) ** 1.7 * 0.72 * twinkle);
         }
       }
     });
