@@ -1,6 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import { AdditiveBlending, Color, type Group, Vector3 } from "three";
+import type { WorldQuery } from "../../../game/world/world";
 import { updateFringeRevealLightUniforms } from "../fringe/fringe-depth-fade";
 import {
   FAIRY_LIGHT_CONFIGS,
@@ -11,6 +12,7 @@ import {
 
 interface Props {
   playerRef: React.RefObject<Group | null>;
+  world: WorldQuery;
   enabled: boolean;
   configs?: FairyLightConfig[];
 }
@@ -24,6 +26,7 @@ interface OrbitState {
   currentRotation: number;
   targetRotation: number;
   nextWanderAt: number;
+  currentY: number;
 }
 
 function clampOrbitRadius(radius: number): number {
@@ -32,6 +35,50 @@ function clampOrbitRadius(radius: number): number {
 
 function nextOrbitValue(seed: number, base: number, spread: number): number {
   return clampOrbitRadius(base + Math.sin(seed * 12.9898) * spread);
+}
+
+const FAIRY_COLLIDER_HALF_WIDTH = 0.22;
+const FAIRY_COLLIDER_HEIGHT = 0.44;
+const FAIRY_SURFACE_CLEARANCE = 1.1;
+const FAIRY_COLLISION_STEP = 0.25;
+const FAIRY_MAX_CLIMB = 8;
+
+export function findNonCollidingFairyY(
+  world: WorldQuery,
+  x: number,
+  z: number,
+  desiredY: number
+): number {
+  const groundY = world.getHighestSolidCell(Math.floor(x), Math.floor(z));
+  const minimumY =
+    groundY === null
+      ? desiredY
+      : Math.max(desiredY, groundY + FAIRY_SURFACE_CLEARANCE);
+
+  for (
+    let y = minimumY;
+    y <= minimumY + FAIRY_MAX_CLIMB;
+    y += FAIRY_COLLISION_STEP
+  ) {
+    if (
+      !world.collidesAABB({
+        min: {
+          x: x - FAIRY_COLLIDER_HALF_WIDTH,
+          y,
+          z: z - FAIRY_COLLIDER_HALF_WIDTH,
+        },
+        max: {
+          x: x + FAIRY_COLLIDER_HALF_WIDTH,
+          y: y + FAIRY_COLLIDER_HEIGHT,
+          z: z + FAIRY_COLLIDER_HALF_WIDTH,
+        },
+      })
+    ) {
+      return y;
+    }
+  }
+
+  return minimumY + FAIRY_MAX_CLIMB;
 }
 
 function createOrbitState(config: FairyLightConfig, index: number): OrbitState {
@@ -45,11 +92,13 @@ function createOrbitState(config: FairyLightConfig, index: number): OrbitState {
     currentRotation: (index * Math.PI) / 5,
     targetRotation: (index * Math.PI) / 5,
     nextWanderAt: now + config.wanderIntervalMs * (0.65 + index * 0.2),
+    currentY: 0,
   };
 }
 
 export default function FairyLightController({
   playerRef,
+  world,
   enabled,
   configs = FAIRY_LIGHT_CONFIGS,
 }: Props) {
@@ -94,8 +143,12 @@ export default function FairyLightController({
 
       if (now >= state.nextWanderAt) {
         const seed = now * 0.001 + index * 17;
-        state.targetEllipseX = nextOrbitValue(seed, config.ellipseX, 0.9);
-        state.targetEllipseZ = nextOrbitValue(seed + 3.7, config.ellipseZ, 0.9);
+        state.targetEllipseX = nextOrbitValue(seed, config.ellipseX, 1.35);
+        state.targetEllipseZ = nextOrbitValue(
+          seed + 3.7,
+          config.ellipseZ,
+          1.35
+        );
         state.targetRotation +=
           Math.PI * (0.3 + Math.abs(Math.sin(seed)) * 0.75);
         state.nextWanderAt =
@@ -118,15 +171,27 @@ export default function FairyLightController({
       const sinRotation = Math.sin(state.currentRotation);
       const x = orbitX * cosRotation - orbitZ * sinRotation;
       const z = orbitX * sinRotation + orbitZ * cosRotation;
-      const y =
+      const desiredY =
+        playerPosition.y +
         config.heightOffset +
         config.bobAmplitude * Math.sin(state.angle * config.bobFrequency);
+      const targetY = findNonCollidingFairyY(
+        world,
+        playerPosition.x + x,
+        playerPosition.z + z,
+        desiredY
+      );
+      if (state.currentY === 0) {
+        state.currentY = targetY;
+      }
+      const yBlend = 1 - Math.exp(-delta * 5);
+      state.currentY += (targetY - state.currentY) * yBlend;
 
       const light = lightRefs.current[index];
       if (light) {
         light.position.set(
           playerPosition.x + x,
-          playerPosition.y + y,
+          state.currentY,
           playerPosition.z + z
         );
         light.getWorldPosition(worldPosition);
