@@ -1,6 +1,13 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import { AdditiveBlending, Color, type Group, Vector3 } from "three";
+import {
+  AdditiveBlending,
+  Color,
+  type Group,
+  type Mesh,
+  type MeshBasicMaterial,
+  Vector3,
+} from "three";
 import type { WorldQuery } from "../../../game/world/world";
 import { updateFringeRevealLightUniforms } from "../fringe/fringe-depth-fade";
 import {
@@ -21,6 +28,8 @@ interface Props {
 interface OrbitState {
   angle: number;
   currentPosition: Vector3 | null;
+  trail: Vector3[];
+  trailElapsed: number;
 }
 
 interface PathSample {
@@ -37,6 +46,8 @@ const FAIRY_COLLIDER_HALF_WIDTH = 0.22;
 const FAIRY_COLLIDER_HEIGHT = 0.44;
 const FAIRY_SURFACE_CLEARANCE = 1.05;
 const FAIRY_POSITION_SMOOTHING = 7;
+const PIXIE_DUST_TRAIL_LENGTH = 18;
+const PIXIE_DUST_SAMPLE_INTERVAL = 0.055;
 
 const scratchCandidate = new Vector3();
 
@@ -135,6 +146,8 @@ function createOrbitState(config: FairyLightConfig): OrbitState {
   return {
     angle: config.phase,
     currentPosition: null,
+    trail: [],
+    trailElapsed: 0,
   };
 }
 
@@ -269,6 +282,8 @@ export default function FairyLightController({
   configs = FAIRY_LIGHT_CONFIGS,
 }: Props) {
   const lightRefs = useRef<(Group | null)[]>([]);
+  const dustRefs = useRef<(Mesh | null)[][]>([]);
+  const dustMaterialRefs = useRef<(MeshBasicMaterial | null)[][]>([]);
   const orbitStates = useRef(configs.map(createOrbitState));
   const worldPosition = useMemo(() => new Vector3(), []);
   const revealSources = useMemo<PlayerRevealSource[]>(
@@ -321,16 +336,60 @@ export default function FairyLightController({
 
       if (!state.currentPosition) {
         state.currentPosition = targetPosition.clone();
+        state.trail = [state.currentPosition.clone()];
       } else {
         const blend = 1 - Math.exp(-FAIRY_POSITION_SMOOTHING * delta);
         state.currentPosition.lerp(targetPosition, blend);
       }
 
+      const currentPosition = state.currentPosition;
+      if (!currentPosition) {
+        return;
+      }
+
+      state.trailElapsed += delta;
+      if (state.trailElapsed >= PIXIE_DUST_SAMPLE_INTERVAL) {
+        state.trailElapsed = 0;
+        state.trail.unshift(currentPosition.clone());
+        state.trail.length = Math.min(
+          state.trail.length,
+          PIXIE_DUST_TRAIL_LENGTH
+        );
+      }
+
       const light = lightRefs.current[index];
       if (light) {
-        light.position.copy(state.currentPosition);
+        light.position.copy(currentPosition);
         light.getWorldPosition(worldPosition);
         revealSources[index].position.copy(worldPosition);
+
+        const dustMeshes = dustRefs.current[index] ?? [];
+        const dustMaterials = dustMaterialRefs.current[index] ?? [];
+        for (
+          let dustIndex = 0;
+          dustIndex < PIXIE_DUST_TRAIL_LENGTH;
+          dustIndex += 1
+        ) {
+          const dust = dustMeshes[dustIndex];
+          const dustMaterial = dustMaterials[dustIndex];
+          const trailPosition = state.trail[dustIndex];
+          if (!dust || !dustMaterial || !trailPosition) {
+            if (dust) {
+              dust.visible = false;
+            }
+            continue;
+          }
+
+          const age = dustIndex / PIXIE_DUST_TRAIL_LENGTH;
+          const twinkle = 0.72 + 0.28 * Math.sin(state.angle * 5 + dustIndex);
+          dust.visible = true;
+          dust.position.copy(trailPosition).sub(currentPosition);
+          dust.scale.setScalar((0.28 - age * 0.18) * twinkle);
+          dustMaterial.opacity = Math.max(
+            0,
+            (1 - age) ** 1.7 * 0.72 * twinkle
+          );
+        }
       }
     });
 
@@ -353,24 +412,48 @@ export default function FairyLightController({
             }}
           >
             <mesh>
-              <sphereGeometry args={[0.12, 16, 16]} />
+              <sphereGeometry args={[0.055, 10, 10]} />
               <meshBasicMaterial color={color} toneMapped={false} />
             </mesh>
             <mesh>
-              <sphereGeometry args={[0.38, 16, 16]} />
+              <sphereGeometry args={[0.16, 12, 12]} />
               <meshBasicMaterial
                 blending={AdditiveBlending}
                 color={color}
                 depthWrite={false}
-                opacity={0.18}
+                opacity={0.14}
                 toneMapped={false}
                 transparent
               />
             </mesh>
+            {Array.from({ length: PIXIE_DUST_TRAIL_LENGTH }, (_, dustIndex) => (
+              <mesh
+                key={`${config.id}-dust-${dustIndex}`}
+                ref={(mesh) => {
+                  dustRefs.current[index] ??= [];
+                  dustRefs.current[index][dustIndex] = mesh;
+                }}
+                visible={false}
+              >
+                <sphereGeometry args={[0.1, 6, 6]} />
+                <meshBasicMaterial
+                  ref={(material) => {
+                    dustMaterialRefs.current[index] ??= [];
+                    dustMaterialRefs.current[index][dustIndex] = material;
+                  }}
+                  blending={AdditiveBlending}
+                  color={color}
+                  depthWrite={false}
+                  opacity={0}
+                  toneMapped={false}
+                  transparent
+                />
+              </mesh>
+            ))}
             <pointLight
               color={color}
-              distance={config.revealRadius * 2.5}
-              intensity={config.intensity * 0.55}
+              distance={config.revealRadius * 2.2}
+              intensity={config.intensity * 0.32}
             />
           </group>
         );
