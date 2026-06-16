@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import type { ReactElement } from "react";
+import { type ReactElement, useEffect, useRef, useState } from "react";
 import LogoIcon from "../icons/logo";
 
 type NavLink = {
@@ -29,7 +29,10 @@ const links: NavLink[] = [
   },
 ];
 
-const divider = <span className="text-divider text-2xl">|</span>;
+const compactIslandWidth = 58;
+const horizontalViewportMargin = 32;
+
+const divider = <span className="text-divider text-xl md:text-2xl">|</span>;
 
 const islandTransition = {
   type: "spring",
@@ -84,17 +87,48 @@ function scrollToSection(targetId: string) {
 
 export default function NavPill() {
   const router = useRouter();
+  const pillRef = useRef<HTMLDivElement>(null);
+  const [expandedWidth, setExpandedWidth] = useState(compactIslandWidth);
   const prefersReducedMotion = useReducedMotion();
   const path = router.pathname;
   const isHome = path === "/";
   const animationDelay = isHome ? 0.7 : 0;
+
+  useEffect(() => {
+    const measureExpandedWidth = () => {
+      if (!pillRef.current) {
+        return;
+      }
+
+      const maxWidth = window.innerWidth - horizontalViewportMargin;
+      const nextWidth = Math.min(pillRef.current.scrollWidth, maxWidth);
+
+      setExpandedWidth(nextWidth);
+    };
+
+    measureExpandedWidth();
+    window.addEventListener("resize", measureExpandedWidth);
+
+    const resizeObserver = new ResizeObserver(measureExpandedWidth);
+
+    if (pillRef.current) {
+      resizeObserver.observe(pillRef.current);
+    }
+
+    document.fonts?.ready.then(measureExpandedWidth);
+
+    return () => {
+      window.removeEventListener("resize", measureExpandedWidth);
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const navLinks = links.map((linkTarget, index) => {
     if (!linkTarget.link.startsWith("/#") || !isHome) {
       return (
         <a
           href={linkTarget.link}
-          className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
+          className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight text-sm md:text-base"
           target={linkTarget.target}
           key={index}
         >
@@ -104,7 +138,7 @@ export default function NavPill() {
     } else {
       return (
         <div
-          className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
+          className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight text-sm md:text-base"
           onClick={() => {
             scrollToSection(linkTarget.link.substring(2));
           }}
@@ -133,16 +167,17 @@ export default function NavPill() {
       id="navbar"
     >
       <motion.div
+        ref={pillRef}
         className="flex justify-start overflow-hidden border rounded-[30rem] border-gray-500 bg-bgcolor-primary p-3 pr-4 md:p-4 md:pr-5 shadow-lg shadow-black/5"
         initial={
           prefersReducedMotion
             ? { opacity: 0 }
-            : { opacity: 0, scale: 0.92, width: 58 }
+            : { opacity: 0, scale: 0.92, width: compactIslandWidth }
         }
         animate={
           prefersReducedMotion
             ? { opacity: 1 }
-            : { opacity: 1, scale: 1, width: "auto" }
+            : { opacity: 1, scale: 1, width: expandedWidth }
         }
         transition={{
           ...islandTransition,
@@ -157,7 +192,7 @@ export default function NavPill() {
           >
             <Link
               href="/#home"
-              className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight"
+              className="no-underline font-semibold transition-all cursor-pointer hover:text-text-highlight text-sm md:text-base"
             >
               <LogoIcon className="h-8 w-auto" />
             </Link>
