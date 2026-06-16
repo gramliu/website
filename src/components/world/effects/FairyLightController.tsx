@@ -25,10 +25,17 @@ interface Props {
   configs?: FairyLightConfig[];
 }
 
+interface PixieDustParticle {
+  position: Vector3;
+  seed: number;
+  size: number;
+}
+
 interface OrbitState {
   angle: number;
   currentPosition: Vector3 | null;
-  trail: Vector3[];
+  previousDustPosition: Vector3 | null;
+  trail: PixieDustParticle[];
   trailElapsed: number;
 }
 
@@ -46,10 +53,25 @@ const FAIRY_COLLIDER_HALF_WIDTH = 0.22;
 const FAIRY_COLLIDER_HEIGHT = 0.44;
 const FAIRY_SURFACE_CLEARANCE = 1.05;
 const FAIRY_POSITION_SMOOTHING = 7;
-const PIXIE_DUST_TRAIL_LENGTH = 18;
-const PIXIE_DUST_SAMPLE_INTERVAL = 0.055;
+const PIXIE_DUST_TRAIL_LENGTH = 96;
+const PIXIE_DUST_PARTICLES_PER_SAMPLE = 5;
+const PIXIE_DUST_SAMPLE_INTERVAL = 0.04;
+const PIXIE_DUST_SIDE_SPREAD = 0.34;
+const PIXIE_DUST_VERTICAL_SPREAD = 0.24;
+const PIXIE_DUST_BACK_SPREAD = 0.5;
 
 const scratchCandidate = new Vector3();
+const scratchDustDirection = new Vector3();
+const scratchDustSide = new Vector3();
+
+function seededUnit(seed: number): number {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
+function seededSigned(seed: number): number {
+  return seededUnit(seed) * 2 - 1;
+}
 
 function clampOrbitRadius(radius: number): number {
   return Math.min(radius, MAX_FAIRY_ORBIT_RADIUS);
@@ -149,9 +171,52 @@ function createOrbitState(config: FairyLightConfig): OrbitState {
   return {
     angle: config.phase,
     currentPosition: null,
+    previousDustPosition: null,
     trail: [],
     trailElapsed: 0,
   };
+}
+
+function appendPixieDustSpray(state: OrbitState, fairyIndex: number): void {
+  const currentPosition = state.currentPosition;
+  if (!currentPosition) {
+    return;
+  }
+
+  const previousDustPosition = state.previousDustPosition ?? currentPosition;
+  scratchDustDirection.subVectors(currentPosition, previousDustPosition);
+  if (scratchDustDirection.lengthSq() < 0.0001) {
+    scratchDustDirection.set(0, 0, 1);
+  } else {
+    scratchDustDirection.normalize();
+  }
+  scratchDustSide.set(-scratchDustDirection.z, 0, scratchDustDirection.x);
+  if (scratchDustSide.lengthSq() < 0.0001) {
+    scratchDustSide.set(1, 0, 0);
+  } else {
+    scratchDustSide.normalize();
+  }
+
+  for (let index = 0; index < PIXIE_DUST_PARTICLES_PER_SAMPLE; index += 1) {
+    const seed = state.angle * 31 + fairyIndex * 101 + index * 17;
+    const backOffset = seededUnit(seed + 1) * PIXIE_DUST_BACK_SPREAD;
+    const sideOffset = seededSigned(seed + 2) * PIXIE_DUST_SIDE_SPREAD;
+    const yOffset = seededSigned(seed + 3) * PIXIE_DUST_VERTICAL_SPREAD;
+    const position = currentPosition
+      .clone()
+      .addScaledVector(scratchDustDirection, -backOffset)
+      .addScaledVector(scratchDustSide, sideOffset);
+    position.y += yOffset;
+
+    state.trail.unshift({
+      position,
+      seed,
+      size: 0.55 + seededUnit(seed + 4) * 0.75,
+    });
+  }
+
+  state.trail.length = Math.min(state.trail.length, PIXIE_DUST_TRAIL_LENGTH);
+  state.previousDustPosition = currentPosition.clone();
 }
 
 function getTerrainGroundY(
@@ -356,7 +421,8 @@ export default function FairyLightController({
 
       if (!state.currentPosition) {
         state.currentPosition = targetPosition.clone();
-        state.trail = [state.currentPosition.clone()];
+        state.previousDustPosition = state.currentPosition.clone();
+        appendPixieDustSpray(state, index);
       } else {
         const blend = 1 - Math.exp(-FAIRY_POSITION_SMOOTHING * delta);
         state.currentPosition.lerp(targetPosition, blend);
@@ -370,11 +436,7 @@ export default function FairyLightController({
       state.trailElapsed += delta;
       if (state.trailElapsed >= PIXIE_DUST_SAMPLE_INTERVAL) {
         state.trailElapsed = 0;
-        state.trail.unshift(currentPosition.clone());
-        state.trail.length = Math.min(
-          state.trail.length,
-          PIXIE_DUST_TRAIL_LENGTH
-        );
+        appendPixieDustSpray(state, index);
       }
 
       const light = lightRefs.current[index];
@@ -392,8 +454,8 @@ export default function FairyLightController({
         ) {
           const dust = dustMeshes[dustIndex];
           const dustMaterial = dustMaterials[dustIndex];
-          const trailPosition = state.trail[dustIndex];
-          if (!dust || !dustMaterial || !trailPosition) {
+          const particle = state.trail[dustIndex];
+          if (!dust || !dustMaterial || !particle) {
             if (dust) {
               dust.visible = false;
             }
@@ -401,11 +463,15 @@ export default function FairyLightController({
           }
 
           const age = dustIndex / PIXIE_DUST_TRAIL_LENGTH;
-          const twinkle = 0.72 + 0.28 * Math.sin(state.angle * 5 + dustIndex);
+          const twinkle =
+            0.62 + 0.38 * Math.sin(state.angle * 5 + particle.seed);
           dust.visible = true;
-          dust.position.copy(trailPosition).sub(currentPosition);
-          dust.scale.setScalar((0.28 - age * 0.18) * twinkle);
-          dustMaterial.opacity = Math.max(0, (1 - age) ** 1.7 * 0.72 * twinkle);
+          dust.position.copy(particle.position).sub(currentPosition);
+          dust.scale.setScalar((0.16 - age * 0.1) * particle.size * twinkle);
+          dustMaterial.opacity = Math.max(
+            0,
+            (1 - age) ** 1.45 * 0.82 * twinkle
+          );
         }
       }
     });
@@ -452,7 +518,7 @@ export default function FairyLightController({
                 }}
                 visible={false}
               >
-                <sphereGeometry args={[0.1, 6, 6]} />
+                <sphereGeometry args={[0.08, 6, 6]} />
                 <meshBasicMaterial
                   ref={(material) => {
                     dustMaterialRefs.current[index] ??= [];
