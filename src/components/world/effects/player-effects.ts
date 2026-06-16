@@ -7,6 +7,7 @@ export const MAX_EFFECTIVE_REVEAL_RADIUS =
   MAX_FAIRY_ORBIT_RADIUS + FAIRY_LIGHT_REVEAL_RADIUS;
 
 export type PlayerEffectKind = "fairyLight";
+export type FairyLightPathKind = "semiEllipse" | "rose" | "epicycloid";
 
 export interface PlayerRevealSource {
   id: string;
@@ -18,20 +19,48 @@ export interface PlayerRevealSource {
   color: ColorRepresentation;
 }
 
+interface BaseFairyLightPathConfig {
+  kind: FairyLightPathKind;
+  rotation?: number;
+}
+
+export interface SemiEllipsePathConfig extends BaseFairyLightPathConfig {
+  kind: "semiEllipse";
+  radiusX: number;
+  radiusZ: number;
+}
+
+export interface RosePathConfig extends BaseFairyLightPathConfig {
+  kind: "rose";
+  radius: number;
+  petalCount: number;
+  innerRadiusRatio: number;
+}
+
+export interface EpicycloidPathConfig extends BaseFairyLightPathConfig {
+  kind: "epicycloid";
+  fixedRadius: number;
+  rollingRadius: number;
+  scale: number;
+}
+
+export type FairyLightPathConfig =
+  | SemiEllipsePathConfig
+  | RosePathConfig
+  | EpicycloidPathConfig;
+
 export interface FairyLightConfig {
   id: string;
   color: ColorRepresentation;
   intensity: number;
   revealRadius: number;
   falloffStart: number;
-  ellipseX: number;
-  ellipseZ: number;
+  path: FairyLightPathConfig;
   heightOffset: number;
   bobAmplitude: number;
   bobFrequency: number;
   speed: number;
   phase: number;
-  wanderIntervalMs: number;
 }
 
 export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
@@ -41,14 +70,17 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
     intensity: 0.9,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
     falloffStart: 0.35,
-    ellipseX: 8.2,
-    ellipseZ: 4.8,
-    heightOffset: 1.8,
-    bobAmplitude: 0.55,
+    path: {
+      kind: "semiEllipse",
+      radiusX: 8.2,
+      radiusZ: 4.8,
+      rotation: Math.PI / 10,
+    },
+    heightOffset: 1.35,
+    bobAmplitude: 0.28,
     bobFrequency: 2.1,
     speed: 0.72,
     phase: 0,
-    wanderIntervalMs: 4100,
   },
   {
     id: "fairy-cyan",
@@ -56,14 +88,18 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
     intensity: 0.82,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.92,
     falloffStart: 0.3,
-    ellipseX: 5.5,
-    ellipseZ: 8.4,
-    heightOffset: 2.35,
-    bobAmplitude: 0.72,
+    path: {
+      kind: "rose",
+      radius: 8.4,
+      petalCount: 3,
+      innerRadiusRatio: 0.42,
+      rotation: Math.PI / 5,
+    },
+    heightOffset: 1.55,
+    bobAmplitude: 0.32,
     bobFrequency: 1.7,
-    speed: -0.58,
+    speed: -0.46,
     phase: (Math.PI * 2) / 3,
-    wanderIntervalMs: 5300,
   },
   {
     id: "fairy-violet",
@@ -71,13 +107,17 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
     intensity: 0.76,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.85,
     falloffStart: 0.4,
-    ellipseX: 7.1,
-    ellipseZ: 6.2,
-    heightOffset: 1.55,
-    bobAmplitude: 0.48,
+    path: {
+      kind: "epicycloid",
+      fixedRadius: 3,
+      rollingRadius: 1,
+      scale: 2.05,
+      rotation: -Math.PI / 8,
+    },
+    heightOffset: 1.25,
+    bobAmplitude: 0.24,
     bobFrequency: 2.5,
-    speed: 0.91,
+    speed: 0.52,
     phase: (Math.PI * 4) / 3,
-    wanderIntervalMs: 4700,
   },
 ];
