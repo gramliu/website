@@ -1,10 +1,20 @@
 import { type Object3D, Vector3 } from "three";
+import { PLAYER_REVEAL_RADIUS } from "../effects/player-effects";
 import { FRINGE_CONFIG } from "./fringe-layout";
 
 export interface DepthBandWeights {
   solid: number;
   wireframe: number;
   tile: number;
+}
+
+export const MAX_REVEAL_LIGHTS = 4;
+
+export interface RevealLightInput {
+  position: Vector3;
+  radius: number;
+  intensity: number;
+  falloffStart?: number;
 }
 
 /**
@@ -28,6 +38,20 @@ export const fringeDepthFadeUniforms = {
   // 0: camera-relative solid fade (preview). 1: radial solid fade around the
   // focus (interactive mode). Wireframe/tile bands always use camera depth.
   uRadialFade: { value: 0 },
+  uPlayerRevealRadius: { value: PLAYER_REVEAL_RADIUS },
+  uRevealLightCount: { value: 0 },
+  uRevealLightPositions: {
+    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => new Vector3()),
+  },
+  uRevealLightRadii: {
+    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => 0),
+  },
+  uRevealLightIntensities: {
+    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => 0),
+  },
+  uRevealLightFalloffStarts: {
+    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => 0.35),
+  },
 };
 
 /**
@@ -64,6 +88,12 @@ export const depthFadeParsGlsl = `
   uniform float uWireframeFadeStart;
   uniform float uWireframeFadeEnd;
   uniform float uRadialFade;
+  uniform float uPlayerRevealRadius;
+  uniform int uRevealLightCount;
+  uniform vec3 uRevealLightPositions[${MAX_REVEAL_LIGHTS}];
+  uniform float uRevealLightRadii[${MAX_REVEAL_LIGHTS}];
+  uniform float uRevealLightIntensities[${MAX_REVEAL_LIGHTS}];
+  uniform float uRevealLightFalloffStarts[${MAX_REVEAL_LIGHTS}];
 
   float fringeCameraDepth(vec3 worldPos) {
     float pointDist = length(worldPos.xz - uCameraWorld.xz);
@@ -75,12 +105,49 @@ export const depthFadeParsGlsl = `
     return length(worldPos.xz - uFocusWorld.xz);
   }
 
+  float fringeRevealLightWeight(
+    vec3 worldPos,
+    vec3 lightPos,
+    float radius,
+    float intensity,
+    float falloffStart
+  ) {
+    float distanceToLight = length(worldPos.xz - lightPos.xz);
+    float innerRadius = radius * clamp(falloffStart, 0.0, 0.95);
+    return intensity * (1.0 - smoothstep(innerRadius, radius, distanceToLight));
+  }
+
+  float fringeRevealWeight(vec3 worldPos, float radialDepth) {
+    float reveal = 1.0 - smoothstep(
+      uPlayerRevealRadius,
+      uSolidFadeEnd,
+      radialDepth
+    );
+
+    for (int i = 0; i < ${MAX_REVEAL_LIGHTS}; i++) {
+      if (i >= uRevealLightCount) {
+        break;
+      }
+      reveal += fringeRevealLightWeight(
+        worldPos,
+        uRevealLightPositions[i],
+        uRevealLightRadii[i],
+        uRevealLightIntensities[i],
+        uRevealLightFalloffStarts[i]
+      );
+    }
+
+    return clamp(reveal, 0.0, 1.0);
+  }
+
   vec3 fringeDepthBandWeights(vec3 worldPos) {
     float cameraDepth = fringeCameraDepth(worldPos);
     float radialDepth = fringeRadialDepth(worldPos);
     float solidDepth = mix(cameraDepth, radialDepth, uRadialFade);
 
+    float reveal = fringeRevealWeight(worldPos, radialDepth);
     float solidOut = smoothstep(uSolidFadeStart, uSolidFadeEnd, solidDepth);
+    solidOut = mix(solidOut, 1.0 - reveal, uRadialFade);
     float wireframeOut = smoothstep(
       uWireframeFadeStart,
       uWireframeFadeEnd,
@@ -94,6 +161,37 @@ export const depthFadeParsGlsl = `
     );
   }
 `;
+
+export function computeRevealLightWeight(
+  pointWorld: Vector3,
+  light: RevealLightInput
+): number {
+  const distanceToLight = Math.hypot(
+    pointWorld.x - light.position.x,
+    pointWorld.z - light.position.z
+  );
+  const falloffStart = Math.max(0, Math.min(0.95, light.falloffStart ?? 0.35));
+  const innerRadius = light.radius * falloffStart;
+  return (
+    light.intensity *
+    (1 - smoothstep(innerRadius, light.radius, distanceToLight))
+  );
+}
+
+export function computeRevealWeight(
+  pointWorld: Vector3,
+  focusWorldPosition: Vector3,
+  lights: RevealLightInput[] = [],
+  playerRevealRadius: number = PLAYER_REVEAL_RADIUS,
+  fadeEnd: number = FRINGE_CONFIG.radialDepthBands.solidFadeEnd
+): number {
+  const radialDepth = computeRadialFadeDepth(pointWorld, focusWorldPosition);
+  let reveal = 1 - smoothstep(playerRevealRadius, fadeEnd, radialDepth);
+  for (const light of lights.slice(0, MAX_REVEAL_LIGHTS)) {
+    reveal += computeRevealLightWeight(pointWorld, light);
+  }
+  return Math.max(0, Math.min(1, reveal));
+}
 
 function smoothstep(edge0: number, edge1: number, x: number): number {
   const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
@@ -195,11 +293,21 @@ export function computeDepthBandWeights(
     cameraWorldPosition,
     focusWorldPosition
   );
-  const solidOut = smoothstep(
+  let solidOut = smoothstep(
     resolvedBands.solidFadeStart,
     resolvedBands.solidFadeEnd,
     solidDepth
   );
+  if (radial) {
+    const reveal = computeRevealWeight(
+      pointWorld,
+      focusWorldPosition,
+      [],
+      PLAYER_REVEAL_RADIUS,
+      resolvedBands.solidFadeEnd
+    );
+    solidOut = 1 - reveal;
+  }
   const wireframeOut = smoothstep(
     resolvedBands.wireframeFadeStart,
     resolvedBands.wireframeFadeEnd,
@@ -229,4 +337,30 @@ export function updateFringeDepthFadeUniforms(
   focusObject.getWorldPosition(focusWorld);
   fringeDepthFadeUniforms.uCameraWorld.value.copy(cameraWorld);
   fringeDepthFadeUniforms.uFocusWorld.value.copy(focusWorld);
+}
+
+export function updateFringeRevealLightUniforms(
+  lights: RevealLightInput[]
+): void {
+  const count = Math.min(lights.length, MAX_REVEAL_LIGHTS);
+  fringeDepthFadeUniforms.uRevealLightCount.value = count;
+
+  for (let index = 0; index < MAX_REVEAL_LIGHTS; index += 1) {
+    const light = lights[index];
+    if (index < count && light) {
+      fringeDepthFadeUniforms.uRevealLightPositions.value[index].copy(
+        light.position
+      );
+      fringeDepthFadeUniforms.uRevealLightRadii.value[index] = light.radius;
+      fringeDepthFadeUniforms.uRevealLightIntensities.value[index] =
+        light.intensity;
+      fringeDepthFadeUniforms.uRevealLightFalloffStarts.value[index] =
+        light.falloffStart ?? 0.35;
+    } else {
+      fringeDepthFadeUniforms.uRevealLightPositions.value[index].set(0, 0, 0);
+      fringeDepthFadeUniforms.uRevealLightRadii.value[index] = 0;
+      fringeDepthFadeUniforms.uRevealLightIntensities.value[index] = 0;
+      fringeDepthFadeUniforms.uRevealLightFalloffStarts.value[index] = 0.35;
+    }
+  }
 }

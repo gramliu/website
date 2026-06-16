@@ -5,9 +5,12 @@ import {
   computeDepthBandWeights,
   computeFadeDepth,
   computeRadialFadeDepth,
+  computeRevealLightWeight,
+  computeRevealWeight,
   fringeDepthFadeUniforms,
   isFringeRadialFadeEnabled,
   setFringeRadialFade,
+  updateFringeRevealLightUniforms,
 } from "./fringe-depth-fade";
 import { FRINGE_CONFIG } from "./fringe-layout";
 
@@ -197,5 +200,89 @@ describe("setFringeRadialFade", () => {
     expect(fringeDepthFadeUniforms.uWireframeFadeEnd.value).toBe(
       FRINGE_CONFIG.depthBands.wireframeFadeEnd
     );
+  });
+});
+
+describe("player reveal lights", () => {
+  it("keeps the player center fully revealed", () => {
+    expect(computeRevealWeight(focus, focus)).toBe(1);
+  });
+
+  it("reveals a dark point inside a fairy light radius", () => {
+    const point = new Vector3(8, 12, 0);
+    const reveal = computeRevealWeight(point, focus, [
+      {
+        position: new Vector3(8, 0, 0),
+        radius: 3,
+        intensity: 0.8,
+        falloffStart: 0.35,
+      },
+    ]);
+
+    expect(reveal).toBeGreaterThan(0.75);
+  });
+
+  it("combines multiple fairy lights but clamps reveal to one", () => {
+    const point = new Vector3(8, 0, 0);
+    const reveal = computeRevealWeight(point, focus, [
+      {
+        position: new Vector3(8, 0, 0),
+        radius: 3,
+        intensity: 0.8,
+      },
+      {
+        position: new Vector3(8, 0, 0),
+        radius: 3,
+        intensity: 0.8,
+      },
+    ]);
+
+    expect(reveal).toBe(1);
+  });
+
+  it("leaves points beyond the player and fairy radii dark", () => {
+    const point = new Vector3(14, 0, 0);
+    const reveal = computeRevealWeight(point, focus, [
+      {
+        position: new Vector3(8, 0, 0),
+        radius: 3,
+        intensity: 1,
+      },
+    ]);
+
+    expect(reveal).toBe(0);
+  });
+
+  it("uses horizontal distance so height does not shrink illumination", () => {
+    const low = computeRevealLightWeight(new Vector3(8, 0, 0), {
+      position: new Vector3(8, 0, 0),
+      radius: 3,
+      intensity: 0.8,
+    });
+    const high = computeRevealLightWeight(new Vector3(8, 20, 0), {
+      position: new Vector3(8, 0, 0),
+      radius: 3,
+      intensity: 0.8,
+    });
+
+    expect(low).toBeCloseTo(high);
+  });
+
+  it("copies reveal lights into bounded shared uniforms", () => {
+    updateFringeRevealLightUniforms([
+      {
+        position: new Vector3(1, 2, 3),
+        radius: 2,
+        intensity: 0.7,
+      },
+    ]);
+
+    expect(fringeDepthFadeUniforms.uRevealLightCount.value).toBe(1);
+    expect(fringeDepthFadeUniforms.uRevealLightPositions.value[0].x).toBe(1);
+    expect(fringeDepthFadeUniforms.uRevealLightRadii.value[0]).toBe(2);
+    expect(fringeDepthFadeUniforms.uRevealLightIntensities.value[0]).toBe(0.7);
+
+    updateFringeRevealLightUniforms([]);
+    expect(fringeDepthFadeUniforms.uRevealLightCount.value).toBe(0);
   });
 });

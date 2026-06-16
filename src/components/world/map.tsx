@@ -9,6 +9,8 @@ import { InfiniteWorld } from "../../game/world/infinite-world";
 import { TerrainGenerator } from "../../game/world/terrain-generator";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
+import FairyLightController from "./effects/FairyLightController";
+import { MAX_EFFECTIVE_REVEAL_RADIUS } from "./effects/player-effects";
 import { FringeFadeContext } from "./fringe/fringe-fade-context";
 import {
   computeFringeLayout,
@@ -23,14 +25,13 @@ const ROTATION_SPEED = 0.3;
 
 /**
  * Solid render radius (Chebyshev, in cells) around the player in interactive
- * mode. Sized so the window edge sits past
- * `FRINGE_CONFIG.radialDepthBands.solidFadeEnd` and blocks always
- * mount/unmount fully faded: the window can shift with the player without
- * any visible pop.
+ * mode. Sized to include the fairy lights' outer reveal path plus a small
+ * fade margin, so they can uncover boundary terrain without mounting visible
+ * blocks at the window edge.
  */
-const RENDER_RADIUS = 11;
+const RENDER_RADIUS = Math.ceil(MAX_EFFECTIVE_REVEAL_RADIUS + 2);
 /** Chunks are pre-generated this many blocks ahead of the player. */
-const PREFETCH_RADIUS = 24;
+const PREFETCH_RADIUS = 30;
 /** Per-frame budget for background chunk generation. */
 const PREFETCH_CHUNKS_PER_FRAME = 2;
 /** Exponential smoothing rate for the camera-follow counter-translation. */
@@ -320,6 +321,11 @@ export default function Map({
                 focusSourceRef={interactiveMode ? playerRef : undefined}
               />
             ) : null}
+            <FairyLightController
+              enabled={interactiveMode && showFringe}
+              playerRef={playerRef}
+              world={activeWorld}
+            />
             <Player
               position={DEFAULT_PLAYER_POSITION}
               animate={!interactiveMode}
