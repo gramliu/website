@@ -9,6 +9,7 @@ import { InfiniteWorld } from "../../game/world/infinite-world";
 import { TerrainGenerator } from "../../game/world/terrain-generator";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
+import FairyLightController from "./effects/FairyLightController";
 import { FringeFadeContext } from "./fringe/fringe-fade-context";
 import {
   computeFringeLayout,
@@ -320,6 +321,10 @@ export default function Map({
                 focusSourceRef={interactiveMode ? playerRef : undefined}
               />
             ) : null}
+            <FairyLightController
+              enabled={interactiveMode && showFringe}
+              playerRef={playerRef}
+            />
             <Player
               position={DEFAULT_PLAYER_POSITION}
               animate={!interactiveMode}
