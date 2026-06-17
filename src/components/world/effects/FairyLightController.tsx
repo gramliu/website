@@ -57,9 +57,9 @@ const FAIRY_SURFACE_CLEARANCE = 1.05;
 const PIXIE_DUST_TRAIL_LENGTH = 96;
 const PIXIE_DUST_PARTICLES_PER_SAMPLE = 5;
 const PIXIE_DUST_SAMPLE_INTERVAL = 0.04;
-const PIXIE_DUST_SIDE_SPREAD = 0.34;
-const PIXIE_DUST_VERTICAL_SPREAD = 0.24;
-const PIXIE_DUST_BACK_SPREAD = 0.5;
+const PIXIE_DUST_SIDE_SPREAD = 0.48;
+const PIXIE_DUST_VERTICAL_SPREAD = 0.32;
+const PIXIE_DUST_BACK_SPREAD = 0.72;
 
 const scratchCandidate = new Vector3();
 const scratchDustDirection = new Vector3();
@@ -199,7 +199,7 @@ function appendPixieDustSpray(
   }
 
   for (let index = 0; index < PIXIE_DUST_PARTICLES_PER_SAMPLE; index += 1) {
-    const speedBoost = Math.min(1.2, state.velocity.length() * 0.22);
+    const speedBoost = Math.min(1.45, state.velocity.length() * 0.28);
     const seed = state.sampleCount * 31 + fairyIndex * 101 + index * 17;
     const backOffset = seededUnit(seed + 1) * PIXIE_DUST_BACK_SPREAD;
     const sideOffset = seededSigned(seed + 2) * PIXIE_DUST_SIDE_SPREAD;
@@ -537,7 +537,7 @@ export default function FairyLightController({
           const age = dustIndex / PIXIE_DUST_TRAIL_LENGTH;
           const twinkle =
             0.62 + 0.38 * Math.sin(state.elapsed * 3.3 + particle.seed);
-          const speedGlow = Math.min(0.2, state.velocity.length() * 0.02);
+          const speedGlow = Math.min(0.28, state.velocity.length() * 0.028);
           dust.visible = true;
           dust.position.copy(particle.position).sub(currentPosition);
           dust.scale.setScalar((0.16 - age * 0.1) * particle.size * twinkle);
