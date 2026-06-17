@@ -25,7 +25,7 @@ const ROTATION_SPEED = 0.3;
 
 /**
  * Solid render radius (Chebyshev, in cells) around the player in interactive
- * mode. Sized to include the fairy lights' outer reveal path plus a small
+ * mode. Sized to include the fairy lights' companion swarm radius plus a small
  * fade margin, so they can uncover boundary terrain without mounting visible
  * blocks at the window edge.
  */

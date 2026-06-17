@@ -2,12 +2,11 @@ import type { ColorRepresentation, Vector3 } from "three";
 
 export const PLAYER_REVEAL_RADIUS = 5.5;
 export const FAIRY_LIGHT_REVEAL_RADIUS = 4.5;
-export const MAX_FAIRY_ORBIT_RADIUS = 8.5;
+export const MAX_FAIRY_SWARM_RADIUS = 3.25;
 export const MAX_EFFECTIVE_REVEAL_RADIUS =
-  MAX_FAIRY_ORBIT_RADIUS + FAIRY_LIGHT_REVEAL_RADIUS;
+  MAX_FAIRY_SWARM_RADIUS + FAIRY_LIGHT_REVEAL_RADIUS;
 
 export type PlayerEffectKind = "fairyLight";
-export type FairyLightPathKind = "semiEllipse" | "rose" | "epicycloid";
 
 export interface PlayerRevealSource {
   id: string;
@@ -19,44 +18,22 @@ export interface PlayerRevealSource {
   color: ColorRepresentation;
 }
 
-interface BaseFairyLightPathConfig {
-  kind: FairyLightPathKind;
-  rotation?: number;
-}
-
-export interface SemiEllipsePathConfig extends BaseFairyLightPathConfig {
-  kind: "semiEllipse";
-  radiusX: number;
-  radiusZ: number;
-}
-
-export interface RosePathConfig extends BaseFairyLightPathConfig {
-  kind: "rose";
-  radius: number;
-  petalCount: number;
-  innerRadiusRatio: number;
-}
-
-export interface EpicycloidPathConfig extends BaseFairyLightPathConfig {
-  kind: "epicycloid";
-  fixedRadius: number;
-  rollingRadius: number;
-  scale: number;
-}
-
-export type FairyLightPathConfig =
-  | SemiEllipsePathConfig
-  | RosePathConfig
-  | EpicycloidPathConfig;
-
 export interface FairyLightConfig {
   id: string;
   color: ColorRepresentation;
   intensity: number;
   revealRadius: number;
   falloffStart: number;
-  path: FairyLightPathConfig;
-  heightOffset: number;
+  anchorRadius: number;
+  anchorHeight: number;
+  driftAmount: number;
+  driftSpeed: number;
+  orbitBias: number;
+  spring: number;
+  damping: number;
+  trailDistance: number;
+  curiosityIntervalMin: number;
+  curiosityIntervalMax: number;
   bobAmplitude: number;
   bobFrequency: number;
   speed: number;
@@ -70,16 +47,19 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
     intensity: 0.9,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
     falloffStart: 0.35,
-    path: {
-      kind: "semiEllipse",
-      radiusX: 8.2,
-      radiusZ: 4.8,
-      rotation: Math.PI / 10,
-    },
-    heightOffset: 1.35,
-    bobAmplitude: 0.28,
-    bobFrequency: 2.1,
-    speed: 0.72,
+    anchorRadius: 1.25,
+    anchorHeight: 1.45,
+    driftAmount: 0.72,
+    driftSpeed: 0.16,
+    orbitBias: 0.16,
+    spring: 11,
+    damping: 5.4,
+    trailDistance: 0.38,
+    curiosityIntervalMin: 4.5,
+    curiosityIntervalMax: 8.5,
+    bobAmplitude: 0.07,
+    bobFrequency: 1.35,
+    speed: 0.18,
     phase: 0,
   },
   {
@@ -88,17 +68,19 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
     intensity: 0.82,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.92,
     falloffStart: 0.3,
-    path: {
-      kind: "rose",
-      radius: 8.4,
-      petalCount: 3,
-      innerRadiusRatio: 0.42,
-      rotation: Math.PI / 5,
-    },
-    heightOffset: 1.55,
-    bobAmplitude: 0.32,
-    bobFrequency: 1.7,
-    speed: -0.46,
+    anchorRadius: 1.85,
+    anchorHeight: 1.9,
+    driftAmount: 0.88,
+    driftSpeed: 0.11,
+    orbitBias: 0.12,
+    spring: 8.5,
+    damping: 4.7,
+    trailDistance: 0.65,
+    curiosityIntervalMin: 6,
+    curiosityIntervalMax: 10,
+    bobAmplitude: 0.06,
+    bobFrequency: 1.05,
+    speed: -0.12,
     phase: (Math.PI * 2) / 3,
   },
   {
@@ -107,17 +89,19 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
     intensity: 0.76,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.85,
     falloffStart: 0.4,
-    path: {
-      kind: "epicycloid",
-      fixedRadius: 3,
-      rollingRadius: 1,
-      scale: 2.05,
-      rotation: -Math.PI / 8,
-    },
-    heightOffset: 1.25,
-    bobAmplitude: 0.24,
-    bobFrequency: 2.5,
-    speed: 0.52,
+    anchorRadius: 1.05,
+    anchorHeight: 1.2,
+    driftAmount: 0.62,
+    driftSpeed: 0.2,
+    orbitBias: 0.2,
+    spring: 13,
+    damping: 6.2,
+    trailDistance: 0.28,
+    curiosityIntervalMin: 4,
+    curiosityIntervalMax: 7.5,
+    bobAmplitude: 0.08,
+    bobFrequency: 1.55,
+    speed: 0.16,
     phase: (Math.PI * 4) / 3,
   },
 ];

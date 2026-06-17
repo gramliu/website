@@ -13,8 +13,7 @@ import { updateFringeRevealLightUniforms } from "../fringe/fringe-depth-fade";
 import {
   FAIRY_LIGHT_CONFIGS,
   type FairyLightConfig,
-  type FairyLightPathConfig,
-  MAX_FAIRY_ORBIT_RADIUS,
+  MAX_FAIRY_SWARM_RADIUS,
   type PlayerRevealSource,
 } from "./player-effects";
 
@@ -31,28 +30,30 @@ interface PixieDustParticle {
   size: number;
 }
 
-interface OrbitState {
+interface FairySwarmState {
   angle: number;
   currentPosition: Vector3 | null;
+  velocity: Vector3;
+  anchorOffset: Vector3;
+  targetAnchorOffset: Vector3;
+  curiosityElapsed: number;
+  nextCuriosityChange: number;
+  noiseSeed: number;
   previousDustPosition: Vector3 | null;
   trail: PixieDustParticle[];
   trailElapsed: number;
+  elapsed: number;
+  sampleCount: number;
 }
 
-interface PathSample {
+interface HorizontalSample {
   x: number;
   z: number;
 }
 
-type FairyLightPathSampler = (
-  path: FairyLightPathConfig,
-  angle: number
-) => PathSample;
-
 const FAIRY_COLLIDER_HALF_WIDTH = 0.22;
 const FAIRY_COLLIDER_HEIGHT = 0.44;
 const FAIRY_SURFACE_CLEARANCE = 1.05;
-const FAIRY_POSITION_SMOOTHING = 7;
 const PIXIE_DUST_TRAIL_LENGTH = 96;
 const PIXIE_DUST_PARTICLES_PER_SAMPLE = 5;
 const PIXIE_DUST_SAMPLE_INTERVAL = 0.04;
@@ -63,6 +64,11 @@ const PIXIE_DUST_BACK_SPREAD = 0.5;
 const scratchCandidate = new Vector3();
 const scratchDustDirection = new Vector3();
 const scratchDustSide = new Vector3();
+const scratchDriftOffset = new Vector3();
+const scratchOrbitOffset = new Vector3();
+const scratchTrailOffset = new Vector3();
+const scratchTarget = new Vector3();
+const scratchPlayerVelocity = new Vector3();
 
 function seededUnit(seed: number): number {
   const value = Math.sin(seed * 12.9898) * 43758.5453;
@@ -73,111 +79,106 @@ function seededSigned(seed: number): number {
   return seededUnit(seed) * 2 - 1;
 }
 
-function clampOrbitRadius(radius: number): number {
-  return Math.min(radius, MAX_FAIRY_ORBIT_RADIUS);
+function smoothNoise(seed: number, time: number): number {
+  const whole = Math.floor(time);
+  const fraction = time - whole;
+  const eased = fraction * fraction * (3 - 2 * fraction);
+  const previous = seededUnit(seed + whole);
+  const next = seededUnit(seed + whole + 1);
+  return previous + (next - previous) * eased;
 }
 
-function rotateSample(sample: PathSample, rotation = 0): PathSample {
-  if (rotation === 0) {
-    return sample;
+function clampHorizontalOffset(offset: Vector3): Vector3 {
+  const radius = Math.hypot(offset.x, offset.z);
+  if (radius <= MAX_FAIRY_SWARM_RADIUS || radius === 0) {
+    return offset;
   }
 
-  const cosRotation = Math.cos(rotation);
-  const sinRotation = Math.sin(rotation);
-  return {
-    x: sample.x * cosRotation - sample.z * sinRotation,
-    z: sample.x * sinRotation + sample.z * cosRotation,
-  };
+  const scale = MAX_FAIRY_SWARM_RADIUS / radius;
+  offset.x *= scale;
+  offset.z *= scale;
+  return offset;
 }
 
-function clampSample(sample: PathSample): PathSample {
-  const radius = Math.hypot(sample.x, sample.z);
-  if (radius <= MAX_FAIRY_ORBIT_RADIUS || radius === 0) {
-    return sample;
-  }
-
-  const scale = MAX_FAIRY_ORBIT_RADIUS / radius;
-  return {
-    x: sample.x * scale,
-    z: sample.z * scale,
-  };
+function createAnchorOffset(config: FairyLightConfig, seed: number): Vector3 {
+  const angle = config.phase + seededSigned(seed) * 0.42;
+  const radius =
+    config.anchorRadius * (0.82 + seededUnit(seed + 1) * 0.36);
+  return clampHorizontalOffset(
+    new Vector3(
+      Math.cos(angle) * radius,
+      config.anchorHeight,
+      Math.sin(angle) * radius
+    )
+  );
 }
 
-const FAIRY_LIGHT_PATHS: Record<
-  FairyLightPathConfig["kind"],
-  FairyLightPathSampler
-> = {
-  semiEllipse: (path, angle) => {
-    if (path.kind !== "semiEllipse") {
-      return { x: 0, z: 0 };
-    }
-
-    return rotateSample(
-      clampSample({
-        x: Math.cos(angle) * clampOrbitRadius(path.radiusX),
-        z: Math.sin(angle) * clampOrbitRadius(path.radiusZ),
-      }),
-      path.rotation
-    );
-  },
-  rose: (path, angle) => {
-    if (path.kind !== "rose") {
-      return { x: 0, z: 0 };
-    }
-
-    const outerRadius = clampOrbitRadius(path.radius);
-    const innerRadiusRatio = Math.max(0, Math.min(0.95, path.innerRadiusRatio));
-    const wave = (1 + Math.cos(path.petalCount * angle)) / 2;
-    const radius =
-      outerRadius * (innerRadiusRatio + (1 - innerRadiusRatio) * wave);
-    return rotateSample(
-      {
-        x: Math.cos(angle) * radius,
-        z: Math.sin(angle) * radius,
-      },
-      path.rotation
-    );
-  },
-  epicycloid: (path, angle) => {
-    if (path.kind !== "epicycloid") {
-      return { x: 0, z: 0 };
-    }
-
-    const ratio = (path.fixedRadius + path.rollingRadius) / path.rollingRadius;
-    return rotateSample(
-      clampSample({
-        x:
-          path.scale *
-          ((path.fixedRadius + path.rollingRadius) * Math.cos(angle) -
-            path.rollingRadius * Math.cos(ratio * angle)),
-        z:
-          path.scale *
-          ((path.fixedRadius + path.rollingRadius) * Math.sin(angle) -
-            path.rollingRadius * Math.sin(ratio * angle)),
-      }),
-      path.rotation
-    );
-  },
-};
-
-function sampleFairyPath(
-  path: FairyLightPathConfig,
-  angle: number
-): PathSample {
-  return FAIRY_LIGHT_PATHS[path.kind](path, angle);
+function scheduleCuriosity(config: FairyLightConfig, seed: number): number {
+  return (
+    config.curiosityIntervalMin +
+    seededUnit(seed) *
+      (config.curiosityIntervalMax - config.curiosityIntervalMin)
+  );
 }
 
-function createOrbitState(config: FairyLightConfig): OrbitState {
+function sampleDriftOffset(
+  target: Vector3,
+  config: FairyLightConfig,
+  state: FairySwarmState
+): Vector3 {
+  const time = state.elapsed * config.driftSpeed;
+  target.set(
+    (smoothNoise(state.noiseSeed, time) - 0.5) * 2 * config.driftAmount,
+    (smoothNoise(state.noiseSeed + 31, time * 0.85) - 0.5) *
+      config.driftAmount *
+      0.55,
+    (smoothNoise(state.noiseSeed + 67, time * 1.07) - 0.5) *
+      2 *
+      config.driftAmount
+  );
+  return target;
+}
+
+function sampleWeakOrbitOffset(
+  target: Vector3,
+  config: FairyLightConfig,
+  state: FairySwarmState
+): Vector3 {
+  target.set(
+    Math.cos(state.angle) * config.anchorRadius * config.orbitBias,
+    0,
+    Math.sin(state.angle) * config.anchorRadius * config.orbitBias
+  );
+  return target;
+}
+
+function createFairySwarmState(
+  config: FairyLightConfig,
+  index: number
+): FairySwarmState {
+  const noiseSeed = (index + 1) * 97 + config.phase * 13;
+  const anchorOffset = createAnchorOffset(config, noiseSeed);
   return {
     angle: config.phase,
     currentPosition: null,
+    velocity: new Vector3(),
+    anchorOffset,
+    targetAnchorOffset: anchorOffset.clone(),
+    curiosityElapsed: 0,
+    nextCuriosityChange: scheduleCuriosity(config, noiseSeed + 11),
+    noiseSeed,
     previousDustPosition: null,
     trail: [],
     trailElapsed: 0,
+    elapsed: 0,
+    sampleCount: 0,
   };
 }
 
-function appendPixieDustSpray(state: OrbitState, fairyIndex: number): void {
+function appendPixieDustSpray(
+  state: FairySwarmState,
+  fairyIndex: number
+): void {
   const currentPosition = state.currentPosition;
   if (!currentPosition) {
     return;
@@ -198,7 +199,8 @@ function appendPixieDustSpray(state: OrbitState, fairyIndex: number): void {
   }
 
   for (let index = 0; index < PIXIE_DUST_PARTICLES_PER_SAMPLE; index += 1) {
-    const seed = state.angle * 31 + fairyIndex * 101 + index * 17;
+    const speedBoost = Math.min(1.2, state.velocity.length() * 0.22);
+    const seed = state.sampleCount * 31 + fairyIndex * 101 + index * 17;
     const backOffset = seededUnit(seed + 1) * PIXIE_DUST_BACK_SPREAD;
     const sideOffset = seededSigned(seed + 2) * PIXIE_DUST_SIDE_SPREAD;
     const yOffset = seededSigned(seed + 3) * PIXIE_DUST_VERTICAL_SPREAD;
@@ -211,10 +213,11 @@ function appendPixieDustSpray(state: OrbitState, fairyIndex: number): void {
     state.trail.unshift({
       position,
       seed,
-      size: 0.55 + seededUnit(seed + 4) * 0.75,
+      size: 0.55 + seededUnit(seed + 4) * 0.75 + speedBoost,
     });
   }
 
+  state.sampleCount += 1;
   state.trail.length = Math.min(state.trail.length, PIXIE_DUST_TRAIL_LENGTH);
   state.previousDustPosition = currentPosition.clone();
 }
@@ -322,7 +325,7 @@ function setCandidatePosition(
 function resolveFairyPosition(
   world: WorldQuery,
   playerPosition: Vector3,
-  sample: PathSample,
+  sample: HorizontalSample,
   config: FairyLightConfig,
   bob: number,
   previousPosition: Vector3 | null
@@ -349,7 +352,7 @@ function resolveFairyPosition(
       playerPosition,
       sample.x + slideX,
       sample.z + slideZ,
-      config.heightOffset,
+      config.anchorHeight,
       bob
     );
     if (!collidesAt(world, scratchCandidate)) {
@@ -358,6 +361,51 @@ function resolveFairyPosition(
   }
 
   return previousPosition ?? scratchCandidate;
+}
+
+function updateCuriosityAnchor(
+  config: FairyLightConfig,
+  state: FairySwarmState,
+  index: number,
+  delta: number
+): void {
+  state.curiosityElapsed += delta;
+  if (state.curiosityElapsed < state.nextCuriosityChange) {
+    return;
+  }
+
+  const seed = state.noiseSeed + state.sampleCount * 19 + index * 7;
+  state.targetAnchorOffset.copy(createAnchorOffset(config, seed));
+  state.curiosityElapsed = 0;
+  state.nextCuriosityChange = scheduleCuriosity(config, seed + 23);
+}
+
+function computeHorizontalTargetSample(
+  config: FairyLightConfig,
+  state: FairySwarmState,
+  playerVelocity: Vector3,
+  delta: number
+): HorizontalSample {
+  const anchorBlend = 1 - Math.exp(-0.55 * delta);
+  state.anchorOffset.lerp(state.targetAnchorOffset, anchorBlend);
+
+  scratchTarget.copy(state.anchorOffset);
+  scratchTarget.add(sampleDriftOffset(scratchDriftOffset, config, state));
+  scratchTarget.add(sampleWeakOrbitOffset(scratchOrbitOffset, config, state));
+
+  scratchTrailOffset.set(0, 0, 0);
+  const horizontalSpeed = Math.hypot(playerVelocity.x, playerVelocity.z);
+  if (horizontalSpeed > 0.001) {
+    scratchTrailOffset.set(
+      (-playerVelocity.x / horizontalSpeed) * config.trailDistance,
+      0,
+      (-playerVelocity.z / horizontalSpeed) * config.trailDistance
+    );
+    scratchTarget.add(scratchTrailOffset);
+  }
+
+  clampHorizontalOffset(scratchTarget);
+  return { x: scratchTarget.x, z: scratchTarget.z };
 }
 
 export default function FairyLightController({
@@ -369,7 +417,8 @@ export default function FairyLightController({
   const lightRefs = useRef<(Group | null)[]>([]);
   const dustRefs = useRef<(Mesh | null)[][]>([]);
   const dustMaterialRefs = useRef<(MeshBasicMaterial | null)[][]>([]);
-  const orbitStates = useRef(configs.map(createOrbitState));
+  const swarmStates = useRef(configs.map(createFairySwarmState));
+  const previousPlayerPosition = useRef<Vector3 | null>(null);
   const worldPosition = useMemo(() => new Vector3(), []);
   const revealSources = useMemo<PlayerRevealSource[]>(
     () =>
@@ -394,22 +443,40 @@ export default function FairyLightController({
 
   useFrame((_, delta) => {
     if (!enabled || !playerRef.current) {
+      previousPlayerPosition.current = null;
       updateFringeRevealLightUniforms([]);
       return;
     }
 
     const playerPosition = playerRef.current.position;
+    if (previousPlayerPosition.current) {
+      scratchPlayerVelocity
+        .copy(playerPosition)
+        .sub(previousPlayerPosition.current)
+        .multiplyScalar(delta > 0 ? 1 / delta : 0);
+    } else {
+      scratchPlayerVelocity.set(0, 0, 0);
+    }
+    previousPlayerPosition.current = playerPosition.clone();
 
     configs.forEach((config, index) => {
-      const state = orbitStates.current[index];
+      const state = swarmStates.current[index];
       if (!state) {
         return;
       }
 
+      state.elapsed += delta;
       state.angle += config.speed * delta;
-      const sample = sampleFairyPath(config.path, state.angle);
+      updateCuriosityAnchor(config, state, index, delta);
+      const sample = computeHorizontalTargetSample(
+        config,
+        state,
+        scratchPlayerVelocity,
+        delta
+      );
       const bob =
-        config.bobAmplitude * Math.sin(state.angle * config.bobFrequency);
+        config.bobAmplitude *
+        Math.sin(state.elapsed * config.bobFrequency + config.phase);
       const targetPosition = resolveFairyPosition(
         world,
         playerPosition,
@@ -424,8 +491,13 @@ export default function FairyLightController({
         state.previousDustPosition = state.currentPosition.clone();
         appendPixieDustSpray(state, index);
       } else {
-        const blend = 1 - Math.exp(-FAIRY_POSITION_SMOOTHING * delta);
-        state.currentPosition.lerp(targetPosition, blend);
+        const springTarget = scratchTarget.copy(targetPosition);
+        state.velocity.addScaledVector(
+          springTarget.sub(state.currentPosition),
+          config.spring * delta
+        );
+        state.velocity.multiplyScalar(Math.exp(-config.damping * delta));
+        state.currentPosition.addScaledVector(state.velocity, delta);
       }
 
       const currentPosition = state.currentPosition;
@@ -464,13 +536,14 @@ export default function FairyLightController({
 
           const age = dustIndex / PIXIE_DUST_TRAIL_LENGTH;
           const twinkle =
-            0.62 + 0.38 * Math.sin(state.angle * 5 + particle.seed);
+            0.62 + 0.38 * Math.sin(state.elapsed * 3.3 + particle.seed);
+          const speedGlow = Math.min(0.2, state.velocity.length() * 0.02);
           dust.visible = true;
           dust.position.copy(particle.position).sub(currentPosition);
           dust.scale.setScalar((0.16 - age * 0.1) * particle.size * twinkle);
           dustMaterial.opacity = Math.max(
             0,
-            (1 - age) ** 1.45 * 0.82 * twinkle
+            (1 - age) ** 1.45 * (0.82 + speedGlow) * twinkle
           );
         }
       }
