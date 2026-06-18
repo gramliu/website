@@ -2,12 +2,11 @@ import type { ColorRepresentation, Vector3 } from "three";
 
 export const PLAYER_REVEAL_RADIUS = 5.5;
 export const FAIRY_LIGHT_REVEAL_RADIUS = 4.5;
-export const MAX_FAIRY_ORBIT_RADIUS = 8.5;
+export const MAX_FAIRY_SWARM_RADIUS = 6;
 export const MAX_EFFECTIVE_REVEAL_RADIUS =
-  MAX_FAIRY_ORBIT_RADIUS + FAIRY_LIGHT_REVEAL_RADIUS;
+  MAX_FAIRY_SWARM_RADIUS + FAIRY_LIGHT_REVEAL_RADIUS;
 
 export type PlayerEffectKind = "fairyLight";
-export type FairyLightPathKind = "semiEllipse" | "rose" | "epicycloid";
 
 export interface PlayerRevealSource {
   id: string;
@@ -19,44 +18,22 @@ export interface PlayerRevealSource {
   color: ColorRepresentation;
 }
 
-interface BaseFairyLightPathConfig {
-  kind: FairyLightPathKind;
-  rotation?: number;
-}
-
-export interface SemiEllipsePathConfig extends BaseFairyLightPathConfig {
-  kind: "semiEllipse";
-  radiusX: number;
-  radiusZ: number;
-}
-
-export interface RosePathConfig extends BaseFairyLightPathConfig {
-  kind: "rose";
-  radius: number;
-  petalCount: number;
-  innerRadiusRatio: number;
-}
-
-export interface EpicycloidPathConfig extends BaseFairyLightPathConfig {
-  kind: "epicycloid";
-  fixedRadius: number;
-  rollingRadius: number;
-  scale: number;
-}
-
-export type FairyLightPathConfig =
-  | SemiEllipsePathConfig
-  | RosePathConfig
-  | EpicycloidPathConfig;
-
 export interface FairyLightConfig {
   id: string;
   color: ColorRepresentation;
   intensity: number;
   revealRadius: number;
   falloffStart: number;
-  path: FairyLightPathConfig;
-  heightOffset: number;
+  anchorRadius: number;
+  anchorHeight: number;
+  driftAmount: number;
+  driftSpeed: number;
+  orbitBias: number;
+  spring: number;
+  damping: number;
+  trailDistance: number;
+  curiosityIntervalMin: number;
+  curiosityIntervalMax: number;
   bobAmplitude: number;
   bobFrequency: number;
   speed: number;
@@ -70,54 +47,103 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
     intensity: 0.9,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
     falloffStart: 0.35,
-    path: {
-      kind: "semiEllipse",
-      radiusX: 8.2,
-      radiusZ: 4.8,
-      rotation: Math.PI / 10,
-    },
-    heightOffset: 1.35,
-    bobAmplitude: 0.28,
-    bobFrequency: 2.1,
-    speed: 0.72,
+    anchorRadius: 3,
+    anchorHeight: 1.45,
+    driftAmount: 0.95,
+    driftSpeed: 0.26,
+    orbitBias: 0.14,
+    spring: 14,
+    damping: 5.6,
+    trailDistance: 0.75,
+    curiosityIntervalMin: 3.8,
+    curiosityIntervalMax: 7,
+    bobAmplitude: 0.07,
+    bobFrequency: 1.45,
+    speed: 0.28,
     phase: 0,
-  },
-  {
-    id: "fairy-cyan",
-    color: "#8ee8ff",
-    intensity: 0.82,
-    revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.92,
-    falloffStart: 0.3,
-    path: {
-      kind: "rose",
-      radius: 8.4,
-      petalCount: 3,
-      innerRadiusRatio: 0.42,
-      rotation: Math.PI / 5,
-    },
-    heightOffset: 1.55,
-    bobAmplitude: 0.32,
-    bobFrequency: 1.7,
-    speed: -0.46,
-    phase: (Math.PI * 2) / 3,
   },
   {
     id: "fairy-violet",
     color: "#d5a3ff",
-    intensity: 0.76,
-    revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.85,
+    intensity: 0.78,
+    revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.88,
     falloffStart: 0.4,
-    path: {
-      kind: "epicycloid",
-      fixedRadius: 3,
-      rollingRadius: 1,
-      scale: 2.05,
-      rotation: -Math.PI / 8,
-    },
-    heightOffset: 1.25,
-    bobAmplitude: 0.24,
-    bobFrequency: 2.5,
-    speed: 0.52,
-    phase: (Math.PI * 4) / 3,
+    anchorRadius: 3.15,
+    anchorHeight: 1.2,
+    driftAmount: 0.9,
+    driftSpeed: 0.32,
+    orbitBias: 0.18,
+    spring: 15,
+    damping: 6.1,
+    trailDistance: 0.7,
+    curiosityIntervalMin: 3.5,
+    curiosityIntervalMax: 6.5,
+    bobAmplitude: 0.08,
+    bobFrequency: 1.65,
+    speed: -0.3,
+    phase: (Math.PI * 2) / 5,
+  },
+  {
+    id: "fairy-cyan",
+    color: "#8ee8ff",
+    intensity: 0.84,
+    revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
+    falloffStart: 0.3,
+    anchorRadius: 4.1,
+    anchorHeight: 1.9,
+    driftAmount: 1.15,
+    driftSpeed: 0.22,
+    orbitBias: 0.1,
+    spring: 10,
+    damping: 4.4,
+    trailDistance: 0.95,
+    curiosityIntervalMin: 4.5,
+    curiosityIntervalMax: 8,
+    bobAmplitude: 0.06,
+    bobFrequency: 1.1,
+    speed: 0.22,
+    phase: (Math.PI * 4) / 5,
+  },
+  {
+    id: "fairy-mint",
+    color: "#9effb8",
+    intensity: 0.8,
+    revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.95,
+    falloffStart: 0.32,
+    anchorRadius: 4.9,
+    anchorHeight: 1.55,
+    driftAmount: 1.35,
+    driftSpeed: 0.2,
+    orbitBias: 0.09,
+    spring: 9,
+    damping: 4.1,
+    trailDistance: 1.15,
+    curiosityIntervalMin: 5,
+    curiosityIntervalMax: 9,
+    bobAmplitude: 0.07,
+    bobFrequency: 1.25,
+    speed: -0.2,
+    phase: (Math.PI * 6) / 5,
+  },
+  {
+    id: "fairy-rose",
+    color: "#ff9ccf",
+    intensity: 0.74,
+    revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.9,
+    falloffStart: 0.38,
+    anchorRadius: 5.6,
+    anchorHeight: 1.7,
+    driftAmount: 1.45,
+    driftSpeed: 0.18,
+    orbitBias: 0.08,
+    spring: 8,
+    damping: 3.8,
+    trailDistance: 1.25,
+    curiosityIntervalMin: 5.5,
+    curiosityIntervalMax: 10,
+    bobAmplitude: 0.06,
+    bobFrequency: 1,
+    speed: 0.18,
+    phase: (Math.PI * 8) / 5,
   },
 ];
