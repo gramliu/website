@@ -102,8 +102,7 @@ function clampHorizontalOffset(offset: Vector3): Vector3 {
 
 function createAnchorOffset(config: FairyLightConfig, seed: number): Vector3 {
   const angle = config.phase + seededSigned(seed) * 0.42;
-  const radius =
-    config.anchorRadius * (0.82 + seededUnit(seed + 1) * 0.36);
+  const radius = config.anchorRadius * (0.82 + seededUnit(seed + 1) * 0.36);
   return clampHorizontalOffset(
     new Vector3(
       Math.cos(angle) * radius,
