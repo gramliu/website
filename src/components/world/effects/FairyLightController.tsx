@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from "react";
 import {
   AdditiveBlending,
   Color,
+  DoubleSide,
   type Group,
   type Mesh,
   type MeshBasicMaterial,
@@ -22,6 +23,7 @@ interface Props {
   world: WorldQuery;
   enabled: boolean;
   configs?: FairyLightConfig[];
+  onRevealSourcesChange?: (sources: PlayerRevealSource[]) => void;
 }
 
 interface PixieDustParticle {
@@ -60,6 +62,8 @@ const PIXIE_DUST_SAMPLE_INTERVAL = 0.04;
 const PIXIE_DUST_SIDE_SPREAD = 0.48;
 const PIXIE_DUST_VERTICAL_SPREAD = 0.32;
 const PIXIE_DUST_BACK_SPREAD = 0.72;
+const GROUND_GLOW_RADIUS_SCALE = 0.58;
+const GROUND_GLOW_BASE_OPACITY = 0.34;
 
 const scratchCandidate = new Vector3();
 const scratchDustDirection = new Vector3();
@@ -412,8 +416,11 @@ export default function FairyLightController({
   world,
   enabled,
   configs = FAIRY_LIGHT_CONFIGS,
+  onRevealSourcesChange,
 }: Props) {
   const lightRefs = useRef<(Group | null)[]>([]);
+  const groundGlowRefs = useRef<(Mesh | null)[]>([]);
+  const groundGlowMaterialRefs = useRef<(MeshBasicMaterial | null)[]>([]);
   const dustRefs = useRef<(Mesh | null)[][]>([]);
   const dustMaterialRefs = useRef<(MeshBasicMaterial | null)[][]>([]);
   const swarmStates = useRef(configs.map(createFairySwarmState));
@@ -436,14 +443,19 @@ export default function FairyLightController({
   useEffect(() => {
     if (!enabled) {
       updateFringeRevealLightUniforms([]);
+      onRevealSourcesChange?.([]);
     }
-    return () => updateFringeRevealLightUniforms([]);
-  }, [enabled]);
+    return () => {
+      updateFringeRevealLightUniforms([]);
+      onRevealSourcesChange?.([]);
+    };
+  }, [enabled, onRevealSourcesChange]);
 
   useFrame((_, delta) => {
     if (!enabled || !playerRef.current) {
       previousPlayerPosition.current = null;
       updateFringeRevealLightUniforms([]);
+      onRevealSourcesChange?.([]);
       return;
     }
 
@@ -518,6 +530,36 @@ export default function FairyLightController({
 
         const dustMeshes = dustRefs.current[index] ?? [];
         const dustMaterials = dustMaterialRefs.current[index] ?? [];
+        const groundGlow = groundGlowRefs.current[index];
+        const groundGlowMaterial = groundGlowMaterialRefs.current[index];
+        if (groundGlow && groundGlowMaterial) {
+          const groundY = getTerrainGroundY(
+            world,
+            Math.floor(currentPosition.x),
+            Math.floor(currentPosition.z)
+          );
+          if (groundY === null) {
+            groundGlow.visible = false;
+          } else {
+            const surfaceY =
+              getWaterSurfaceY(
+                world,
+                Math.floor(currentPosition.x),
+                Math.floor(currentPosition.z),
+                groundY
+              ) ?? groundY;
+            const pulse =
+              0.82 + 0.18 * Math.sin(state.elapsed * 2.6 + config.phase);
+            groundGlow.visible = true;
+            groundGlow.position.set(0, surfaceY + 1.012 - currentPosition.y, 0);
+            groundGlow.scale.setScalar(
+              config.revealRadius * GROUND_GLOW_RADIUS_SCALE * pulse
+            );
+            groundGlowMaterial.opacity =
+              GROUND_GLOW_BASE_OPACITY * config.intensity * pulse;
+          }
+        }
+
         for (
           let dustIndex = 0;
           dustIndex < PIXIE_DUST_TRAIL_LENGTH;
@@ -549,6 +591,7 @@ export default function FairyLightController({
     });
 
     updateFringeRevealLightUniforms(revealSources);
+    onRevealSourcesChange?.(revealSources);
   });
 
   if (!enabled) {
@@ -577,6 +620,28 @@ export default function FairyLightController({
                 color={color}
                 depthWrite={false}
                 opacity={0.14}
+                toneMapped={false}
+                transparent
+              />
+            </mesh>
+            <mesh
+              ref={(mesh) => {
+                groundGlowRefs.current[index] = mesh;
+              }}
+              renderOrder={-1}
+              rotation={[-Math.PI / 2, 0, 0]}
+              visible={false}
+            >
+              <circleGeometry args={[1, 40]} />
+              <meshBasicMaterial
+                ref={(material) => {
+                  groundGlowMaterialRefs.current[index] = material;
+                }}
+                blending={AdditiveBlending}
+                color={color}
+                depthWrite={false}
+                opacity={0}
+                side={DoubleSide}
                 toneMapped={false}
                 transparent
               />
