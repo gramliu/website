@@ -9,6 +9,7 @@ import {
   LinearFilter,
   type Mesh,
   type MeshBasicMaterial,
+  NormalBlending,
   Vector3,
 } from "three";
 import type { WorldQuery } from "../../../game/world/world";
@@ -64,8 +65,8 @@ const PIXIE_DUST_SAMPLE_INTERVAL = 0.04;
 const PIXIE_DUST_SIDE_SPREAD = 0.48;
 const PIXIE_DUST_VERTICAL_SPREAD = 0.32;
 const PIXIE_DUST_BACK_SPREAD = 0.72;
-const GROUND_GLOW_RADIUS_SCALE = 0.32;
-const GROUND_GLOW_BASE_OPACITY = 0.22;
+const GROUND_GLOW_RADIUS_SCALE = 0.42;
+const GROUND_GLOW_BASE_OPACITY = 0.46;
 const FAIRY_POINT_LIGHT_DISTANCE_SCALE = 1.35;
 const FAIRY_POINT_LIGHT_INTENSITY_SCALE = 0.18;
 
@@ -110,8 +111,9 @@ function createGroundGlowAlphaMap(): CanvasTexture | null {
     center,
     center
   );
-  gradient.addColorStop(0, "rgba(255,255,255,0.95)");
-  gradient.addColorStop(0.35, "rgba(255,255,255,0.42)");
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.22, "rgba(255,255,255,0.82)");
+  gradient.addColorStop(0.58, "rgba(255,255,255,0.28)");
   gradient.addColorStop(1, "rgba(255,255,255,0)");
 
   context.fillStyle = gradient;
@@ -680,10 +682,14 @@ export default function FairyLightController({
                   groundGlowMaterialRefs.current[index] = material;
                 }}
                 alphaMap={groundGlowAlphaMap}
-                blending={AdditiveBlending}
+                alphaTest={0.01}
+                blending={NormalBlending}
                 color={color}
                 depthWrite={false}
                 opacity={0}
+                polygonOffset
+                polygonOffsetFactor={-1}
+                polygonOffsetUnits={-1}
                 side={DoubleSide}
                 toneMapped={false}
                 transparent
