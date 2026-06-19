@@ -2,9 +2,11 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
   AdditiveBlending,
+  CanvasTexture,
   Color,
   DoubleSide,
   type Group,
+  LinearFilter,
   type Mesh,
   type MeshBasicMaterial,
   Vector3,
@@ -62,8 +64,10 @@ const PIXIE_DUST_SAMPLE_INTERVAL = 0.04;
 const PIXIE_DUST_SIDE_SPREAD = 0.48;
 const PIXIE_DUST_VERTICAL_SPREAD = 0.32;
 const PIXIE_DUST_BACK_SPREAD = 0.72;
-const GROUND_GLOW_RADIUS_SCALE = 0.58;
-const GROUND_GLOW_BASE_OPACITY = 0.34;
+const GROUND_GLOW_RADIUS_SCALE = 0.32;
+const GROUND_GLOW_BASE_OPACITY = 0.22;
+const FAIRY_POINT_LIGHT_DISTANCE_SCALE = 1.35;
+const FAIRY_POINT_LIGHT_INTENSITY_SCALE = 0.18;
 
 const scratchCandidate = new Vector3();
 const scratchDustDirection = new Vector3();
@@ -81,6 +85,43 @@ function seededUnit(seed: number): number {
 
 function seededSigned(seed: number): number {
   return seededUnit(seed) * 2 - 1;
+}
+
+function createGroundGlowAlphaMap(): CanvasTexture | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return null;
+  }
+
+  const center = size / 2;
+  const gradient = context.createRadialGradient(
+    center,
+    center,
+    0,
+    center,
+    center,
+    center
+  );
+  gradient.addColorStop(0, "rgba(255,255,255,0.95)");
+  gradient.addColorStop(0.35, "rgba(255,255,255,0.42)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+
+  const texture = new CanvasTexture(canvas);
+  texture.minFilter = LinearFilter;
+  texture.magFilter = LinearFilter;
+  texture.needsUpdate = true;
+  return texture;
 }
 
 function smoothNoise(seed: number, time: number): number {
@@ -426,6 +467,7 @@ export default function FairyLightController({
   const swarmStates = useRef(configs.map(createFairySwarmState));
   const previousPlayerPosition = useRef<Vector3 | null>(null);
   const worldPosition = useMemo(() => new Vector3(), []);
+  const groundGlowAlphaMap = useMemo(createGroundGlowAlphaMap, []);
   const revealSources = useMemo<PlayerRevealSource[]>(
     () =>
       configs.map((config) => ({
@@ -637,6 +679,7 @@ export default function FairyLightController({
                 ref={(material) => {
                   groundGlowMaterialRefs.current[index] = material;
                 }}
+                alphaMap={groundGlowAlphaMap}
                 blending={AdditiveBlending}
                 color={color}
                 depthWrite={false}
@@ -672,8 +715,8 @@ export default function FairyLightController({
             ))}
             <pointLight
               color={color}
-              distance={config.revealRadius * 2.2}
-              intensity={config.intensity * 0.32}
+              distance={config.revealRadius * FAIRY_POINT_LIGHT_DISTANCE_SCALE}
+              intensity={config.intensity * FAIRY_POINT_LIGHT_INTENSITY_SCALE}
             />
           </group>
         );
