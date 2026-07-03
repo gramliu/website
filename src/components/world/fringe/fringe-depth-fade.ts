@@ -148,6 +148,9 @@ export const depthFadeParsGlsl = `
     float reveal = fringeRevealWeight(worldPos, radialDepth);
     float solidOut = smoothstep(uSolidFadeStart, uSolidFadeEnd, solidDepth);
     solidOut = mix(solidOut, 1.0 - reveal, uRadialFade);
+    // Wireframes/tiles use camera-relative depth and are gated to the far
+    // side of the focus: the camera-facing fade edge dissolves cleanly
+    // instead of showing a noisy wireframe field in front of the player.
     float wireframeOut = smoothstep(
       uWireframeFadeStart,
       uWireframeFadeEnd,
@@ -288,6 +291,8 @@ export function computeDepthBandWeights(
     focusWorldPosition,
     radial
   );
+  // Wireframes/tiles use camera-relative depth and only render behind the
+  // focus, so the camera-facing fade edge dissolves without wireframe noise.
   const wireframeDepth = computeCameraFadeDepth(
     pointWorld,
     cameraWorldPosition,

@@ -127,3 +127,9 @@ export function isBlockSolid(id: number): boolean {
 export function isBlockFluid(id: number): boolean {
   return getBlockDefinition(id).fluid;
 }
+
+/** Opaque blocks fully hide the faces of neighbors they touch. */
+export function isBlockOpaque(id: number): boolean {
+  const definition = getBlockDefinition(id);
+  return definition.solid && !definition.transparent;
+}

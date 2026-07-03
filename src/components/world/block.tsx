@@ -1,12 +1,22 @@
 import { memo, useContext, useRef } from "react";
 import type { Material, Mesh } from "three";
 import {
+  getFringeShadowDepthMaterial,
   type MaterialTextureProps,
   useTextureMaterial,
 } from "../../lib/texture";
 import type { CommonProps } from "../common/types";
 import { FringeFadeContext } from "./fringe/fringe-fade-context";
-import type { WaterBlockAdjacency } from "./world";
+
+/** True for a face means the neighbor on that side fully hides it. */
+export interface FaceOcclusion {
+  top: boolean;
+  bottom: boolean;
+  north: boolean;
+  south: boolean;
+  east: boolean;
+  west: boolean;
+}
 
 export interface BlockProps extends CommonProps {
   texture: {
@@ -14,7 +24,7 @@ export interface BlockProps extends CommonProps {
     side: MaterialTextureProps;
   };
   id: number;
-  adjacentBlocks: WaterBlockAdjacency;
+  occludedFaces: FaceOcclusion;
 }
 
 function Block({
@@ -22,20 +32,13 @@ function Block({
   size = 1,
   rotation = [0, 0, 0],
   texture: { top, side },
-  id,
-  adjacentBlocks,
+  id: _id,
+  occludedFaces,
 }: BlockProps) {
-  const isWater = id === 9;
   const depthFade = useContext(FringeFadeContext);
   const topTexture = useTextureMaterial(top, depthFade);
   const sideTexture = useTextureMaterial(side, depthFade);
   const meshRef = useRef<Mesh>(null);
-
-  // Function to determine if a face should be rendered
-  const shouldRenderFace = (face: string) => {
-    if (!isWater) return true;
-    return !adjacentBlocks[face as keyof WaterBlockAdjacency];
-  };
 
   return (
     <group position={position} scale={[size, size, size]} rotation={rotation}>
@@ -44,14 +47,20 @@ function Block({
         position={[0.5, 0.5, 0.5]}
         castShadow
         receiveShadow
+        // Shadow pass discards faded fragments so invisible blocks don't
+        // darken the visible terrain.
+        customDepthMaterial={
+          depthFade ? getFringeShadowDepthMaterial() : undefined
+        }
         material={
+          // BoxGeometry material order: +x, -x, +y, -y, +z, -z.
           [
-            shouldRenderFace("east") ? sideTexture : null,
-            shouldRenderFace("west") ? sideTexture : null,
-            shouldRenderFace("top") ? topTexture : null,
-            shouldRenderFace("bottom") ? topTexture : null,
-            shouldRenderFace("south") ? sideTexture : null,
-            shouldRenderFace("north") ? sideTexture : null,
+            occludedFaces.east ? null : sideTexture,
+            occludedFaces.west ? null : sideTexture,
+            occludedFaces.top ? null : topTexture,
+            occludedFaces.bottom ? null : topTexture,
+            occludedFaces.south ? null : sideTexture,
+            occludedFaces.north ? null : sideTexture,
           ] as Material[]
         }
       >
@@ -68,10 +77,7 @@ function vec3Equal(
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
 }
 
-function adjacencyEqual(
-  a: WaterBlockAdjacency,
-  b: WaterBlockAdjacency
-): boolean {
+function occlusionEqual(a: FaceOcclusion, b: FaceOcclusion): boolean {
   return (
     a.top === b.top &&
     a.bottom === b.bottom &&
@@ -94,6 +100,6 @@ export default memo(Block, (previous, next) => {
     previous.texture === next.texture &&
     vec3Equal(previous.position, next.position) &&
     vec3Equal(previous.rotation, next.rotation) &&
-    adjacencyEqual(previous.adjacentBlocks, next.adjacentBlocks)
+    occlusionEqual(previous.occludedFaces, next.occludedFaces)
   );
 });

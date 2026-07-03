@@ -2,9 +2,11 @@ import { useTexture } from "@react-three/drei";
 import { useMemo } from "react";
 import {
   type Material,
+  MeshDepthMaterial,
   MeshStandardMaterial,
   type MeshStandardMaterialParameters,
   RepeatWrapping,
+  RGBADepthPacking,
   type Texture,
 } from "three";
 import type {
@@ -61,12 +63,18 @@ export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
 }
 
 /**
- * Patches a standard material so its alpha is multiplied by the "solid" band
- * weight of the camera-distance LOD fade. Far-away fragments dissolve,
- * letting the fringe wireframes/tiles show through.
+ * Depth material for shadow maps that discards fragments the fringe fade has
+ * dissolved. Without it, fully invisible blocks would still darken the
+ * visible terrain. Shared by every fade-enabled block mesh.
  */
-function applyDepthFade(material: MeshStandardMaterial): void {
-  material.transparent = true;
+let fringeShadowDepthMaterial: MeshDepthMaterial | null = null;
+
+export function getFringeShadowDepthMaterial(): MeshDepthMaterial {
+  if (fringeShadowDepthMaterial) {
+    return fringeShadowDepthMaterial;
+  }
+
+  const material = new MeshDepthMaterial({ depthPacking: RGBADepthPacking });
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, fringeDepthFadeUniforms);
 
@@ -86,13 +94,63 @@ function applyDepthFade(material: MeshStandardMaterial): void {
         `#include <common>\nvarying vec3 vFringeWorldPos;\n${depthFadeParsGlsl}`
       )
       .replace(
+        "vec4 diffuseColor = vec4( 1.0 );",
+        `vec4 diffuseColor = vec4( 1.0 );
+        if (fringeDepthBandWeights(vFringeWorldPos).x < 0.5) discard;`
+      );
+  };
+  material.customProgramCacheKey = () => "fringe-shadow-depth-fade";
+
+  fringeShadowDepthMaterial = material;
+  return fringeShadowDepthMaterial;
+}
+
+/**
+ * Patches a standard material so its alpha is multiplied by the "solid" band
+ * weight of the camera-distance LOD fade. Far-away fragments dissolve,
+ * letting the fringe wireframes/tiles show through.
+ *
+ * With `perBlock`, the fade is sampled once at the block center (the mesh
+ * origin) instead of per fragment. Water uses this: a per-fragment radial
+ * fade across the flat pool surface reads as a smooth circle, while the
+ * per-block fade dissolves the pool in voxel steps like the terrain.
+ */
+function applyDepthFade(
+  material: MeshStandardMaterial,
+  perBlock = false
+): void {
+  material.transparent = true;
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, fringeDepthFadeUniforms);
+
+    const fadeSample = perBlock
+      ? "vFringeWorldPos = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;"
+      : "vFringeWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;";
+
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        "#include <common>",
+        "#include <common>\nvarying vec3 vFringeWorldPos;"
+      )
+      .replace(
+        "#include <project_vertex>",
+        `#include <project_vertex>\n${fadeSample}`
+      );
+
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        "#include <common>",
+        `#include <common>\nvarying vec3 vFringeWorldPos;\n${depthFadeParsGlsl}`
+      )
+      .replace(
         "vec4 diffuseColor = vec4( diffuse, opacity );",
         `vec4 diffuseColor = vec4( diffuse, opacity );
         diffuseColor.a *= fringeDepthBandWeights(vFringeWorldPos).x;
         if (diffuseColor.a < 0.004) discard;`
       );
   };
-  material.customProgramCacheKey = () => "fringe-depth-fade";
+  material.customProgramCacheKey = () =>
+    perBlock ? "fringe-depth-fade-block" : "fringe-depth-fade";
 }
 
 export function useTextureMaterial(
@@ -126,13 +184,21 @@ export function useTextureMaterial(
       materialProps.alphaTest = 0.2;
     }
 
+    // Semi-transparent surfaces (water) must not write depth: they would
+    // z-reject the faded terrain behind them and break blending order.
+    if ((texture.opacity ?? 1) < 1) {
+      materialProps.depthWrite = false;
+    }
+
     if (texture.opacity) {
       materialProps.opacity = texture.opacity;
     }
 
     const material = new MeshStandardMaterial(materialProps);
     if (depthFade) {
-      applyDepthFade(material);
+      // Semi-transparent surfaces (water) fade per block rather than per
+      // fragment so the pool edge dissolves in voxel steps, not as a circle.
+      applyDepthFade(material, (texture.opacity ?? 1) < 1);
     }
 
     materialCache.set(cacheKey, material);
