@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import World from "../src/components/world";
 import PlayWorldButton from "../src/components/world/PlayWorldButton";
@@ -6,8 +7,13 @@ import PlayWorldButton from "../src/components/world/PlayWorldButton";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function WorldPage() {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const router = useRouter();
+  const [playingOverride, setPlayingOverride] = useState<boolean | null>(null);
   const [worldLoaded, setWorldLoaded] = useState(false);
+
+  const queryWantsInteractive =
+    router.isReady && router.query.mode === "interactive";
+  const isPlaying = playingOverride ?? queryWantsInteractive;
 
   return (
     <main className={`flex h-screen w-screen ${inter.className} relative`}>
@@ -22,7 +28,7 @@ export default function WorldPage() {
       <PlayWorldButton
         ready={worldLoaded}
         isPlaying={isPlaying}
-        onToggle={() => setIsPlaying(!isPlaying)}
+        onToggle={() => setPlayingOverride(!isPlaying)}
         variant="overlay"
       />
     </main>
