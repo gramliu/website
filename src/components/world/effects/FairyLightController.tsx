@@ -2,10 +2,14 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
   AdditiveBlending,
+  CanvasTexture,
   Color,
+  DoubleSide,
   type Group,
+  LinearFilter,
   type Mesh,
   type MeshBasicMaterial,
+  NormalBlending,
   Vector3,
 } from "three";
 import type { WorldQuery } from "../../../game/world/world";
@@ -22,6 +26,7 @@ interface Props {
   world: WorldQuery;
   enabled: boolean;
   configs?: FairyLightConfig[];
+  onRevealSourcesChange?: (sources: PlayerRevealSource[]) => void;
 }
 
 interface PixieDustParticle {
@@ -60,6 +65,10 @@ const PIXIE_DUST_SAMPLE_INTERVAL = 0.04;
 const PIXIE_DUST_SIDE_SPREAD = 0.48;
 const PIXIE_DUST_VERTICAL_SPREAD = 0.32;
 const PIXIE_DUST_BACK_SPREAD = 0.72;
+const GROUND_GLOW_RADIUS_SCALE = 0.42;
+const GROUND_GLOW_BASE_OPACITY = 0.46;
+const FAIRY_POINT_LIGHT_DISTANCE_SCALE = 1.35;
+const FAIRY_POINT_LIGHT_INTENSITY_SCALE = 0.18;
 
 const scratchCandidate = new Vector3();
 const scratchDustDirection = new Vector3();
@@ -77,6 +86,44 @@ function seededUnit(seed: number): number {
 
 function seededSigned(seed: number): number {
   return seededUnit(seed) * 2 - 1;
+}
+
+function createGroundGlowAlphaMap(): CanvasTexture | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return null;
+  }
+
+  const center = size / 2;
+  const gradient = context.createRadialGradient(
+    center,
+    center,
+    0,
+    center,
+    center,
+    center
+  );
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.22, "rgba(255,255,255,0.82)");
+  gradient.addColorStop(0.58, "rgba(255,255,255,0.28)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+
+  const texture = new CanvasTexture(canvas);
+  texture.minFilter = LinearFilter;
+  texture.magFilter = LinearFilter;
+  texture.needsUpdate = true;
+  return texture;
 }
 
 function smoothNoise(seed: number, time: number): number {
@@ -412,13 +459,17 @@ export default function FairyLightController({
   world,
   enabled,
   configs = FAIRY_LIGHT_CONFIGS,
+  onRevealSourcesChange,
 }: Props) {
   const lightRefs = useRef<(Group | null)[]>([]);
+  const groundGlowRefs = useRef<(Mesh | null)[]>([]);
+  const groundGlowMaterialRefs = useRef<(MeshBasicMaterial | null)[]>([]);
   const dustRefs = useRef<(Mesh | null)[][]>([]);
   const dustMaterialRefs = useRef<(MeshBasicMaterial | null)[][]>([]);
   const swarmStates = useRef(configs.map(createFairySwarmState));
   const previousPlayerPosition = useRef<Vector3 | null>(null);
   const worldPosition = useMemo(() => new Vector3(), []);
+  const groundGlowAlphaMap = useMemo(createGroundGlowAlphaMap, []);
   const revealSources = useMemo<PlayerRevealSource[]>(
     () =>
       configs.map((config) => ({
@@ -436,14 +487,19 @@ export default function FairyLightController({
   useEffect(() => {
     if (!enabled) {
       updateFringeRevealLightUniforms([]);
+      onRevealSourcesChange?.([]);
     }
-    return () => updateFringeRevealLightUniforms([]);
-  }, [enabled]);
+    return () => {
+      updateFringeRevealLightUniforms([]);
+      onRevealSourcesChange?.([]);
+    };
+  }, [enabled, onRevealSourcesChange]);
 
   useFrame((_, delta) => {
     if (!enabled || !playerRef.current) {
       previousPlayerPosition.current = null;
       updateFringeRevealLightUniforms([]);
+      onRevealSourcesChange?.([]);
       return;
     }
 
@@ -518,6 +574,36 @@ export default function FairyLightController({
 
         const dustMeshes = dustRefs.current[index] ?? [];
         const dustMaterials = dustMaterialRefs.current[index] ?? [];
+        const groundGlow = groundGlowRefs.current[index];
+        const groundGlowMaterial = groundGlowMaterialRefs.current[index];
+        if (groundGlow && groundGlowMaterial) {
+          const groundY = getTerrainGroundY(
+            world,
+            Math.floor(currentPosition.x),
+            Math.floor(currentPosition.z)
+          );
+          if (groundY === null) {
+            groundGlow.visible = false;
+          } else {
+            const surfaceY =
+              getWaterSurfaceY(
+                world,
+                Math.floor(currentPosition.x),
+                Math.floor(currentPosition.z),
+                groundY
+              ) ?? groundY;
+            const pulse =
+              0.82 + 0.18 * Math.sin(state.elapsed * 2.6 + config.phase);
+            groundGlow.visible = true;
+            groundGlow.position.set(0, surfaceY + 1.012 - currentPosition.y, 0);
+            groundGlow.scale.setScalar(
+              config.revealRadius * GROUND_GLOW_RADIUS_SCALE * pulse
+            );
+            groundGlowMaterial.opacity =
+              GROUND_GLOW_BASE_OPACITY * config.intensity * pulse;
+          }
+        }
+
         for (
           let dustIndex = 0;
           dustIndex < PIXIE_DUST_TRAIL_LENGTH;
@@ -549,6 +635,7 @@ export default function FairyLightController({
     });
 
     updateFringeRevealLightUniforms(revealSources);
+    onRevealSourcesChange?.(revealSources);
   });
 
   if (!enabled) {
@@ -581,6 +668,33 @@ export default function FairyLightController({
                 transparent
               />
             </mesh>
+            <mesh
+              ref={(mesh) => {
+                groundGlowRefs.current[index] = mesh;
+              }}
+              renderOrder={-1}
+              rotation={[-Math.PI / 2, 0, 0]}
+              visible={false}
+            >
+              <circleGeometry args={[1, 40]} />
+              <meshBasicMaterial
+                ref={(material) => {
+                  groundGlowMaterialRefs.current[index] = material;
+                }}
+                alphaMap={groundGlowAlphaMap}
+                alphaTest={0.01}
+                blending={NormalBlending}
+                color={color}
+                depthWrite={false}
+                opacity={0}
+                polygonOffset
+                polygonOffsetFactor={-1}
+                polygonOffsetUnits={-1}
+                side={DoubleSide}
+                toneMapped={false}
+                transparent
+              />
+            </mesh>
             {Array.from({ length: PIXIE_DUST_TRAIL_LENGTH }, (_, dustIndex) => (
               <mesh
                 key={`${config.id}-dust-${dustIndex}`}
@@ -607,8 +721,8 @@ export default function FairyLightController({
             ))}
             <pointLight
               color={color}
-              distance={config.revealRadius * 2.2}
-              intensity={config.intensity * 0.32}
+              distance={config.revealRadius * FAIRY_POINT_LIGHT_DISTANCE_SCALE}
+              intensity={config.intensity * FAIRY_POINT_LIGHT_INTENSITY_SCALE}
             />
           </group>
         );

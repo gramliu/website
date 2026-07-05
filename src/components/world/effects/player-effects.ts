@@ -1,7 +1,7 @@
 import type { ColorRepresentation, Vector3 } from "three";
 
 export const PLAYER_REVEAL_RADIUS = 5.5;
-export const FAIRY_LIGHT_REVEAL_RADIUS = 4.5;
+export const FAIRY_LIGHT_REVEAL_RADIUS = 4.9;
 export const MAX_FAIRY_SWARM_RADIUS = 6;
 export const MAX_EFFECTIVE_REVEAL_RADIUS =
   MAX_FAIRY_SWARM_RADIUS + FAIRY_LIGHT_REVEAL_RADIUS;
@@ -44,9 +44,9 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-amber",
     color: "#ffd27a",
-    intensity: 0.9,
+    intensity: 0.92,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
-    falloffStart: 0.35,
+    falloffStart: 0.44,
     anchorRadius: 3,
     anchorHeight: 1.45,
     driftAmount: 0.95,
@@ -65,9 +65,9 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-violet",
     color: "#d5a3ff",
-    intensity: 0.78,
+    intensity: 0.82,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.88,
-    falloffStart: 0.4,
+    falloffStart: 0.44,
     anchorRadius: 3.15,
     anchorHeight: 1.2,
     driftAmount: 0.9,
@@ -86,9 +86,9 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-cyan",
     color: "#8ee8ff",
-    intensity: 0.84,
+    intensity: 0.88,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
-    falloffStart: 0.3,
+    falloffStart: 0.42,
     anchorRadius: 4.1,
     anchorHeight: 1.9,
     driftAmount: 1.15,
@@ -107,9 +107,9 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-mint",
     color: "#9effb8",
-    intensity: 0.8,
+    intensity: 0.84,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.95,
-    falloffStart: 0.32,
+    falloffStart: 0.43,
     anchorRadius: 4.9,
     anchorHeight: 1.55,
     driftAmount: 1.35,
@@ -128,9 +128,9 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-rose",
     color: "#ff9ccf",
-    intensity: 0.74,
+    intensity: 0.8,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.9,
-    falloffStart: 0.38,
+    falloffStart: 0.44,
     anchorRadius: 5.6,
     anchorHeight: 1.7,
     driftAmount: 1.45,

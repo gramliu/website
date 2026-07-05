@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import { useKeyboardState } from "../../adapters/input/keyboard";
 import WorldRenderer from "../../adapters/three/world-renderer";
@@ -10,7 +10,10 @@ import { TerrainGenerator } from "../../game/world/terrain-generator";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
 import FairyLightController from "./effects/FairyLightController";
-import { MAX_EFFECTIVE_REVEAL_RADIUS } from "./effects/player-effects";
+import {
+  MAX_EFFECTIVE_REVEAL_RADIUS,
+  type PlayerRevealSource,
+} from "./effects/player-effects";
 import { FringeFadeContext } from "./fringe/fringe-fade-context";
 import {
   computeFringeLayout,
@@ -18,6 +21,7 @@ import {
 } from "./fringe/fringe-layout";
 import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
+import { computeFairyExpandedRenderRadius } from "./render-window";
 import worldData from "./world-data";
 
 const staticWorld = new VoxelWorld(loadWorldCellsFromString(worldData));
@@ -99,6 +103,7 @@ export default function Map({
   );
   const windowCenterRef = useRef<WindowCenter | null>(null);
   const [windowCenter, setWindowCenter] = useState<WindowCenter | null>(null);
+  const [dynamicRenderRadius, setDynamicRenderRadius] = useState(RENDER_RADIUS);
   const [worldRevision, setWorldRevision] = useState(0);
 
   function syncPlayerTransform() {
@@ -133,6 +138,7 @@ export default function Map({
       };
       windowCenterRef.current = center;
       setWindowCenter(center);
+      setDynamicRenderRadius(RENDER_RADIUS);
       world.prefetchAround(center.x, center.z, PREFETCH_RADIUS, Infinity);
       setWorldRevision((revision) => revision + 1);
     } else {
@@ -201,7 +207,7 @@ export default function Map({
     getInfiniteWorld().prefetchAround(
       cellX,
       cellZ,
-      PREFETCH_RADIUS,
+      Math.max(PREFETCH_RADIUS, dynamicRenderRadius + 8),
       PREFETCH_CHUNKS_PER_FRAME
     );
 
@@ -235,6 +241,7 @@ export default function Map({
       };
       windowCenterRef.current = center;
       setWindowCenter(center);
+      setDynamicRenderRadius(RENDER_RADIUS);
     } else {
       // Back to the static preview island: reset the player so autoplay's
       // assumptions hold, and undo the camera-follow translation.
@@ -254,6 +261,7 @@ export default function Map({
       followRef.current?.position.set(0, 0, 0);
       windowCenterRef.current = null;
       setWindowCenter(null);
+      setDynamicRenderRadius(RENDER_RADIUS);
     }
 
     // Reset world rotation
@@ -277,16 +285,38 @@ export default function Map({
 
   const activeWorld = effectiveCenter ? getInfiniteWorld() : staticWorld;
 
+  const handleRevealSourcesChange = useCallback(
+    (sources: PlayerRevealSource[]) => {
+      const center = windowCenterRef.current;
+      if (!interactiveMode || !center || sources.length === 0) {
+        setDynamicRenderRadius((radius) =>
+          radius === RENDER_RADIUS ? radius : RENDER_RADIUS
+        );
+        return;
+      }
+
+      const nextRadius = computeFairyExpandedRenderRadius(
+        center,
+        sources,
+        RENDER_RADIUS
+      );
+      setDynamicRenderRadius((radius) =>
+        radius === nextRadius ? radius : nextRadius
+      );
+    },
+    [interactiveMode]
+  );
+
   const renderCells = useMemo(() => {
     if (effectiveCenter) {
       return getInfiniteWorld().getCellsInWindow(
         effectiveCenter.x,
         effectiveCenter.z,
-        RENDER_RADIUS
+        dynamicRenderRadius
       );
     }
     return staticWorld.getRenderableCells();
-  }, [effectiveCenter, worldRevision]);
+  }, [effectiveCenter, dynamicRenderRadius, worldRevision]);
 
   const fringeLayout = useMemo(() => {
     if (!showFringe) {
@@ -297,12 +327,18 @@ export default function Map({
         getInfiniteWorld(),
         effectiveCenter.x,
         effectiveCenter.z,
-        RENDER_RADIUS,
+        dynamicRenderRadius,
         renderCells
       );
     }
     return computeFringeLayout(staticWorld);
-  }, [showFringe, effectiveCenter, renderCells, worldRevision]);
+  }, [
+    showFringe,
+    effectiveCenter,
+    dynamicRenderRadius,
+    renderCells,
+    worldRevision,
+  ]);
 
   return (
     <FringeFadeContext.Provider value={showFringe}>
@@ -323,6 +359,7 @@ export default function Map({
             ) : null}
             <FairyLightController
               enabled={interactiveMode && showFringe}
+              onRevealSourcesChange={handleRevealSourcesChange}
               playerRef={playerRef}
               world={activeWorld}
             />

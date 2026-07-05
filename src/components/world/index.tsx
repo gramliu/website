@@ -141,7 +141,7 @@ function World({
           className="h-full"
           shadows
         >
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={0.38} />
           <directionalLight
             position={[1, 10, 5]}
             intensity={1}
