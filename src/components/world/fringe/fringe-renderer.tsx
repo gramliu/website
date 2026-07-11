@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import type { Group } from "three";
+import type { WorldQuality } from "../quality";
 import { setFringeRadialFade } from "./fringe-depth-fade";
 import { FRINGE_CONFIG, type FringeLayout } from "./fringe-layout";
 import FringeLineField from "./fringe-line-field";
@@ -11,19 +12,22 @@ interface Props {
   radialFade?: boolean;
   /** Object whose position the fade focus tracks (the player). */
   focusSourceRef?: React.RefObject<Group | null>;
+  /** Lite mode keeps the wireframe but uses a tighter radial fade. */
+  quality?: WorldQuality;
 }
 
 export default function FringeRenderer({
   layout,
   radialFade = false,
   focusSourceRef,
+  quality = "full",
 }: Props) {
   useEffect(() => {
-    setFringeRadialFade(radialFade);
+    setFringeRadialFade(radialFade, quality);
     return () => {
       setFringeRadialFade(false);
     };
-  }, [radialFade]);
+  }, [quality, radialFade]);
 
   // Grid tiles and particles sit on a fixed y=0 plane. In interactive mode the
   // render window moves in XZ while terrain sits several blocks higher, so that

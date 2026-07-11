@@ -144,4 +144,18 @@ describe("InfiniteWorld prefetch", () => {
       }
     }
   });
+
+  it("evicts chunks outside the retained radius and can clear the session", () => {
+    const world = createWorld();
+    world.prefetchAround(0, 0, 24, Infinity);
+    expect(world.getCachedChunkCount()).toBeGreaterThan(0);
+
+    const evicted = world.evictOutsideRadius(0, 0, 8);
+    expect(evicted).toBeGreaterThan(0);
+    expect(world.hasChunk(0, 0)).toBe(true);
+    expect(world.hasChunk(3, 3)).toBe(false);
+
+    world.clear();
+    expect(world.getCachedChunkCount()).toBe(0);
+  });
 });

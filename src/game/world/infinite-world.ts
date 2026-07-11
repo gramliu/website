@@ -20,6 +20,8 @@ import type { LoadedWorldCell } from "./world-loader";
 export const CHUNK_SIZE = 8;
 
 interface GeneratedChunk {
+  cx: number;
+  cz: number;
   cells: LoadedWorldCell[];
 }
 
@@ -68,7 +70,7 @@ export class InfiniteWorld implements WorldQuery {
       this.blockIds.set(cellKey(cell.x, cell.y, cell.z), cell.id);
     }
 
-    const chunk: GeneratedChunk = { cells };
+    const chunk: GeneratedChunk = { cx, cz, cells };
     this.chunks.set(key, chunk);
     return chunk;
   }
@@ -118,6 +120,52 @@ export class InfiniteWorld implements WorldQuery {
     }
 
     return count;
+  }
+
+  /**
+   * Releases generated chunks outside a block-radius around the player. The
+   * render window and prefetch ring are intentionally smaller than this
+   * radius, so removal never touches terrain needed by the current frame.
+   */
+  public evictOutsideRadius(
+    centerX: number,
+    centerZ: number,
+    radius: number
+  ): number {
+    const minCx = toChunkCoord(centerX - radius);
+    const maxCx = toChunkCoord(centerX + radius);
+    const minCz = toChunkCoord(centerZ - radius);
+    const maxCz = toChunkCoord(centerZ + radius);
+    let evicted = 0;
+
+    for (const [key, chunk] of Array.from(this.chunks.entries())) {
+      if (
+        chunk.cx >= minCx &&
+        chunk.cx <= maxCx &&
+        chunk.cz >= minCz &&
+        chunk.cz <= maxCz
+      ) {
+        continue;
+      }
+
+      this.chunks.delete(key);
+      for (const cell of chunk.cells) {
+        this.blockIds.delete(cellKey(cell.x, cell.y, cell.z));
+      }
+      evicted++;
+    }
+
+    return evicted;
+  }
+
+  /** Clears the session cache when interactive play ends. */
+  public clear(): void {
+    this.chunks.clear();
+    this.blockIds.clear();
+  }
+
+  public getCachedChunkCount(): number {
+    return this.chunks.size;
   }
 
   public getGroundHeight(x: number, z: number): number {

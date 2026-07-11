@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { Vector3 } from "three";
+import { PLAYER_REVEAL_RADIUS } from "../effects/player-effects";
 import {
   computeCameraFadeDepth,
   computeDepthBandWeights,
@@ -199,6 +200,17 @@ describe("setFringeRadialFade", () => {
     );
     expect(fringeDepthFadeUniforms.uWireframeFadeEnd.value).toBe(
       FRINGE_CONFIG.depthBands.wireframeFadeEnd
+    );
+  });
+
+  it("uses a tighter reveal radius for the lite wireframe fringe", () => {
+    setFringeRadialFade(true, "lite");
+    expect(fringeDepthFadeUniforms.uPlayerRevealRadius.value).toBe(2.5);
+    expect(fringeDepthFadeUniforms.uSolidFadeEnd.value).toBe(5.5);
+
+    setFringeRadialFade(false);
+    expect(fringeDepthFadeUniforms.uPlayerRevealRadius.value).toBe(
+      PLAYER_REVEAL_RADIUS
     );
   });
 });

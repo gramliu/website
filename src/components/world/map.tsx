@@ -10,7 +10,6 @@ import { TerrainGenerator } from "../../game/world/terrain-generator";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
 import FairyLightController from "./effects/FairyLightController";
-import { MAX_EFFECTIVE_REVEAL_RADIUS } from "./effects/player-effects";
 import { FringeFadeContext } from "./fringe/fringe-fade-context";
 import {
   computeFringeLayout,
@@ -18,27 +17,22 @@ import {
 } from "./fringe/fringe-layout";
 import FringeRenderer from "./fringe/fringe-renderer";
 import Player from "./player";
+import {
+  getWorldTerrainBehavior,
+  WORLD_QUALITY_PROFILES,
+  type WorldQuality,
+  type WorldTerrainMode,
+} from "./quality";
 import worldData from "./world-data";
 
 const staticWorld = new VoxelWorld(loadWorldCellsFromString(worldData));
 const ROTATION_SPEED = 0.3;
 
-/**
- * Solid render radius (Chebyshev, in cells) around the player in interactive
- * mode. Sized to include the fairy lights' companion swarm radius plus a small
- * fade margin, so they can uncover boundary terrain without mounting visible
- * blocks at the window edge.
- */
-const RENDER_RADIUS = Math.ceil(MAX_EFFECTIVE_REVEAL_RADIUS + 2);
-/** Chunks are pre-generated this many blocks ahead of the player. */
-const PREFETCH_RADIUS = 30;
-/** Per-frame budget for background chunk generation. */
-const PREFETCH_CHUNKS_PER_FRAME = 2;
 /** Exponential smoothing rate for the camera-follow counter-translation. */
 const FOLLOW_SMOOTHING = 6;
 
-// The infinite world is created lazily on the first interactive session and
-// reused until an interactive reset (R) picks a new seed.
+// The infinite world is created lazily for an interactive session and released
+// when play stops so terrain caches do not survive in the static preview.
 let infiniteWorldSingleton: InfiniteWorld | null = null;
 
 function createInfiniteWorld(
@@ -57,8 +51,14 @@ function getInfiniteWorld(): InfiniteWorld {
 }
 
 function resetInfiniteWorld(): InfiniteWorld {
+  infiniteWorldSingleton?.clear();
   infiniteWorldSingleton = createInfiniteWorld();
   return infiniteWorldSingleton;
+}
+
+function releaseInfiniteWorld(): void {
+  infiniteWorldSingleton?.clear();
+  infiniteWorldSingleton = null;
 }
 
 type Vec3 = [number, number, number];
@@ -77,6 +77,8 @@ interface Props {
   rotateWorld?: boolean;
   interactiveMode?: boolean;
   showFringe?: boolean;
+  quality?: WorldQuality;
+  terrainMode?: WorldTerrainMode;
 }
 
 /**
@@ -87,7 +89,11 @@ export default function Map({
   rotateWorld,
   interactiveMode = false,
   showFringe = false,
+  quality = "full",
+  terrainMode = "infinite",
 }: Props) {
+  const qualityProfile = WORLD_QUALITY_PROFILES[quality];
+  const terrainBehavior = getWorldTerrainBehavior(interactiveMode, terrainMode);
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
   const followRef = useRef<Group>(null);
@@ -119,7 +125,7 @@ export default function Map({
   function resetSession() {
     resetWorld();
 
-    if (interactiveMode) {
+    if (terrainBehavior.usesInfiniteWorld) {
       const world = resetInfiniteWorld();
       gameStateRef.current = createGameState(
         world,
@@ -133,7 +139,12 @@ export default function Map({
       };
       windowCenterRef.current = center;
       setWindowCenter(center);
-      world.prefetchAround(center.x, center.z, PREFETCH_RADIUS, Infinity);
+      world.prefetchAround(
+        center.x,
+        center.z,
+        qualityProfile.prefetchRadius,
+        qualityProfile.prefetchChunksPerFrame
+      );
       setWorldRevision((revision) => revision + 1);
     } else {
       gameStateRef.current = createGameState(
@@ -170,7 +181,7 @@ export default function Map({
       window.removeEventListener("keydown", handleKeyDown, {
         capture: true,
       });
-  }, [interactiveMode]);
+  }, [interactiveMode, qualityProfile, terrainBehavior.usesInfiniteWorld]);
 
   useFrame((_, delta) => {
     // Rotate the world
@@ -178,7 +189,7 @@ export default function Map({
       worldRef.current.rotation.y += delta * ROTATION_SPEED;
     }
 
-    if (!interactiveMode) {
+    if (!terrainBehavior.usesInfiniteWorld) {
       return;
     }
 
@@ -196,14 +207,16 @@ export default function Map({
       setWindowCenter(next);
     }
 
-    // Keep a ring of chunks generated well past the fringe so the window
-    // never has to generate terrain on the render path.
-    getInfiniteWorld().prefetchAround(
+    // Keep a bounded ring of chunks ahead of the player so rendering never
+    // generates terrain synchronously or retains an unbounded session cache.
+    const world = getInfiniteWorld();
+    world.prefetchAround(
       cellX,
       cellZ,
-      PREFETCH_RADIUS,
-      PREFETCH_CHUNKS_PER_FRAME
+      qualityProfile.prefetchRadius,
+      qualityProfile.prefetchChunksPerFrame
     );
+    world.evictOutsideRadius(cellX, cellZ, qualityProfile.cacheRadius);
 
     // Counter-translate the world so the camera stays centered on the player.
     const origin = followOriginRef.current;
@@ -220,7 +233,7 @@ export default function Map({
   });
 
   useEffect(() => {
-    if (interactiveMode) {
+    if (terrainBehavior.usesInfiniteWorld) {
       // Branch into the infinite world from wherever the player stands; the
       // island terrain is embedded verbatim, so nothing visibly changes.
       gameStateRef.current = {
@@ -235,7 +248,13 @@ export default function Map({
       };
       windowCenterRef.current = center;
       setWindowCenter(center);
-    } else {
+      // The infinite view starts from a stable orientation before following
+      // the player-centered render window.
+      resetWorld();
+      return;
+    }
+
+    if (!interactiveMode) {
       // Back to the static preview island: reset the player so autoplay's
       // assumptions hold, and undo the camera-follow translation.
       gameStateRef.current = createGameState(
@@ -254,14 +273,29 @@ export default function Map({
       followRef.current?.position.set(0, 0, 0);
       windowCenterRef.current = null;
       setWindowCenter(null);
+      releaseInfiniteWorld();
+      resetWorld();
+      return;
     }
 
-    // Reset world rotation
-    resetWorld();
-  }, [interactiveMode]);
+    // Preview-island play freezes the current idle rotation. It retains the
+    // static map, camera-relative fringe, and bounded collision world.
+    if (gameStateRef.current.world !== staticWorld) {
+      gameStateRef.current = createGameState(
+        staticWorld,
+        DEFAULT_PLAYER_STATE_POSITION
+      );
+      syncPlayerTransform();
+    }
+    followOriginRef.current = null;
+    followRef.current?.position.set(0, 0, 0);
+    windowCenterRef.current = null;
+    setWindowCenter(null);
+    releaseInfiniteWorld();
+  }, [interactiveMode, terrainBehavior.usesInfiniteWorld]);
 
   const effectiveCenter = useMemo(() => {
-    if (!interactiveMode) {
+    if (!terrainBehavior.usesInfiniteWorld) {
       return null;
     }
     if (windowCenter) {
@@ -273,36 +307,50 @@ export default function Map({
       x: Math.floor(playerPosition.x),
       z: Math.floor(playerPosition.z),
     };
-  }, [interactiveMode, windowCenter]);
+  }, [terrainBehavior.usesInfiniteWorld, windowCenter]);
 
-  const activeWorld = effectiveCenter ? getInfiniteWorld() : staticWorld;
+  const activeWorld = terrainBehavior.usesInfiniteWorld
+    ? getInfiniteWorld()
+    : staticWorld;
 
   const renderCells = useMemo(() => {
-    if (effectiveCenter) {
+    if (terrainBehavior.usesInfiniteWorld && effectiveCenter) {
       return getInfiniteWorld().getCellsInWindow(
         effectiveCenter.x,
         effectiveCenter.z,
-        RENDER_RADIUS
+        qualityProfile.renderRadius
       );
     }
     return staticWorld.getRenderableCells();
-  }, [effectiveCenter, worldRevision]);
+  }, [
+    effectiveCenter,
+    qualityProfile.renderRadius,
+    terrainBehavior.usesInfiniteWorld,
+    worldRevision,
+  ]);
 
   const fringeLayout = useMemo(() => {
     if (!showFringe) {
       return null;
     }
-    if (effectiveCenter) {
+    if (terrainBehavior.usesInfiniteWorld && effectiveCenter) {
       return computeWindowFringeLayout(
         getInfiniteWorld(),
         effectiveCenter.x,
         effectiveCenter.z,
-        RENDER_RADIUS,
+        qualityProfile.renderRadius,
         renderCells
       );
     }
     return computeFringeLayout(staticWorld);
-  }, [showFringe, effectiveCenter, renderCells, worldRevision]);
+  }, [
+    showFringe,
+    effectiveCenter,
+    qualityProfile.renderRadius,
+    renderCells,
+    terrainBehavior.usesInfiniteWorld,
+    worldRevision,
+  ]);
 
   return (
     <FringeFadeContext.Provider value={showFringe}>
@@ -317,12 +365,19 @@ export default function Map({
             {fringeLayout ? (
               <FringeRenderer
                 layout={fringeLayout}
-                radialFade={interactiveMode}
-                focusSourceRef={interactiveMode ? playerRef : undefined}
+                radialFade={terrainBehavior.usesRadialFringe}
+                focusSourceRef={
+                  terrainBehavior.usesRadialFringe ? playerRef : undefined
+                }
+                quality={quality}
               />
             ) : null}
             <FairyLightController
-              enabled={interactiveMode && showFringe}
+              enabled={
+                terrainBehavior.usesInfiniteWorld &&
+                showFringe &&
+                quality === "full"
+              }
               playerRef={playerRef}
               world={activeWorld}
             />

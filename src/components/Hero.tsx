@@ -7,6 +7,12 @@ import social from "../config/social";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 import World from "./world";
 import PlayWorldButton from "./world/PlayWorldButton";
+import {
+  getWorldQuality,
+  getWorldTerrainMode,
+  type WorldQuality,
+  type WorldTerrainMode,
+} from "./world/quality";
 
 function HeroContent() {
   return (
@@ -54,7 +60,15 @@ function SocialIcons() {
 export default function Hero() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [worldLoaded, setWorldLoaded] = useState(false);
+  const [worldQuality, setWorldQuality] = useState<WorldQuality>("lite");
+  const [terrainMode, setTerrainMode] =
+    useState<WorldTerrainMode>("preview_island");
   const isDesktop = useIsDesktop();
+
+  useEffect(() => {
+    setWorldQuality(getWorldQuality(isDesktop));
+    setTerrainMode(getWorldTerrainMode(isDesktop));
+  }, [isDesktop]);
 
   useEffect(() => {
     const preventScroll = (e: KeyboardEvent) => {
@@ -112,13 +126,21 @@ export default function Hero() {
               size={0.8}
               interactiveMode={isPlaying}
               closeUp
-              showFringe={isDesktop}
+              showFringe
+              quality={worldQuality}
+              terrainMode={terrainMode}
               onLoaded={() => setWorldLoaded(true)}
+              onInteractiveFailure={() => setIsPlaying(false)}
+              onRetryLite={() => {
+                setWorldQuality("lite");
+                setIsPlaying(true);
+              }}
             />
           </div>
           <PlayWorldButton
             ready={worldLoaded}
             isPlaying={isPlaying}
+            terrainMode={terrainMode}
             onToggle={() => setIsPlaying(!isPlaying)}
           />
         </div>

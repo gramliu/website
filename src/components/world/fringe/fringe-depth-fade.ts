@@ -1,5 +1,6 @@
 import { type Object3D, Vector3 } from "three";
 import { PLAYER_REVEAL_RADIUS } from "../effects/player-effects";
+import type { WorldQuality } from "../quality";
 import { FRINGE_CONFIG } from "./fringe-layout";
 
 export interface DepthBandWeights {
@@ -9,6 +10,14 @@ export interface DepthBandWeights {
 }
 
 export const MAX_REVEAL_LIGHTS = 4;
+
+const LITE_RADIAL_DEPTH_BANDS = {
+  solidFadeStart: 1.5,
+  solidFadeEnd: 5.5,
+  wireframeFadeStart: 2.5,
+  wireframeFadeEnd: 5.5,
+} as const;
+const LITE_PLAYER_REVEAL_RADIUS = 2.5;
 
 export interface RevealLightInput {
   position: Vector3;
@@ -60,16 +69,25 @@ export const fringeDepthFadeUniforms = {
  * thresholds appropriate for each mode. Affects every consumer of the shared
  * uniforms plus the CPU mirrors' defaults.
  */
-export function setFringeRadialFade(enabled: boolean): void {
+export function setFringeRadialFade(
+  enabled: boolean,
+  quality: WorldQuality = "full"
+): void {
   fringeDepthFadeUniforms.uRadialFade.value = enabled ? 1 : 0;
 
   const bands = enabled
-    ? FRINGE_CONFIG.radialDepthBands
+    ? quality === "lite"
+      ? LITE_RADIAL_DEPTH_BANDS
+      : FRINGE_CONFIG.radialDepthBands
     : FRINGE_CONFIG.depthBands;
   fringeDepthFadeUniforms.uSolidFadeStart.value = bands.solidFadeStart;
   fringeDepthFadeUniforms.uSolidFadeEnd.value = bands.solidFadeEnd;
   fringeDepthFadeUniforms.uWireframeFadeStart.value = bands.wireframeFadeStart;
   fringeDepthFadeUniforms.uWireframeFadeEnd.value = bands.wireframeFadeEnd;
+  fringeDepthFadeUniforms.uPlayerRevealRadius.value =
+    enabled && quality === "lite"
+      ? LITE_PLAYER_REVEAL_RADIUS
+      : PLAYER_REVEAL_RADIUS;
 }
 
 export function isFringeRadialFadeEnabled(): boolean {
