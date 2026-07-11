@@ -1,8 +1,9 @@
-import { memo, useContext, useRef } from "react";
-import type { Material, Mesh } from "three";
+import { memo, useContext, useEffect, useMemo, useRef } from "react";
+import { BoxGeometry, type Material, type Mesh } from "three";
 import {
   getFringeShadowDepthMaterial,
   type MaterialTextureProps,
+  useFringeOcclusionMaterial,
   useTextureMaterial,
 } from "../../lib/texture";
 import type { CommonProps } from "../common/types";
@@ -38,34 +39,59 @@ function Block({
   const depthFade = useContext(FringeFadeContext);
   const topTexture = useTextureMaterial(top, depthFade);
   const sideTexture = useTextureMaterial(side, depthFade);
+  const topOcclusionMaterial = useFringeOcclusionMaterial(top, depthFade);
+  const sideOcclusionMaterial = useFringeOcclusionMaterial(side, depthFade);
   const meshRef = useRef<Mesh>(null);
+  const geometry = useMemo(() => new BoxGeometry(1, 1, 1), []);
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  const visibleMaterials = [
+    occludedFaces.east ? null : sideTexture,
+    occludedFaces.west ? null : sideTexture,
+    occludedFaces.top ? null : topTexture,
+    occludedFaces.bottom ? null : topTexture,
+    occludedFaces.south ? null : sideTexture,
+    occludedFaces.north ? null : sideTexture,
+  ] as Material[];
+  const occlusionMaterials = [
+    occludedFaces.east ? null : sideOcclusionMaterial,
+    occludedFaces.west ? null : sideOcclusionMaterial,
+    occludedFaces.top ? null : topOcclusionMaterial,
+    occludedFaces.bottom ? null : topOcclusionMaterial,
+    occludedFaces.south ? null : sideOcclusionMaterial,
+    occludedFaces.north ? null : sideOcclusionMaterial,
+  ] as Material[];
+  const hasOcclusionMaterial = Boolean(
+    topOcclusionMaterial || sideOcclusionMaterial
+  );
 
   return (
     <group position={position} scale={[size, size, size]} rotation={rotation}>
+      {depthFade && hasOcclusionMaterial ? (
+        <mesh
+          geometry={geometry}
+          material={occlusionMaterials}
+          position={[0.5, 0.5, 0.5]}
+          renderOrder={-1}
+          dispose={null}
+        />
+      ) : null}
       <mesh
         ref={meshRef}
+        geometry={geometry}
         position={[0.5, 0.5, 0.5]}
         castShadow
         receiveShadow
+        dispose={null}
         // Shadow pass discards faded fragments so invisible blocks don't
         // darken the visible terrain.
         customDepthMaterial={
           depthFade ? getFringeShadowDepthMaterial() : undefined
         }
-        material={
-          // BoxGeometry material order: +x, -x, +y, -y, +z, -z.
-          [
-            occludedFaces.east ? null : sideTexture,
-            occludedFaces.west ? null : sideTexture,
-            occludedFaces.top ? null : topTexture,
-            occludedFaces.bottom ? null : topTexture,
-            occludedFaces.south ? null : sideTexture,
-            occludedFaces.north ? null : sideTexture,
-          ] as Material[]
-        }
-      >
-        <boxGeometry args={[1, 1, 1]} />
-      </mesh>
+        // BoxGeometry material order: +x, -x, +y, -y, +z, -z.
+        material={visibleMaterials}
+      />
     </group>
   );
 }

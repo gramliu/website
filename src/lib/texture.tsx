@@ -34,6 +34,9 @@ const fallbackTexture = "textures/water_still.png";
 // distinct configuration (a small bounded set) shared by every block.
 const repeatedTextureCache = new Map<string, Texture>();
 const materialCache = new Map<string, Material>();
+const fringeOcclusionMaterialCache = new Map<string, MeshDepthMaterial>();
+
+export const FRINGE_OCCLUSION_FADE_THRESHOLD = 0.004;
 
 export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
   const texture = _texture as MaterialTextureProps;
@@ -105,6 +108,87 @@ export function getFringeShadowDepthMaterial(): MeshDepthMaterial {
   return fringeShadowDepthMaterial;
 }
 
+export function shouldOccludeFringe(texture: MaterialTextureProps): boolean {
+  return (texture.opacity ?? 1) >= 1;
+}
+
+/**
+ * A colorless prepass for solid terrain. It establishes an occluding depth
+ * buffer before transparent terrain and fringe lines are blended, so lines
+ * cannot bleed through a still-visible faded block.
+ */
+export function createFringeOcclusionMaterial(
+  texture: MaterialTextureProps,
+  textureMap: Texture
+): MeshDepthMaterial {
+  const material = new MeshDepthMaterial({
+    depthPacking: RGBADepthPacking,
+    map: textureMap,
+    alphaTest: texture.translucent ? 0.2 : 0,
+  });
+  material.colorWrite = false;
+  material.depthWrite = true;
+  material.depthTest = true;
+  material.transparent = false;
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, fringeDepthFadeUniforms);
+
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        "#include <common>",
+        "#include <common>\nvarying vec3 vFringeWorldPos;"
+      )
+      .replace(
+        "#include <project_vertex>",
+        "#include <project_vertex>\nvFringeWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;"
+      );
+
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        "#include <common>",
+        `#include <common>\nvarying vec3 vFringeWorldPos;\n${depthFadeParsGlsl}`
+      )
+      .replace(
+        "#include <alphatest_fragment>",
+        `#include <alphatest_fragment>
+        if (fringeDepthBandWeights(vFringeWorldPos).x < ${FRINGE_OCCLUSION_FADE_THRESHOLD}) discard;`
+      );
+  };
+  material.customProgramCacheKey = () =>
+    `fringe-occlusion-${texture.translucent ? "cutout" : "solid"}`;
+
+  return material;
+}
+
+export function useFringeOcclusionMaterial(
+  texture: MaterialTextureProps,
+  enabled: boolean
+): MeshDepthMaterial | null {
+  const textureMap = useRepeatedTexture(texture);
+  return useMemo(() => {
+    if (!enabled || !shouldOccludeFringe(texture)) {
+      return null;
+    }
+
+    const cacheKey = [
+      texture.path ?? fallbackTexture,
+      texture.repeat ?? 1,
+      texture.offset?.[0] ?? 0,
+      texture.offset?.[1] ?? 0,
+      texture.translucent ?? false,
+      texture.opacity ?? 1,
+    ].join("|");
+    const cached = fringeOcclusionMaterialCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const material = createFringeOcclusionMaterial(texture, textureMap);
+    fringeOcclusionMaterialCache.set(cacheKey, material);
+    return material;
+  }, [enabled, texture, textureMap]);
+}
+
 /**
  * Patches a standard material so its alpha is multiplied by the "solid" band
  * weight of the camera-distance LOD fade. Far-away fragments dissolve,
@@ -146,7 +230,7 @@ function applyDepthFade(
         "vec4 diffuseColor = vec4( diffuse, opacity );",
         `vec4 diffuseColor = vec4( diffuse, opacity );
         diffuseColor.a *= fringeDepthBandWeights(vFringeWorldPos).x;
-        if (diffuseColor.a < 0.004) discard;`
+        if (diffuseColor.a < ${FRINGE_OCCLUSION_FADE_THRESHOLD}) discard;`
       );
   };
   material.customProgramCacheKey = () =>
