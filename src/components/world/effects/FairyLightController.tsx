@@ -9,12 +9,12 @@ import {
   Vector3,
 } from "three";
 import type { WorldQuery } from "../../../game/world/world";
-import { updateFringeRevealLightUniforms } from "../fringe/fringe-depth-fade";
+import { updateTerrainRevealUniforms } from "../fringe/fringe-depth-fade";
 import {
   FAIRY_LIGHT_CONFIGS,
   type FairyLightConfig,
   MAX_FAIRY_SWARM_RADIUS,
-  type PlayerRevealSource,
+  type TerrainRevealSource,
 } from "./player-effects";
 
 interface Props {
@@ -419,14 +419,14 @@ export default function FairyLightController({
   const swarmStates = useRef(configs.map(createFairySwarmState));
   const previousPlayerPosition = useRef<Vector3 | null>(null);
   const worldPosition = useMemo(() => new Vector3(), []);
-  const revealSources = useMemo<PlayerRevealSource[]>(
+  const revealSources = useMemo<TerrainRevealSource[]>(
     () =>
       configs.map((config) => ({
         id: config.id,
         kind: "fairyLight",
         position: new Vector3(),
         radius: config.revealRadius,
-        intensity: config.intensity,
+        strength: config.revealStrength,
         falloffStart: config.falloffStart,
         color: config.color,
       })),
@@ -435,15 +435,15 @@ export default function FairyLightController({
 
   useEffect(() => {
     if (!enabled) {
-      updateFringeRevealLightUniforms([]);
+      updateTerrainRevealUniforms([]);
     }
-    return () => updateFringeRevealLightUniforms([]);
+    return () => updateTerrainRevealUniforms([]);
   }, [enabled]);
 
   useFrame((_, delta) => {
     if (!enabled || !playerRef.current) {
       previousPlayerPosition.current = null;
-      updateFringeRevealLightUniforms([]);
+      updateTerrainRevealUniforms([]);
       return;
     }
 
@@ -548,7 +548,7 @@ export default function FairyLightController({
       }
     });
 
-    updateFringeRevealLightUniforms(revealSources);
+    updateTerrainRevealUniforms(revealSources);
   });
 
   if (!enabled) {
@@ -607,8 +607,8 @@ export default function FairyLightController({
             ))}
             <pointLight
               color={color}
-              distance={config.revealRadius * 2.2}
-              intensity={config.intensity * 0.32}
+              distance={config.pointLightDistance}
+              intensity={config.pointLightIntensity}
             />
           </group>
         );

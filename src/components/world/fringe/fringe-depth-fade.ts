@@ -1,5 +1,8 @@
 import { type Object3D, Vector3 } from "three";
-import { PLAYER_REVEAL_RADIUS } from "../effects/player-effects";
+import {
+  PLAYER_REVEAL_RADIUS,
+  type TerrainRevealInput,
+} from "../effects/player-effects";
 import type { WorldQuality } from "../quality";
 import { FRINGE_CONFIG } from "./fringe-layout";
 
@@ -9,7 +12,7 @@ export interface DepthBandWeights {
   tile: number;
 }
 
-export const MAX_REVEAL_LIGHTS = 4;
+export const MAX_TERRAIN_REVEAL_SOURCES = 4;
 
 const LITE_RADIAL_DEPTH_BANDS = {
   solidFadeStart: 1.5,
@@ -18,13 +21,6 @@ const LITE_RADIAL_DEPTH_BANDS = {
   wireframeFadeEnd: 5.5,
 } as const;
 const LITE_PLAYER_REVEAL_RADIUS = 2.5;
-
-export interface RevealLightInput {
-  position: Vector3;
-  radius: number;
-  intensity: number;
-  falloffStart?: number;
-}
 
 /**
  * Shared uniforms for the camera-distance LOD fade. The same uniform objects
@@ -48,18 +44,21 @@ export const fringeDepthFadeUniforms = {
   // focus (interactive mode). Wireframe/tile bands always use camera depth.
   uRadialFade: { value: 0 },
   uPlayerRevealRadius: { value: PLAYER_REVEAL_RADIUS },
-  uRevealLightCount: { value: 0 },
-  uRevealLightPositions: {
-    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => new Vector3()),
+  uTerrainRevealSourceCount: { value: 0 },
+  uTerrainRevealPositions: {
+    value: Array.from(
+      { length: MAX_TERRAIN_REVEAL_SOURCES },
+      () => new Vector3()
+    ),
   },
-  uRevealLightRadii: {
-    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => 0),
+  uTerrainRevealRadii: {
+    value: Array.from({ length: MAX_TERRAIN_REVEAL_SOURCES }, () => 0),
   },
-  uRevealLightIntensities: {
-    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => 0),
+  uTerrainRevealStrengths: {
+    value: Array.from({ length: MAX_TERRAIN_REVEAL_SOURCES }, () => 0),
   },
-  uRevealLightFalloffStarts: {
-    value: Array.from({ length: MAX_REVEAL_LIGHTS }, () => 0.35),
+  uTerrainRevealFalloffStarts: {
+    value: Array.from({ length: MAX_TERRAIN_REVEAL_SOURCES }, () => 0.35),
   },
 };
 
@@ -107,11 +106,11 @@ export const depthFadeParsGlsl = `
   uniform float uWireframeFadeEnd;
   uniform float uRadialFade;
   uniform float uPlayerRevealRadius;
-  uniform int uRevealLightCount;
-  uniform vec3 uRevealLightPositions[${MAX_REVEAL_LIGHTS}];
-  uniform float uRevealLightRadii[${MAX_REVEAL_LIGHTS}];
-  uniform float uRevealLightIntensities[${MAX_REVEAL_LIGHTS}];
-  uniform float uRevealLightFalloffStarts[${MAX_REVEAL_LIGHTS}];
+  uniform int uTerrainRevealSourceCount;
+  uniform vec3 uTerrainRevealPositions[${MAX_TERRAIN_REVEAL_SOURCES}];
+  uniform float uTerrainRevealRadii[${MAX_TERRAIN_REVEAL_SOURCES}];
+  uniform float uTerrainRevealStrengths[${MAX_TERRAIN_REVEAL_SOURCES}];
+  uniform float uTerrainRevealFalloffStarts[${MAX_TERRAIN_REVEAL_SOURCES}];
 
   float fringeCameraDepth(vec3 worldPos) {
     float pointDist = length(worldPos.xz - uCameraWorld.xz);
@@ -123,7 +122,7 @@ export const depthFadeParsGlsl = `
     return length(worldPos.xz - uFocusWorld.xz);
   }
 
-  float fringeRevealLightWeight(
+  float fringeTerrainRevealSourceWeight(
     vec3 worldPos,
     vec3 lightPos,
     float radius,
@@ -142,16 +141,16 @@ export const depthFadeParsGlsl = `
       radialDepth
     );
 
-    for (int i = 0; i < ${MAX_REVEAL_LIGHTS}; i++) {
-      if (i >= uRevealLightCount) {
+    for (int i = 0; i < ${MAX_TERRAIN_REVEAL_SOURCES}; i++) {
+      if (i >= uTerrainRevealSourceCount) {
         break;
       }
-      reveal += fringeRevealLightWeight(
+      reveal += fringeTerrainRevealSourceWeight(
         worldPos,
-        uRevealLightPositions[i],
-        uRevealLightRadii[i],
-        uRevealLightIntensities[i],
-        uRevealLightFalloffStarts[i]
+        uTerrainRevealPositions[i],
+        uTerrainRevealRadii[i],
+        uTerrainRevealStrengths[i],
+        uTerrainRevealFalloffStarts[i]
       );
     }
 
@@ -183,9 +182,9 @@ export const depthFadeParsGlsl = `
   }
 `;
 
-export function computeRevealLightWeight(
+export function computeTerrainRevealSourceWeight(
   pointWorld: Vector3,
-  light: RevealLightInput
+  light: TerrainRevealInput
 ): number {
   const distanceToLight = Math.hypot(
     pointWorld.x - light.position.x,
@@ -194,22 +193,22 @@ export function computeRevealLightWeight(
   const falloffStart = Math.max(0, Math.min(0.95, light.falloffStart ?? 0.35));
   const innerRadius = light.radius * falloffStart;
   return (
-    light.intensity *
+    light.strength *
     (1 - smoothstep(innerRadius, light.radius, distanceToLight))
   );
 }
 
-export function computeRevealWeight(
+export function computeTerrainRevealWeight(
   pointWorld: Vector3,
   focusWorldPosition: Vector3,
-  lights: RevealLightInput[] = [],
+  lights: TerrainRevealInput[] = [],
   playerRevealRadius: number = PLAYER_REVEAL_RADIUS,
   fadeEnd: number = FRINGE_CONFIG.radialDepthBands.solidFadeEnd
 ): number {
   const radialDepth = computeRadialFadeDepth(pointWorld, focusWorldPosition);
   let reveal = 1 - smoothstep(playerRevealRadius, fadeEnd, radialDepth);
-  for (const light of lights.slice(0, MAX_REVEAL_LIGHTS)) {
-    reveal += computeRevealLightWeight(pointWorld, light);
+  for (const light of lights.slice(0, MAX_TERRAIN_REVEAL_SOURCES)) {
+    reveal += computeTerrainRevealSourceWeight(pointWorld, light);
   }
   return Math.max(0, Math.min(1, reveal));
 }
@@ -322,7 +321,7 @@ export function computeDepthBandWeights(
     solidDepth
   );
   if (radial) {
-    const reveal = computeRevealWeight(
+    const reveal = computeTerrainRevealWeight(
       pointWorld,
       focusWorldPosition,
       [],
@@ -362,28 +361,28 @@ export function updateFringeDepthFadeUniforms(
   fringeDepthFadeUniforms.uFocusWorld.value.copy(focusWorld);
 }
 
-export function updateFringeRevealLightUniforms(
-  lights: RevealLightInput[]
+export function updateTerrainRevealUniforms(
+  lights: TerrainRevealInput[]
 ): void {
-  const count = Math.min(lights.length, MAX_REVEAL_LIGHTS);
-  fringeDepthFadeUniforms.uRevealLightCount.value = count;
+  const count = Math.min(lights.length, MAX_TERRAIN_REVEAL_SOURCES);
+  fringeDepthFadeUniforms.uTerrainRevealSourceCount.value = count;
 
-  for (let index = 0; index < MAX_REVEAL_LIGHTS; index += 1) {
+  for (let index = 0; index < MAX_TERRAIN_REVEAL_SOURCES; index += 1) {
     const light = lights[index];
     if (index < count && light) {
-      fringeDepthFadeUniforms.uRevealLightPositions.value[index].copy(
+      fringeDepthFadeUniforms.uTerrainRevealPositions.value[index].copy(
         light.position
       );
-      fringeDepthFadeUniforms.uRevealLightRadii.value[index] = light.radius;
-      fringeDepthFadeUniforms.uRevealLightIntensities.value[index] =
-        light.intensity;
-      fringeDepthFadeUniforms.uRevealLightFalloffStarts.value[index] =
+      fringeDepthFadeUniforms.uTerrainRevealRadii.value[index] = light.radius;
+      fringeDepthFadeUniforms.uTerrainRevealStrengths.value[index] =
+        light.strength;
+      fringeDepthFadeUniforms.uTerrainRevealFalloffStarts.value[index] =
         light.falloffStart ?? 0.35;
     } else {
-      fringeDepthFadeUniforms.uRevealLightPositions.value[index].set(0, 0, 0);
-      fringeDepthFadeUniforms.uRevealLightRadii.value[index] = 0;
-      fringeDepthFadeUniforms.uRevealLightIntensities.value[index] = 0;
-      fringeDepthFadeUniforms.uRevealLightFalloffStarts.value[index] = 0.35;
+      fringeDepthFadeUniforms.uTerrainRevealPositions.value[index].set(0, 0, 0);
+      fringeDepthFadeUniforms.uTerrainRevealRadii.value[index] = 0;
+      fringeDepthFadeUniforms.uTerrainRevealStrengths.value[index] = 0;
+      fringeDepthFadeUniforms.uTerrainRevealFalloffStarts.value[index] = 0.35;
     }
   }
 }

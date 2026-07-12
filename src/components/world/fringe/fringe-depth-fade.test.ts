@@ -6,12 +6,12 @@ import {
   computeDepthBandWeights,
   computeFadeDepth,
   computeRadialFadeDepth,
-  computeRevealLightWeight,
-  computeRevealWeight,
+  computeTerrainRevealSourceWeight,
+  computeTerrainRevealWeight,
   fringeDepthFadeUniforms,
   isFringeRadialFadeEnabled,
   setFringeRadialFade,
-  updateFringeRevealLightUniforms,
+  updateTerrainRevealUniforms,
 } from "./fringe-depth-fade";
 import { FRINGE_CONFIG } from "./fringe-layout";
 
@@ -169,6 +169,17 @@ describe("computeDepthBandWeights in radial mode", () => {
     expect(center.solid).toBe(1);
   });
 
+  it("produces a gradual solid fade across intermediate radii", () => {
+    const weights = [5.5, 6.625, 7.75, 8.875, 10].map(
+      (radius) => radialWeights(new Vector3(radius, 0, 0)).solid
+    );
+    expect(weights[0]).toBe(1);
+    expect(weights[1]).toBeGreaterThan(weights[2] ?? 0);
+    expect(weights[2]).toBeCloseTo(0.5);
+    expect(weights[2]).toBeGreaterThan(weights[3] ?? 0);
+    expect(weights[4]).toBe(0);
+  });
+
   it("fades solids radially at far rings", () => {
     const far = radialWeights(new Vector3(radialBands.solidFadeEnd + 2, 0, 0));
     expect(far.solid).toBe(0);
@@ -217,16 +228,16 @@ describe("setFringeRadialFade", () => {
 
 describe("player reveal lights", () => {
   it("keeps the player center fully revealed", () => {
-    expect(computeRevealWeight(focus, focus)).toBe(1);
+    expect(computeTerrainRevealWeight(focus, focus)).toBe(1);
   });
 
   it("reveals a dark point inside a fairy light radius", () => {
     const point = new Vector3(8, 12, 0);
-    const reveal = computeRevealWeight(point, focus, [
+    const reveal = computeTerrainRevealWeight(point, focus, [
       {
         position: new Vector3(8, 0, 0),
         radius: 3,
-        intensity: 0.8,
+        strength: 0.8,
         falloffStart: 0.35,
       },
     ]);
@@ -236,16 +247,16 @@ describe("player reveal lights", () => {
 
   it("combines multiple fairy lights but clamps reveal to one", () => {
     const point = new Vector3(8, 0, 0);
-    const reveal = computeRevealWeight(point, focus, [
+    const reveal = computeTerrainRevealWeight(point, focus, [
       {
         position: new Vector3(8, 0, 0),
         radius: 3,
-        intensity: 0.8,
+        strength: 0.8,
       },
       {
         position: new Vector3(8, 0, 0),
         radius: 3,
-        intensity: 0.8,
+        strength: 0.8,
       },
     ]);
 
@@ -254,11 +265,11 @@ describe("player reveal lights", () => {
 
   it("leaves points beyond the player and fairy radii dark", () => {
     const point = new Vector3(14, 0, 0);
-    const reveal = computeRevealWeight(point, focus, [
+    const reveal = computeTerrainRevealWeight(point, focus, [
       {
         position: new Vector3(8, 0, 0),
         radius: 3,
-        intensity: 1,
+        strength: 1,
       },
     ]);
 
@@ -266,35 +277,35 @@ describe("player reveal lights", () => {
   });
 
   it("uses horizontal distance so height does not shrink illumination", () => {
-    const low = computeRevealLightWeight(new Vector3(8, 0, 0), {
+    const low = computeTerrainRevealSourceWeight(new Vector3(8, 0, 0), {
       position: new Vector3(8, 0, 0),
       radius: 3,
-      intensity: 0.8,
+      strength: 0.8,
     });
-    const high = computeRevealLightWeight(new Vector3(8, 20, 0), {
+    const high = computeTerrainRevealSourceWeight(new Vector3(8, 20, 0), {
       position: new Vector3(8, 0, 0),
       radius: 3,
-      intensity: 0.8,
+      strength: 0.8,
     });
 
     expect(low).toBeCloseTo(high);
   });
 
   it("copies reveal lights into bounded shared uniforms", () => {
-    updateFringeRevealLightUniforms([
+    updateTerrainRevealUniforms([
       {
         position: new Vector3(1, 2, 3),
         radius: 2,
-        intensity: 0.7,
+        strength: 0.7,
       },
     ]);
 
-    expect(fringeDepthFadeUniforms.uRevealLightCount.value).toBe(1);
-    expect(fringeDepthFadeUniforms.uRevealLightPositions.value[0].x).toBe(1);
-    expect(fringeDepthFadeUniforms.uRevealLightRadii.value[0]).toBe(2);
-    expect(fringeDepthFadeUniforms.uRevealLightIntensities.value[0]).toBe(0.7);
+    expect(fringeDepthFadeUniforms.uTerrainRevealSourceCount.value).toBe(1);
+    expect(fringeDepthFadeUniforms.uTerrainRevealPositions.value[0].x).toBe(1);
+    expect(fringeDepthFadeUniforms.uTerrainRevealRadii.value[0]).toBe(2);
+    expect(fringeDepthFadeUniforms.uTerrainRevealStrengths.value[0]).toBe(0.7);
 
-    updateFringeRevealLightUniforms([]);
-    expect(fringeDepthFadeUniforms.uRevealLightCount.value).toBe(0);
+    updateTerrainRevealUniforms([]);
+    expect(fringeDepthFadeUniforms.uTerrainRevealSourceCount.value).toBe(0);
   });
 });

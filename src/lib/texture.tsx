@@ -13,10 +13,12 @@ import type {
   EntityTexture,
   EntityTextureProps,
 } from "../components/world/entities";
+import { fringeDepthFadeUniforms } from "../components/world/fringe/fringe-depth-fade";
 import {
-  depthFadeParsGlsl,
-  fringeDepthFadeUniforms,
-} from "../components/world/fringe/fringe-depth-fade";
+  injectTerrainColorFade,
+  injectTerrainHashedFade,
+  injectTerrainVisibilityVarying,
+} from "../components/world/fringe/fringe-terrain-visibility";
 
 export interface MaterialTextureProps {
   path: string;
@@ -35,8 +37,7 @@ const fallbackTexture = "textures/water_still.png";
 const repeatedTextureCache = new Map<string, Texture>();
 const materialCache = new Map<string, Material>();
 const fringeOcclusionMaterialCache = new Map<string, MeshDepthMaterial>();
-
-export const FRINGE_OCCLUSION_FADE_THRESHOLD = 0.004;
+const fringeShadowMaterialCache = new Map<string, MeshDepthMaterial>();
 
 export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
   const texture = _texture as MaterialTextureProps;
@@ -68,44 +69,54 @@ export function useRepeatedTexture(_texture: MaterialTextureProps): Texture {
 /**
  * Depth material for shadow maps that discards fragments the fringe fade has
  * dissolved. Without it, fully invisible blocks would still darken the
- * visible terrain. Shared by every fade-enabled block mesh.
+ * visible terrain. Cached per texture so alpha-tested leaves keep their
+ * cutout shadows.
  */
-let fringeShadowDepthMaterial: MeshDepthMaterial | null = null;
-
-export function getFringeShadowDepthMaterial(): MeshDepthMaterial {
-  if (fringeShadowDepthMaterial) {
-    return fringeShadowDepthMaterial;
-  }
-
-  const material = new MeshDepthMaterial({ depthPacking: RGBADepthPacking });
+export function createFringeShadowDepthMaterial(
+  texture: MaterialTextureProps,
+  textureMap: Texture
+): MeshDepthMaterial {
+  const material = new MeshDepthMaterial({
+    depthPacking: RGBADepthPacking,
+    map: textureMap,
+    alphaTest: texture.translucent ? 0.2 : 0,
+  });
+  material.alphaHash = true;
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, fringeDepthFadeUniforms);
-
-    shader.vertexShader = shader.vertexShader
-      .replace(
-        "#include <common>",
-        "#include <common>\nvarying vec3 vFringeWorldPos;"
-      )
-      .replace(
-        "#include <project_vertex>",
-        "#include <project_vertex>\nvFringeWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;"
-      );
-
-    shader.fragmentShader = shader.fragmentShader
-      .replace(
-        "#include <common>",
-        `#include <common>\nvarying vec3 vFringeWorldPos;\n${depthFadeParsGlsl}`
-      )
-      .replace(
-        "vec4 diffuseColor = vec4( 1.0 );",
-        `vec4 diffuseColor = vec4( 1.0 );
-        if (fringeDepthBandWeights(vFringeWorldPos).x < 0.5) discard;`
-      );
+    injectTerrainVisibilityVarying(shader);
+    injectTerrainHashedFade(shader);
   };
-  material.customProgramCacheKey = () => "fringe-shadow-depth-fade";
+  material.customProgramCacheKey = () =>
+    `fringe-shadow-hashed-${texture.translucent ? "cutout" : "solid"}`;
 
-  fringeShadowDepthMaterial = material;
-  return fringeShadowDepthMaterial;
+  return material;
+}
+
+export function useFringeShadowDepthMaterial(
+  texture: MaterialTextureProps,
+  enabled: boolean
+): MeshDepthMaterial | undefined {
+  const textureMap = useRepeatedTexture(texture);
+  return useMemo(() => {
+    if (!enabled) {
+      return undefined;
+    }
+    const cacheKey = [
+      texture.path ?? fallbackTexture,
+      texture.repeat ?? 1,
+      texture.offset?.[0] ?? 0,
+      texture.offset?.[1] ?? 0,
+      texture.translucent ?? false,
+    ].join("|");
+    const cached = fringeShadowMaterialCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+    const material = createFringeShadowDepthMaterial(texture, textureMap);
+    fringeShadowMaterialCache.set(cacheKey, material);
+    return material;
+  }, [enabled, texture, textureMap]);
 }
 
 export function shouldOccludeFringe(texture: MaterialTextureProps): boolean {
@@ -130,29 +141,11 @@ export function createFringeOcclusionMaterial(
   material.depthWrite = true;
   material.depthTest = true;
   material.transparent = false;
+  material.alphaHash = true;
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, fringeDepthFadeUniforms);
-
-    shader.vertexShader = shader.vertexShader
-      .replace(
-        "#include <common>",
-        "#include <common>\nvarying vec3 vFringeWorldPos;"
-      )
-      .replace(
-        "#include <project_vertex>",
-        "#include <project_vertex>\nvFringeWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;"
-      );
-
-    shader.fragmentShader = shader.fragmentShader
-      .replace(
-        "#include <common>",
-        `#include <common>\nvarying vec3 vFringeWorldPos;\n${depthFadeParsGlsl}`
-      )
-      .replace(
-        "#include <alphatest_fragment>",
-        `#include <alphatest_fragment>
-        if (fringeDepthBandWeights(vFringeWorldPos).x < ${FRINGE_OCCLUSION_FADE_THRESHOLD}) discard;`
-      );
+    injectTerrainVisibilityVarying(shader);
+    injectTerrainHashedFade(shader);
   };
   material.customProgramCacheKey = () =>
     `fringe-occlusion-${texture.translucent ? "cutout" : "solid"}`;
@@ -190,51 +183,18 @@ export function useFringeOcclusionMaterial(
 }
 
 /**
- * Patches a standard material so its alpha is multiplied by the "solid" band
- * weight of the camera-distance LOD fade. Far-away fragments dissolve,
- * letting the fringe wireframes/tiles show through.
- *
- * With `perBlock`, the fade is sampled once at the block center (the mesh
- * origin) instead of per fragment. Water uses this: a per-fragment radial
- * fade across the flat pool surface reads as a smooth circle, while the
- * per-block fade dissolves the pool in voxel steps like the terrain.
+ * Smoothly fades visible terrain. A separate alpha-hashed depth prepass owns
+ * occlusion, so transparent color fragments do not write competing depth.
  */
-function applyDepthFade(
-  material: MeshStandardMaterial,
-  perBlock = false
-): void {
+export function applyTerrainVisibility(material: MeshStandardMaterial): void {
   material.transparent = true;
+  material.depthWrite = false;
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, fringeDepthFadeUniforms);
-
-    const fadeSample = perBlock
-      ? "vFringeWorldPos = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;"
-      : "vFringeWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;";
-
-    shader.vertexShader = shader.vertexShader
-      .replace(
-        "#include <common>",
-        "#include <common>\nvarying vec3 vFringeWorldPos;"
-      )
-      .replace(
-        "#include <project_vertex>",
-        `#include <project_vertex>\n${fadeSample}`
-      );
-
-    shader.fragmentShader = shader.fragmentShader
-      .replace(
-        "#include <common>",
-        `#include <common>\nvarying vec3 vFringeWorldPos;\n${depthFadeParsGlsl}`
-      )
-      .replace(
-        "vec4 diffuseColor = vec4( diffuse, opacity );",
-        `vec4 diffuseColor = vec4( diffuse, opacity );
-        diffuseColor.a *= fringeDepthBandWeights(vFringeWorldPos).x;
-        if (diffuseColor.a < ${FRINGE_OCCLUSION_FADE_THRESHOLD}) discard;`
-      );
+    injectTerrainVisibilityVarying(shader);
+    injectTerrainColorFade(shader);
   };
-  material.customProgramCacheKey = () =>
-    perBlock ? "fringe-depth-fade-block" : "fringe-depth-fade";
+  material.customProgramCacheKey = () => "fringe-smooth-visibility";
 }
 
 export function useTextureMaterial(
@@ -280,9 +240,7 @@ export function useTextureMaterial(
 
     const material = new MeshStandardMaterial(materialProps);
     if (depthFade) {
-      // Semi-transparent surfaces (water) fade per block rather than per
-      // fragment so the pool edge dissolves in voxel steps, not as a circle.
-      applyDepthFade(material, (texture.opacity ?? 1) < 1);
+      applyTerrainVisibility(material);
     }
 
     materialCache.set(cacheKey, material);

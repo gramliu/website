@@ -7,6 +7,7 @@ import {
   WORLD_QUALITY_PROFILES,
 } from "./quality";
 import { shouldDowngradeQuality, summarizeFrameTimes } from "./runtime";
+import { WORLD_LIGHTING_CONFIG } from "./world-lighting";
 
 describe("world quality profiles", () => {
   it("uses lite quality on mobile with a bounded render and cache radius", () => {
@@ -16,7 +17,7 @@ describe("world quality profiles", () => {
     expect(lite.renderRadius).toBe(5);
     expect(lite.prefetchRadius).toBe(8);
     expect(lite.cacheRadius).toBeGreaterThanOrEqual(lite.prefetchRadius);
-    expect(lite.shadows).toBe(false);
+    expect(WORLD_LIGHTING_CONFIG.lite.sun.castsShadow).toBe(false);
     expect(lite.antialias).toBe(false);
     expect(lite.dpr).toEqual([1, 1]);
   });
@@ -25,6 +26,11 @@ describe("world quality profiles", () => {
     expect(getWorldQuality(true)).toBe("full");
     expect(getWorldTerrainMode(true)).toBe("infinite");
     expect(WORLD_QUALITY_PROFILES.full.renderRadius).toBe(13);
+    expect(WORLD_LIGHTING_CONFIG.full.sun.castsShadow).toBe(true);
+    expect(WORLD_LIGHTING_CONFIG.full.sun.shadowMapSize).toBe(1024);
+    expect(WORLD_LIGHTING_CONFIG.full.sun.shadowCamera.near).toBeLessThan(
+      WORLD_LIGHTING_CONFIG.full.sun.shadowCamera.far
+    );
   });
 
   it("keeps preview-island play out of the infinite terrain path", () => {

@@ -1,9 +1,9 @@
 import { memo, useContext, useEffect, useMemo, useRef } from "react";
 import { BoxGeometry, type Material, type Mesh } from "three";
 import {
-  getFringeShadowDepthMaterial,
   type MaterialTextureProps,
   useFringeOcclusionMaterial,
+  useFringeShadowDepthMaterial,
   useTextureMaterial,
 } from "../../lib/texture";
 import type { CommonProps } from "../common/types";
@@ -41,6 +41,7 @@ function Block({
   const sideTexture = useTextureMaterial(side, depthFade);
   const topOcclusionMaterial = useFringeOcclusionMaterial(top, depthFade);
   const sideOcclusionMaterial = useFringeOcclusionMaterial(side, depthFade);
+  const shadowDepthMaterial = useFringeShadowDepthMaterial(top, depthFade);
   const meshRef = useRef<Mesh>(null);
   const geometry = useMemo(() => new BoxGeometry(1, 1, 1), []);
 
@@ -86,9 +87,7 @@ function Block({
         dispose={null}
         // Shadow pass discards faded fragments so invisible blocks don't
         // darken the visible terrain.
-        customDepthMaterial={
-          depthFade ? getFringeShadowDepthMaterial() : undefined
-        }
+        customDepthMaterial={shadowDepthMaterial}
         // BoxGeometry material order: +x, -x, +y, -y, +z, -z.
         material={visibleMaterials}
       />

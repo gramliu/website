@@ -8,22 +8,27 @@ export const MAX_EFFECTIVE_REVEAL_RADIUS =
 
 export type PlayerEffectKind = "fairyLight";
 
-export interface PlayerRevealSource {
-  id: string;
-  kind: PlayerEffectKind;
+export interface TerrainRevealInput {
   position: Vector3;
   radius: number;
-  intensity: number;
-  falloffStart: number;
+  strength: number;
+  falloffStart?: number;
+}
+
+export interface TerrainRevealSource extends TerrainRevealInput {
+  id: string;
+  kind: PlayerEffectKind;
   color: ColorRepresentation;
 }
 
 export interface FairyLightConfig {
   id: string;
   color: ColorRepresentation;
-  intensity: number;
+  revealStrength: number;
   revealRadius: number;
   falloffStart: number;
+  pointLightIntensity: number;
+  pointLightDistance: number;
   anchorRadius: number;
   anchorHeight: number;
   driftAmount: number;
@@ -44,9 +49,11 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-amber",
     color: "#ffd27a",
-    intensity: 0.9,
+    revealStrength: 0.9,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
     falloffStart: 0.35,
+    pointLightIntensity: 0.288,
+    pointLightDistance: 9.9,
     anchorRadius: 3,
     anchorHeight: 1.45,
     driftAmount: 0.95,
@@ -65,9 +72,11 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-violet",
     color: "#d5a3ff",
-    intensity: 0.78,
+    revealStrength: 0.78,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.88,
     falloffStart: 0.4,
+    pointLightIntensity: 0.2496,
+    pointLightDistance: 8.712,
     anchorRadius: 3.15,
     anchorHeight: 1.2,
     driftAmount: 0.9,
@@ -86,9 +95,11 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-cyan",
     color: "#8ee8ff",
-    intensity: 0.84,
+    revealStrength: 0.84,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS,
     falloffStart: 0.3,
+    pointLightIntensity: 0.2688,
+    pointLightDistance: 9.9,
     anchorRadius: 4.1,
     anchorHeight: 1.9,
     driftAmount: 1.15,
@@ -107,9 +118,11 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-mint",
     color: "#9effb8",
-    intensity: 0.8,
+    revealStrength: 0.8,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.95,
     falloffStart: 0.32,
+    pointLightIntensity: 0.256,
+    pointLightDistance: 9.405,
     anchorRadius: 4.9,
     anchorHeight: 1.55,
     driftAmount: 1.35,
@@ -128,9 +141,11 @@ export const FAIRY_LIGHT_CONFIGS: FairyLightConfig[] = [
   {
     id: "fairy-rose",
     color: "#ff9ccf",
-    intensity: 0.74,
+    revealStrength: 0.74,
     revealRadius: FAIRY_LIGHT_REVEAL_RADIUS * 0.9,
     falloffStart: 0.38,
+    pointLightIntensity: 0.2368,
+    pointLightDistance: 8.91,
     anchorRadius: 5.6,
     anchorHeight: 1.7,
     driftAmount: 1.45,
