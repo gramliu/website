@@ -2,6 +2,7 @@ import type {
   WorldQuality,
   WorldTerrainMode,
 } from "../components/world/quality";
+import { HERO_WORLD_SIDE_BY_SIDE_MEDIA_QUERY } from "../config/breakpoints";
 
 type TelemetryValue = string | number | boolean | undefined;
 type TelemetryParameters = Record<string, TelemetryValue>;
@@ -53,7 +54,7 @@ export function getWorldCapabilityTelemetry(
   return {
     quality,
     world_mode: terrainMode,
-    viewport: window.matchMedia("(min-width: 768px)").matches
+    viewport: window.matchMedia(HERO_WORLD_SIDE_BY_SIDE_MEDIA_QUERY).matches
       ? "desktop"
       : "mobile",
     dpr: bucket(window.devicePixelRatio, [1, 2, 3]),

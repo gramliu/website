@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Portrait from "../../public/images/portrait.png";
 import social from "../config/social";
-import { useIsDesktop } from "../hooks/useIsDesktop";
+import { useHasSideBySideHeroLayout } from "../hooks/useHasSideBySideHeroLayout";
 import World from "./world";
 import PlayWorldButton from "./world/PlayWorldButton";
 import {
@@ -63,12 +63,12 @@ export default function Hero() {
   const [worldQuality, setWorldQuality] = useState<WorldQuality>("lite");
   const [terrainMode, setTerrainMode] =
     useState<WorldTerrainMode>("preview_island");
-  const isDesktop = useIsDesktop();
+  const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
 
   useEffect(() => {
-    setWorldQuality(getWorldQuality(isDesktop));
-    setTerrainMode(getWorldTerrainMode(isDesktop));
-  }, [isDesktop]);
+    setWorldQuality(getWorldQuality(hasSideBySideHeroLayout));
+    setTerrainMode(getWorldTerrainMode(hasSideBySideHeroLayout));
+  }, [hasSideBySideHeroLayout]);
 
   useEffect(() => {
     const preventScroll = (e: KeyboardEvent) => {
@@ -140,7 +140,6 @@ export default function Hero() {
           <PlayWorldButton
             ready={worldLoaded}
             isPlaying={isPlaying}
-            terrainMode={terrainMode}
             onToggle={() => setIsPlaying(!isPlaying)}
           />
         </div>

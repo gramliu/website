@@ -49,6 +49,7 @@ interface Props {
   showFringe?: boolean;
   quality?: WorldQuality;
   terrainMode?: WorldTerrainMode;
+  allowQualityDowngrade?: boolean;
   onLoaded?: () => void;
   onInteractiveFailure?: () => void;
   onRetryLite?: () => void;
@@ -160,6 +161,7 @@ function World({
   showFringe = false,
   quality = "full",
   terrainMode = "infinite",
+  allowQualityDowngrade = true,
   onLoaded,
   onInteractiveFailure,
   onRetryLite,
@@ -289,6 +291,7 @@ function World({
       });
 
       if (
+        allowQualityDowngrade &&
         activeQualityRef.current === "full" &&
         shouldDowngradeQuality(summary)
       ) {
@@ -302,7 +305,7 @@ function World({
         });
       }
     },
-    []
+    [allowQualityDowngrade]
   );
 
   useEffect(() => {

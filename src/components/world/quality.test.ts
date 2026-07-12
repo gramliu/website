@@ -3,6 +3,7 @@ import {
   getWorldQuality,
   getWorldTerrainBehavior,
   getWorldTerrainMode,
+  parseWorldQualityOverride,
   WORLD_QUALITY_PROFILES,
 } from "./quality";
 import { shouldDowngradeQuality, summarizeFrameTimes } from "./runtime";
@@ -20,7 +21,7 @@ describe("world quality profiles", () => {
     expect(lite.dpr).toEqual([1, 1]);
   });
 
-  it("keeps full quality for desktop", () => {
+  it("keeps full quality for the side-by-side hero layout", () => {
     expect(getWorldQuality(true)).toBe("full");
     expect(getWorldTerrainMode(true)).toBe("infinite");
     expect(WORLD_QUALITY_PROFILES.full.renderRadius).toBe(13);
@@ -37,6 +38,16 @@ describe("world quality profiles", () => {
       followsPlayer: true,
       usesRadialFringe: true,
     });
+  });
+});
+
+describe("world quality overrides", () => {
+  it("accepts only single, supported quality values", () => {
+    expect(parseWorldQualityOverride("full")).toBe("full");
+    expect(parseWorldQualityOverride("lite")).toBe("lite");
+    expect(parseWorldQualityOverride(undefined)).toBeUndefined();
+    expect(parseWorldQualityOverride("unsupported")).toBeUndefined();
+    expect(parseWorldQualityOverride(["full", "lite"])).toBeUndefined();
   });
 });
 

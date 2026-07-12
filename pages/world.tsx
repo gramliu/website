@@ -6,10 +6,11 @@ import PlayWorldButton from "../src/components/world/PlayWorldButton";
 import {
   getWorldQuality,
   getWorldTerrainMode,
+  parseWorldQualityOverride,
   type WorldQuality,
   type WorldTerrainMode,
 } from "../src/components/world/quality";
-import { useIsDesktop } from "../src/hooks/useIsDesktop";
+import { useHasSideBySideHeroLayout } from "../src/hooks/useHasSideBySideHeroLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,16 +21,22 @@ export default function WorldPage() {
   const [worldQuality, setWorldQuality] = useState<WorldQuality>("lite");
   const [terrainMode, setTerrainMode] =
     useState<WorldTerrainMode>("preview_island");
-  const isDesktop = useIsDesktop();
+  const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
+
+  const qualityOverride = router.isReady
+    ? parseWorldQualityOverride(router.query.quality)
+    : undefined;
 
   const queryWantsInteractive =
     router.isReady && router.query.mode === "interactive";
   const isPlaying = playingOverride ?? queryWantsInteractive;
 
   useEffect(() => {
-    setWorldQuality(getWorldQuality(isDesktop));
-    setTerrainMode(getWorldTerrainMode(isDesktop));
-  }, [isDesktop]);
+    setWorldQuality(
+      qualityOverride ?? getWorldQuality(hasSideBySideHeroLayout)
+    );
+    setTerrainMode(getWorldTerrainMode(hasSideBySideHeroLayout));
+  }, [hasSideBySideHeroLayout, qualityOverride]);
 
   return (
     <main className={`flex h-screen w-screen ${inter.className} relative`}>
@@ -38,20 +45,24 @@ export default function WorldPage() {
           rotateWorld={false}
           interactiveMode={isPlaying}
           showFringe
-          quality={worldQuality}
+          quality={qualityOverride ?? worldQuality}
           terrainMode={terrainMode}
+          allowQualityDowngrade={!qualityOverride}
           onLoaded={() => setWorldLoaded(true)}
           onInteractiveFailure={() => setPlayingOverride(false)}
-          onRetryLite={() => {
-            setWorldQuality("lite");
-            setPlayingOverride(true);
-          }}
+          onRetryLite={
+            qualityOverride
+              ? undefined
+              : () => {
+                  setWorldQuality("lite");
+                  setPlayingOverride(true);
+                }
+          }
         />
       </div>
       <PlayWorldButton
         ready={worldLoaded}
         isPlaying={isPlaying}
-        terrainMode={terrainMode}
         onToggle={() => setPlayingOverride(!isPlaying)}
         variant="overlay"
       />

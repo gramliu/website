@@ -33,12 +33,22 @@ export const WORLD_QUALITY_PROFILES: Record<WorldQuality, WorldQualityProfile> =
     },
   };
 
-export function getWorldQuality(isDesktop: boolean): WorldQuality {
-  return isDesktop ? "full" : "lite";
+export function getWorldQuality(
+  hasSideBySideHeroLayout: boolean
+): WorldQuality {
+  return hasSideBySideHeroLayout ? "full" : "lite";
 }
 
-export function getWorldTerrainMode(isDesktop: boolean): WorldTerrainMode {
-  return isDesktop ? "infinite" : "preview_island";
+export function parseWorldQualityOverride(
+  value: unknown
+): WorldQuality | undefined {
+  return value === "full" || value === "lite" ? value : undefined;
+}
+
+export function getWorldTerrainMode(
+  hasSideBySideHeroLayout: boolean
+): WorldTerrainMode {
+  return hasSideBySideHeroLayout ? "infinite" : "preview_island";
 }
 
 export interface WorldTerrainBehavior {

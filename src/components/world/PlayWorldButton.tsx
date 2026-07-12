@@ -1,8 +1,7 @@
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useIsDesktop } from "../../hooks/useIsDesktop";
-import type { WorldTerrainMode } from "./quality";
+import { useHasSideBySideHeroLayout } from "../../hooks/useHasSideBySideHeroLayout";
 
 const BOUNCE_DELAY_MS = 3_000;
 
@@ -11,7 +10,6 @@ interface Props {
   isPlaying: boolean;
   onToggle: () => void;
   variant?: "hero" | "overlay";
-  terrainMode?: WorldTerrainMode;
 }
 
 function PlayButton({
@@ -19,13 +17,11 @@ function PlayButton({
   onToggle,
   bounce,
   className,
-  terrainMode,
 }: {
   isPlaying: boolean;
   onToggle: () => void;
   bounce: boolean;
   className?: string;
-  terrainMode: WorldTerrainMode;
 }) {
   return (
     <button
@@ -39,11 +35,7 @@ function PlayButton({
         className
       )}
     >
-      {isPlaying
-        ? "Stop playing"
-        : terrainMode === "preview_island"
-          ? "Explore island"
-          : "Start playing"}
+      {isPlaying ? "Stop playing" : "Start playing"}
     </button>
   );
 }
@@ -53,10 +45,9 @@ export default function PlayWorldButton({
   isPlaying,
   onToggle,
   variant = "hero",
-  terrainMode = "infinite",
 }: Props) {
   const [bounce, setBounce] = useState(false);
-  const isDesktop = useIsDesktop();
+  const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
 
   useEffect(() => {
     if (!ready || isPlaying) {
@@ -83,12 +74,7 @@ export default function PlayWorldButton({
         transition={{ duration: 0.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
-        <PlayButton
-          isPlaying={isPlaying}
-          onToggle={onToggle}
-          bounce={bounce}
-          terrainMode={terrainMode}
-        />
+        <PlayButton isPlaying={isPlaying} onToggle={onToggle} bounce={bounce} />
       </motion.div>
     );
   }
@@ -104,10 +90,9 @@ export default function PlayWorldButton({
         isPlaying={isPlaying}
         onToggle={onToggle}
         bounce={bounce}
-        terrainMode={terrainMode}
         className="z-10"
       />
-      {isPlaying && isDesktop ? (
+      {isPlaying && hasSideBySideHeroLayout ? (
         <span className="text-center">Use WASD + Space to move around.</span>
       ) : null}
     </motion.div>
