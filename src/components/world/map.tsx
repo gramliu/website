@@ -10,6 +10,7 @@ import { TerrainGenerator } from "../../game/world/terrain-generator";
 import { VoxelWorld } from "../../game/world/world";
 import { loadWorldCellsFromString } from "../../game/world/world-loader";
 import FairyLightController from "./effects/FairyLightController";
+import { FAIRY_LIGHT_CONFIGS } from "./effects/player-effects";
 import { FringeFadeContext } from "./fringe/fringe-fade-context";
 import {
   computeFringeLayout,
@@ -93,6 +94,10 @@ export default function Map({
   terrainMode = "infinite",
 }: Props) {
   const qualityProfile = WORLD_QUALITY_PROFILES[quality];
+  const fairyLightConfigs = useMemo(
+    () => FAIRY_LIGHT_CONFIGS.slice(0, qualityProfile.fairyLightCount),
+    [qualityProfile.fairyLightCount]
+  );
   const terrainBehavior = getWorldTerrainBehavior(interactiveMode, terrainMode);
   const playerRef = useRef<Group>(null);
   const worldRef = useRef<Group>(null);
@@ -376,8 +381,9 @@ export default function Map({
               enabled={
                 terrainBehavior.usesInfiniteWorld &&
                 showFringe &&
-                quality === "full"
+                qualityProfile.fairyLightCount > 0
               }
+              configs={fairyLightConfigs}
               playerRef={playerRef}
               world={activeWorld}
             />

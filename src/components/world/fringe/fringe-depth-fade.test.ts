@@ -214,10 +214,15 @@ describe("setFringeRadialFade", () => {
     );
   });
 
-  it("uses a tighter reveal radius for the lite wireframe fringe", () => {
+  it("keeps a broad player reveal and balanced fade bands for lite quality", () => {
     setFringeRadialFade(true, "lite");
-    expect(fringeDepthFadeUniforms.uPlayerRevealRadius.value).toBe(2.5);
-    expect(fringeDepthFadeUniforms.uSolidFadeEnd.value).toBe(5.5);
+    expect(fringeDepthFadeUniforms.uPlayerRevealRadius.value).toBe(
+      PLAYER_REVEAL_RADIUS
+    );
+    expect(fringeDepthFadeUniforms.uSolidFadeStart.value).toBe(3);
+    expect(fringeDepthFadeUniforms.uSolidFadeEnd.value).toBe(8);
+    expect(fringeDepthFadeUniforms.uWireframeFadeStart.value).toBe(6.5);
+    expect(fringeDepthFadeUniforms.uWireframeFadeEnd.value).toBe(9);
 
     setFringeRadialFade(false);
     expect(fringeDepthFadeUniforms.uPlayerRevealRadius.value).toBe(

@@ -7,7 +7,10 @@ export interface WorldQualityProfile {
   prefetchChunksPerFrame: number;
   cacheRadius: number;
   dpr: [number, number];
+  shadows: boolean;
+  shadowMapSize: number;
   antialias: boolean;
+  fairyLightCount: number;
 }
 
 export const WORLD_QUALITY_PROFILES: Record<WorldQuality, WorldQualityProfile> =
@@ -18,15 +21,21 @@ export const WORLD_QUALITY_PROFILES: Record<WorldQuality, WorldQualityProfile> =
       prefetchChunksPerFrame: 2,
       cacheRadius: 32,
       dpr: [1, 2],
+      shadows: true,
+      shadowMapSize: 1024,
       antialias: true,
+      fairyLightCount: 4,
     },
     lite: {
-      renderRadius: 5,
-      prefetchRadius: 8,
+      renderRadius: 9,
+      prefetchRadius: 16,
       prefetchChunksPerFrame: 1,
-      cacheRadius: 10,
-      dpr: [1, 1],
-      antialias: false,
+      cacheRadius: 18,
+      dpr: [1, 1.25],
+      shadows: true,
+      shadowMapSize: 512,
+      antialias: true,
+      fairyLightCount: 1,
     },
   };
 

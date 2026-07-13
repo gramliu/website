@@ -1,29 +1,8 @@
-import type { WorldQuality } from "./quality";
-
-export interface WorldLightingConfig {
-  ambientIntensity: number;
-  sun: {
-    position: [number, number, number];
-    intensity: number;
-    castsShadow: boolean;
-    shadowMapSize: number;
-    shadowCamera: {
-      near: number;
-      far: number;
-      left: number;
-      right: number;
-      top: number;
-      bottom: number;
-    };
-    shadowBias: number;
-    shadowNormalBias: number;
-  };
-}
+import { WORLD_QUALITY_PROFILES, type WorldQuality } from "./quality";
 
 const BASE_SUN = {
   position: [1, 10, 5] as [number, number, number],
   intensity: 1,
-  shadowMapSize: 1024,
   shadowCamera: {
     near: 0.5,
     far: 50,
@@ -36,33 +15,23 @@ const BASE_SUN = {
   shadowNormalBias: 0.02,
 };
 
-export const WORLD_LIGHTING_CONFIG: Record<WorldQuality, WorldLightingConfig> =
-  {
-    full: {
-      ambientIntensity: 0.5,
-      sun: { ...BASE_SUN, castsShadow: true },
-    },
-    lite: {
-      ambientIntensity: 0.5,
-      sun: { ...BASE_SUN, castsShadow: false },
-    },
-  };
-
 interface Props {
   quality: WorldQuality;
 }
 
 export default function WorldLighting({ quality }: Props) {
-  const { ambientIntensity, sun } = WORLD_LIGHTING_CONFIG[quality];
+  const qualityProfile = WORLD_QUALITY_PROFILES[quality];
+  const ambientIntensity = 0.5;
+  const sun = BASE_SUN;
   return (
     <>
       <ambientLight intensity={ambientIntensity} />
       <directionalLight
         position={sun.position}
         intensity={sun.intensity}
-        castShadow={sun.castsShadow}
-        shadow-mapSize-width={sun.shadowMapSize}
-        shadow-mapSize-height={sun.shadowMapSize}
+        castShadow={qualityProfile.shadows}
+        shadow-mapSize-width={qualityProfile.shadowMapSize}
+        shadow-mapSize-height={qualityProfile.shadowMapSize}
         shadow-camera-near={sun.shadowCamera.near}
         shadow-camera-far={sun.shadowCamera.far}
         shadow-camera-left={sun.shadowCamera.left}

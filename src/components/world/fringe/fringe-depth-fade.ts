@@ -15,12 +15,11 @@ export interface DepthBandWeights {
 export const MAX_TERRAIN_REVEAL_SOURCES = 4;
 
 const LITE_RADIAL_DEPTH_BANDS = {
-  solidFadeStart: 1.5,
-  solidFadeEnd: 5.5,
-  wireframeFadeStart: 2.5,
-  wireframeFadeEnd: 5.5,
+  solidFadeStart: 3,
+  solidFadeEnd: 8,
+  wireframeFadeStart: 6.5,
+  wireframeFadeEnd: 9,
 } as const;
-const LITE_PLAYER_REVEAL_RADIUS = 2.5;
 
 /**
  * Shared uniforms for the camera-distance LOD fade. The same uniform objects
@@ -83,10 +82,7 @@ export function setFringeRadialFade(
   fringeDepthFadeUniforms.uSolidFadeEnd.value = bands.solidFadeEnd;
   fringeDepthFadeUniforms.uWireframeFadeStart.value = bands.wireframeFadeStart;
   fringeDepthFadeUniforms.uWireframeFadeEnd.value = bands.wireframeFadeEnd;
-  fringeDepthFadeUniforms.uPlayerRevealRadius.value =
-    enabled && quality === "lite"
-      ? LITE_PLAYER_REVEAL_RADIUS
-      : PLAYER_REVEAL_RADIUS;
+  fringeDepthFadeUniforms.uPlayerRevealRadius.value = PLAYER_REVEAL_RADIUS;
 }
 
 export function isFringeRadialFadeEnabled(): boolean {

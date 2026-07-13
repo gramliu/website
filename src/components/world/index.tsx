@@ -28,7 +28,7 @@ import {
   type WorldPerformanceSummary,
 } from "./runtime";
 import WorldLoadingIndicator from "./WorldLoadingIndicator";
-import WorldLighting, { WORLD_LIGHTING_CONFIG } from "./world-lighting";
+import WorldLighting from "./world-lighting";
 
 const MIN_LOADING_DURATION_MS = 1_500;
 const STALL_PROGRESS = 100;
@@ -193,7 +193,6 @@ function World({
   const telemetryRef = useRef(new WorldTelemetrySession());
 
   const qualityProfile = WORLD_QUALITY_PROFILES[activeQuality];
-  const lightingConfig = WORLD_LIGHTING_CONFIG[activeQuality];
   const effectiveInteractiveMode = interactiveMode && !failure;
   const effectiveShowFringe = showFringe;
 
@@ -458,7 +457,7 @@ function World({
               powerPreference:
                 activeQuality === "lite" ? "low-power" : "high-performance",
             }}
-            shadows={lightingConfig.sun.castsShadow}
+            shadows={qualityProfile.shadows}
             fallback={
               <div className="flex h-full items-center justify-center text-center text-text-faded">
                 3D preview is not supported on this device.

@@ -7,30 +7,29 @@ import {
   WORLD_QUALITY_PROFILES,
 } from "./quality";
 import { shouldDowngradeQuality, summarizeFrameTimes } from "./runtime";
-import { WORLD_LIGHTING_CONFIG } from "./world-lighting";
 
 describe("world quality profiles", () => {
   it("uses lite quality on mobile with a bounded render and cache radius", () => {
     const lite = WORLD_QUALITY_PROFILES.lite;
     expect(getWorldQuality(false)).toBe("lite");
     expect(getWorldTerrainMode(false)).toBe("preview_island");
-    expect(lite.renderRadius).toBe(5);
-    expect(lite.prefetchRadius).toBe(8);
+    expect(lite.renderRadius).toBe(9);
+    expect(lite.prefetchRadius).toBe(16);
     expect(lite.cacheRadius).toBeGreaterThanOrEqual(lite.prefetchRadius);
-    expect(WORLD_LIGHTING_CONFIG.lite.sun.castsShadow).toBe(false);
-    expect(lite.antialias).toBe(false);
-    expect(lite.dpr).toEqual([1, 1]);
+    expect(lite.shadows).toBe(true);
+    expect(lite.shadowMapSize).toBe(512);
+    expect(lite.antialias).toBe(true);
+    expect(lite.dpr).toEqual([1, 1.25]);
+    expect(lite.fairyLightCount).toBe(1);
   });
 
   it("keeps full quality for the side-by-side hero layout", () => {
     expect(getWorldQuality(true)).toBe("full");
     expect(getWorldTerrainMode(true)).toBe("infinite");
     expect(WORLD_QUALITY_PROFILES.full.renderRadius).toBe(13);
-    expect(WORLD_LIGHTING_CONFIG.full.sun.castsShadow).toBe(true);
-    expect(WORLD_LIGHTING_CONFIG.full.sun.shadowMapSize).toBe(1024);
-    expect(WORLD_LIGHTING_CONFIG.full.sun.shadowCamera.near).toBeLessThan(
-      WORLD_LIGHTING_CONFIG.full.sun.shadowCamera.far
-    );
+    expect(WORLD_QUALITY_PROFILES.full.shadows).toBe(true);
+    expect(WORLD_QUALITY_PROFILES.full.shadowMapSize).toBe(1024);
+    expect(WORLD_QUALITY_PROFILES.full.fairyLightCount).toBe(4);
   });
 
   it("keeps preview-island play out of the infinite terrain path", () => {
