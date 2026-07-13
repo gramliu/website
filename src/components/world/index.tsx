@@ -17,6 +17,7 @@ import {
 } from "../../lib/world-telemetry";
 import Map from "./map";
 import {
+  resolveWorldQuality,
   WORLD_QUALITY_PROFILES,
   type WorldQuality,
   type WorldTerrainMode,
@@ -171,7 +172,9 @@ function World({
   const [minDurationMet, setMinDurationMet] = useState(false);
   const [displayProgress, setDisplayProgress] = useState(0);
   const [overlayVisible, setOverlayVisible] = useState(true);
-  const [activeQuality, setActiveQuality] = useState<WorldQuality>(quality);
+  const [activeQuality, setActiveQuality] = useState<WorldQuality>(() =>
+    resolveWorldQuality(quality, interactiveMode, terrainMode)
+  );
   const [failure, setFailure] = useState<WorldFailureReason | null>(null);
   const [retryUsed, setRetryUsed] = useState(false);
   const [canvasKey, setCanvasKey] = useState(0);
@@ -192,22 +195,28 @@ function World({
   const onInteractiveFailureRef = useRef(onInteractiveFailure);
   const telemetryRef = useRef(new WorldTelemetrySession());
 
-  const qualityProfile = WORLD_QUALITY_PROFILES[activeQuality];
+  const effectiveQuality = resolveWorldQuality(
+    activeQuality,
+    interactiveMode,
+    terrainMode
+  );
+  const qualityProfile = WORLD_QUALITY_PROFILES[effectiveQuality];
   const effectiveInteractiveMode = interactiveMode && !failure;
   const effectiveShowFringe = showFringe;
 
   useEffect(() => {
-    activeQualityRef.current = quality;
-    setActiveQuality(quality);
-  }, [quality]);
+    setActiveQuality(
+      resolveWorldQuality(quality, interactiveMode, terrainMode)
+    );
+  }, [interactiveMode, quality, terrainMode]);
 
   useEffect(() => {
     interactiveModeRef.current = interactiveMode;
   }, [interactiveMode]);
 
   useEffect(() => {
-    activeQualityRef.current = activeQuality;
-  }, [activeQuality]);
+    activeQualityRef.current = effectiveQuality;
+  }, [effectiveQuality]);
 
   useEffect(() => {
     terrainModeRef.current = terrainMode;
@@ -294,6 +303,7 @@ function World({
       if (
         allowQualityDowngrade &&
         activeQualityRef.current === "full" &&
+        terrainModeRef.current === "infinite" &&
         shouldDowngradeQuality(summary)
       ) {
         activeQualityRef.current = "lite";
@@ -313,7 +323,7 @@ function World({
     if (!interactiveMode) {
       if (wasInteractiveRef.current) {
         telemetryRef.current.trackOnce("world_stopped", {
-          quality: activeQuality,
+          quality: activeQualityRef.current,
           world_mode: terrainMode,
         });
       }
@@ -327,7 +337,7 @@ function World({
     interactiveReadyRef.current = false;
     startedAtRef.current = performance.now();
     telemetryRef.current.trackOnce("world_start_requested", {
-      ...getWorldCapabilityTelemetry(activeQuality, terrainMode),
+      ...getWorldCapabilityTelemetry(activeQualityRef.current, terrainMode),
     });
 
     const timeoutId = window.setTimeout(() => {
@@ -396,7 +406,7 @@ function World({
   }, [loadingComplete]);
 
   const retryLite = () => {
-    if (retryUsed || !onRetryLite) {
+    if (retryUsed || !onRetryLite || terrainMode !== "infinite") {
       return;
     }
     setRetryUsed(true);
@@ -455,7 +465,7 @@ function World({
             gl={{
               antialias: qualityProfile.antialias,
               powerPreference:
-                activeQuality === "lite" ? "low-power" : "high-performance",
+                effectiveQuality === "lite" ? "low-power" : "high-performance",
             }}
             shadows={qualityProfile.shadows}
             fallback={
@@ -470,7 +480,7 @@ function World({
               setWebglVersion(version);
             }}
           >
-            <WorldLighting quality={activeQuality} />
+            <WorldLighting quality={effectiveQuality} />
             {!rotateWorld ? (
               <OrbitControls enabled={!effectiveInteractiveMode} />
             ) : null}
@@ -480,7 +490,7 @@ function World({
                 rotateWorld={rotateWorld}
                 interactiveMode={effectiveInteractiveMode}
                 showFringe={effectiveShowFringe}
-                quality={activeQuality}
+                quality={effectiveQuality}
                 terrainMode={terrainMode}
               />
               <WorldLoadedNotifier onReady={() => setAssetsReady(true)} />
@@ -501,7 +511,7 @@ function World({
           <span>
             Interactive mode could not start. Showing the preview instead.
           </span>
-          {!retryUsed && onRetryLite ? (
+          {!retryUsed && onRetryLite && terrainMode === "infinite" ? (
             <button
               type="button"
               onClick={retryLite}

@@ -4,6 +4,7 @@ import {
   getWorldTerrainBehavior,
   getWorldTerrainMode,
   parseWorldQualityOverride,
+  resolveWorldQuality,
   WORLD_QUALITY_PROFILES,
 } from "./quality";
 import { shouldDowngradeQuality, summarizeFrameTimes } from "./runtime";
@@ -53,6 +54,19 @@ describe("world quality overrides", () => {
     expect(parseWorldQualityOverride(undefined)).toBeUndefined();
     expect(parseWorldQualityOverride("unsupported")).toBeUndefined();
     expect(parseWorldQualityOverride(["full", "lite"])).toBeUndefined();
+  });
+});
+
+describe("world quality policy", () => {
+  it("always uses full quality outside interactive infinite terrain", () => {
+    expect(resolveWorldQuality("lite", false, "preview_island")).toBe("full");
+    expect(resolveWorldQuality("lite", false, "infinite")).toBe("full");
+    expect(resolveWorldQuality("lite", true, "preview_island")).toBe("full");
+  });
+
+  it("preserves the requested quality for interactive infinite terrain", () => {
+    expect(resolveWorldQuality("full", true, "infinite")).toBe("full");
+    expect(resolveWorldQuality("lite", true, "infinite")).toBe("lite");
   });
 });
 

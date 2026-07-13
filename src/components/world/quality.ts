@@ -51,6 +51,16 @@ export function parseWorldQualityOverride(
   return value === "full" || value === "lite" ? value : undefined;
 }
 
+export function resolveWorldQuality(
+  requestedQuality: WorldQuality,
+  interactiveMode: boolean,
+  terrainMode: WorldTerrainMode
+): WorldQuality {
+  return interactiveMode && terrainMode === "infinite"
+    ? requestedQuality
+    : "full";
+}
+
 export function getWorldTerrainMode(
   hasSideBySideHeroLayout: boolean
 ): WorldTerrainMode {
