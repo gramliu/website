@@ -1,8 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { MeshStandardMaterial, Texture } from "three";
 import {
+  computeTerrainOcclusionCoverage,
   terrainColorFadeGlsl,
   terrainFadeAlphaGlsl,
+  terrainOcclusionFadeGlsl,
 } from "../components/world/fringe/fringe-terrain-visibility";
 import {
   applyTerrainVisibility,
@@ -44,7 +46,7 @@ describe("fringe terrain occlusion", () => {
     ).toBe(false);
   });
 
-  it("writes alpha-hashed proportional depth without color", () => {
+  it("holds occluding depth until the final portion of the fade", () => {
     const material = createFringeOcclusionMaterial(
       { path: "textures/oak_leaves.png", translucent: true },
       new Texture()
@@ -60,10 +62,16 @@ describe("fringe terrain occlusion", () => {
       "#include <alphatest_fragment>\n#include <alphahash_fragment>"
     );
     expect(shader.fragmentShader).toContain("fringeDepthBandWeights");
-    expect(shader.fragmentShader).toContain(terrainFadeAlphaGlsl);
-    expect(shader.fragmentShader.indexOf(terrainFadeAlphaGlsl)).toBeLessThan(
+    expect(shader.fragmentShader).toContain(terrainOcclusionFadeGlsl);
+    expect(
+      shader.fragmentShader.indexOf(terrainOcclusionFadeGlsl)
+    ).toBeLessThan(
       shader.fragmentShader.indexOf("#include <alphahash_fragment>")
     );
+    expect(computeTerrainOcclusionCoverage(0)).toBe(0);
+    expect(computeTerrainOcclusionCoverage(0.1)).toBeCloseTo(0.5);
+    expect(computeTerrainOcclusionCoverage(0.2)).toBe(1);
+    expect(computeTerrainOcclusionCoverage(1)).toBe(1);
   });
 
   it("smoothly blends color and shares reveal weight with hashed depth passes", () => {
@@ -98,11 +106,13 @@ describe("fringe terrain occlusion", () => {
     );
     expect(colorShader.fragmentShader).not.toContain("fringeVoxel");
 
+    expect(depthShaders[0]?.fragmentShader).toContain(terrainOcclusionFadeGlsl);
+    expect(depthShaders[1]?.fragmentShader).toContain(terrainFadeAlphaGlsl);
+
     for (const shader of depthShaders) {
       expect(shader.vertexShader).toContain(
         "modelMatrix * vec4(transformed, 1.0)"
       );
-      expect(shader.fragmentShader).toContain(terrainFadeAlphaGlsl);
       expect(shader.fragmentShader).not.toContain("fringeVoxel");
       expect(shader.fragmentShader).not.toContain("< 0.5");
     }

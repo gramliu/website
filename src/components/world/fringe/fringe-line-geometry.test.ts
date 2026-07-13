@@ -1,8 +1,10 @@
 import { describe, expect, it } from "bun:test";
+import { LessDepth } from "three";
 import { VoxelWorld } from "../../../game/world/world";
 import { loadWorldCellsFromString } from "../../../game/world/world-loader";
 import worldData from "../world-data";
 import { computeFringeLayout } from "./fringe-layout";
+import { createFringeLineMaterial } from "./fringe-line-field";
 import {
   buildFringeLineGeometry,
   getGridVerticesPerTile,
@@ -12,6 +14,14 @@ import {
 const world = new VoxelWorld(loadWorldCellsFromString(worldData));
 
 describe("buildFringeLineGeometry", () => {
+  it("requires lines to be strictly in front of occluding terrain", () => {
+    const material = createFringeLineMaterial();
+    expect(material.depthTest).toBe(true);
+    expect(material.depthWrite).toBe(false);
+    expect(material.depthFunc).toBe(LessDepth);
+    material.dispose();
+  });
+
   it("merges wireframe and grid vertices with matching baseOpacity counts", () => {
     const layout = computeFringeLayout(world);
     const geometry = buildFringeLineGeometry(layout);

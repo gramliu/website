@@ -1,6 +1,7 @@
 import { depthFadeParsGlsl } from "./fringe-depth-fade";
 
 export const TERRAIN_COLOR_ALPHA_EPSILON = 0.004;
+export const TERRAIN_OCCLUSION_CROSSFADE_END = 0.2;
 
 export interface TerrainShaderSource {
   vertexShader: string;
@@ -13,8 +14,24 @@ export const terrainVisibilityParsGlsl = depthFadeParsGlsl;
 export const terrainFadeAlphaGlsl =
   "diffuseColor.a *= fringeDepthBandWeights(vFringeWorldPos).x;";
 
+export const terrainOcclusionFadeGlsl = `
+float fringeSolidAlpha = fringeDepthBandWeights(vFringeWorldPos).x;
+diffuseColor.a *= smoothstep(
+  0.0,
+  ${TERRAIN_OCCLUSION_CROSSFADE_END},
+  fringeSolidAlpha
+);`;
+
 export const terrainColorFadeGlsl = `${terrainFadeAlphaGlsl}
 if (diffuseColor.a < ${TERRAIN_COLOR_ALPHA_EPSILON}) discard;`;
+
+export function computeTerrainOcclusionCoverage(solidAlpha: number): number {
+  const t = Math.max(
+    0,
+    Math.min(1, solidAlpha / TERRAIN_OCCLUSION_CROSSFADE_END)
+  );
+  return t * t * (3 - 2 * t);
+}
 
 function replaceRequired(
   source: string,
@@ -77,5 +94,16 @@ export function injectTerrainHashedFade(shader: TerrainShaderSource): void {
     anchor,
     `${terrainFadeAlphaGlsl}\n${anchor}`,
     "fragment alpha hash"
+  );
+}
+
+/** Keeps full terrain occlusion until the final portion of the color fade. */
+export function injectTerrainOcclusionFade(shader: TerrainShaderSource): void {
+  const anchor = "#include <alphahash_fragment>";
+  shader.fragmentShader = replaceRequired(
+    shader.fragmentShader,
+    anchor,
+    `${terrainOcclusionFadeGlsl}\n${anchor}`,
+    "fragment occlusion alpha hash"
   );
 }

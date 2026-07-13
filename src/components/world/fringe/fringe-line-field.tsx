@@ -1,6 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import { type Group, type Object3D, ShaderMaterial } from "three";
+import { type Group, LessDepth, type Object3D, ShaderMaterial } from "three";
 import {
   depthFadeParsGlsl,
   fringeDepthFadeUniforms,
@@ -77,6 +77,27 @@ const lineFragmentShader = `
   }
 `;
 
+export function createFringeLineMaterial(): ShaderMaterial {
+  const { lineFade, wireframeFade, radialTileFade } = FRINGE_CONFIG;
+  return new ShaderMaterial({
+    uniforms: {
+      ...fringeDepthFadeUniforms,
+      uLateralInner: { value: lineFade.lateralInner },
+      uLateralOuter: { value: lineFade.lateralOuter },
+      uWireframeLateralInner: { value: wireframeFade.lateralInner },
+      uWireframeLateralOuter: { value: wireframeFade.lateralOuter },
+      uTileRadialFadeStart: { value: radialTileFade.start },
+      uTileRadialFadeEnd: { value: radialTileFade.end },
+    },
+    vertexShader: lineVertexShader,
+    fragmentShader: lineFragmentShader,
+    transparent: true,
+    depthWrite: false,
+    depthTest: true,
+    depthFunc: LessDepth,
+  });
+}
+
 export default function FringeLineField({ layout, focusSourceRef }: Props) {
   const focusRef = useRef<Object3D>(null);
 
@@ -90,25 +111,11 @@ export default function FringeLineField({ layout, focusSourceRef }: Props) {
     };
   }, [geometry]);
 
-  const material = useMemo(() => {
-    const { lineFade, wireframeFade, radialTileFade } = FRINGE_CONFIG;
-    return new ShaderMaterial({
-      uniforms: {
-        ...fringeDepthFadeUniforms,
-        uLateralInner: { value: lineFade.lateralInner },
-        uLateralOuter: { value: lineFade.lateralOuter },
-        uWireframeLateralInner: { value: wireframeFade.lateralInner },
-        uWireframeLateralOuter: { value: wireframeFade.lateralOuter },
-        uTileRadialFadeStart: { value: radialTileFade.start },
-        uTileRadialFadeEnd: { value: radialTileFade.end },
-      },
-      vertexShader: lineVertexShader,
-      fragmentShader: lineFragmentShader,
-      transparent: true,
-      depthWrite: false,
-      depthTest: true,
-    });
-  }, []);
+  const material = useMemo(() => createFringeLineMaterial(), []);
+
+  useEffect(() => {
+    return () => material.dispose();
+  }, [material]);
 
   useFrame(({ camera }) => {
     if (!focusRef.current) {

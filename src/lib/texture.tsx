@@ -17,6 +17,7 @@ import { fringeDepthFadeUniforms } from "../components/world/fringe/fringe-depth
 import {
   injectTerrainColorFade,
   injectTerrainHashedFade,
+  injectTerrainOcclusionFade,
   injectTerrainVisibilityVarying,
 } from "../components/world/fringe/fringe-terrain-visibility";
 
@@ -145,7 +146,7 @@ export function createFringeOcclusionMaterial(
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, fringeDepthFadeUniforms);
     injectTerrainVisibilityVarying(shader);
-    injectTerrainHashedFade(shader);
+    injectTerrainOcclusionFade(shader);
   };
   material.customProgramCacheKey = () =>
     `fringe-occlusion-${texture.translucent ? "cutout" : "solid"}`;
