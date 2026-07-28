@@ -50,12 +50,11 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
               aria-hidden
               className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full opacity-40 [filter:url(#paper)]"
             />
-            <h2
-              className="text-base m-auto text-ellipsis h-64 w-[44px] font-serif line-clamp-2 align-middle leading-tight text-start"
-              style={{ writingMode: "vertical-rl" }}
-            >
-              {book.title}
-            </h2>
+            <div className="relative mx-auto h-64 w-[44px] overflow-hidden">
+              <h2 className="absolute top-0 left-0 h-[44px] w-64 origin-top-left translate-x-[44px] rotate-90 text-base font-serif line-clamp-2 leading-tight text-start">
+                {book.title}
+              </h2>
+            </div>
           </div>
           <div
             className={clsx(
