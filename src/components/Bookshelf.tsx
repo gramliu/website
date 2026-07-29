@@ -51,7 +51,7 @@ function InteractiveBookshelf({ books }: { books: Book[] }) {
               className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full opacity-40 [filter:url(#paper)]"
             />
             <div className="relative mx-auto h-64 w-[44px] overflow-hidden">
-              <h2 className="absolute top-0 left-0 h-[44px] w-64 origin-top-left translate-x-[44px] rotate-90 text-base font-serif line-clamp-2 leading-tight text-start">
+              <h2 className="absolute top-0 left-0 h-10 w-64 origin-top-left translate-x-[42px] rotate-90 text-base font-serif line-clamp-2 leading-5 text-start">
                 {book.title}
               </h2>
             </div>
