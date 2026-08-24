@@ -136,14 +136,14 @@ describe("mailbox body handling", () => {
     ).rejects.toBeInstanceOf(MailboxPayloadTooLargeError);
   });
 
-  it("creates UTC, date-partitioned text paths", () => {
+  it("creates flat UTC text paths under the mailbox prefix", () => {
     expect(
       createMailboxPath(
         new Date("2026-08-24T08:00:00.123Z"),
         "00000000-0000-0000-0000-000000000000"
       )
     ).toBe(
-      "mailbox/2026/08/24/2026-08-24T08-00-00-123Z-00000000-0000-0000-0000-000000000000.txt"
+      "mailbox/2026-08-24T08-00-00-123Z-00000000-0000-0000-0000-000000000000.txt"
     );
   });
 });
@@ -172,7 +172,9 @@ describe("handleMailboxRequest", () => {
     expect(writes[0]?.contentType).toBe("text/plain");
     expect(writes[0]?.token).toBe("blob-secret");
     expect(await writes[0]?.body.text()).toBe("hello mailbox");
-    expect(writes[0]?.pathname).toContain("mailbox/2026/08/24/");
+    expect(writes[0]?.pathname).toBe(
+      "mailbox/2026-08-24T08-00-00-123Z-00000000-0000-0000-0000-000000000000.txt"
+    );
   });
 
   it("rejects invalid credentials before reading or storing the body", async () => {

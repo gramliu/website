@@ -97,11 +97,8 @@ export function isMailboxAuthorized(
 
 export function createMailboxPath(date: Date, uuid: string): string {
   const timestamp = date.toISOString().replace(/[:.]/g, "-");
-  const year = date.getUTCFullYear().toString().padStart(4, "0");
-  const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
-  const day = date.getUTCDate().toString().padStart(2, "0");
 
-  return `mailbox/${year}/${month}/${day}/${timestamp}-${uuid}.txt`;
+  return `mailbox/${timestamp}-${uuid}.txt`;
 }
 
 function sendMailboxResponse(
