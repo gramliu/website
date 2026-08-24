@@ -7,6 +7,8 @@ export const env = createEnv({
     ZOTERO_API_KEY: z.string().optional(),
     REDIS_URL: z.string().optional(),
     REDIS_TOKEN: z.string().optional(),
+    MAILBOX_TOKEN: z.string().optional(),
+    BLOB_READ_WRITE_TOKEN: z.string().optional(),
   },
   client: {},
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
@@ -15,6 +17,8 @@ export const env = createEnv({
     ZOTERO_API_KEY: process.env.ZOTERO_API_KEY,
     REDIS_URL: process.env.REDIS_URL,
     REDIS_TOKEN: process.env.REDIS_TOKEN,
+    MAILBOX_TOKEN: process.env.MAILBOX_TOKEN,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   },
   // For Next.js >= 13.4.4, you only need to destructure client variables:
   // experimental__runtimeEnv: {

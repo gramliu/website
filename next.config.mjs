@@ -44,6 +44,14 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/mailbox",
+        destination: "/api/mailbox",
+      },
+    ];
+  },
 };
 
 export default withMdx(nextConfig);
