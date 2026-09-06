@@ -58,9 +58,9 @@ describe("world quality overrides", () => {
 });
 
 describe("world quality policy", () => {
-  it("honors lite quality for idle and island previews", () => {
-    expect(resolveWorldQuality("lite", false, "preview_island")).toBe("lite");
-    expect(resolveWorldQuality("lite", false, "infinite")).toBe("lite");
+  it("keeps idle previews full quality while honoring lite during play", () => {
+    expect(resolveWorldQuality("lite", false, "preview_island")).toBe("full");
+    expect(resolveWorldQuality("lite", false, "infinite")).toBe("full");
     expect(resolveWorldQuality("lite", true, "preview_island")).toBe("lite");
   });
 

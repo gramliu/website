@@ -59,10 +59,10 @@ export function parseWorldQualityOverride(
 
 export function resolveWorldQuality(
   requestedQuality: WorldQuality,
-  _interactiveMode: boolean,
+  interactiveMode: boolean,
   _terrainMode: WorldTerrainMode
 ): WorldQuality {
-  return requestedQuality;
+  return interactiveMode ? requestedQuality : "full";
 }
 
 export function getWorldTerrainMode(

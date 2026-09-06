@@ -176,7 +176,7 @@ export default function Hero() {
           </motion.div>
         </div>
         <div
-          className="mx-auto w-full max-w-xl pb-12 xl:mt-[10%] xl:pt-[10%] xl:max-w-none xl:w-1/2 xl:h-screen xl:pb-0"
+          className="mx-auto w-[95%] max-w-xl pb-12 xl:mt-[10%] xl:pt-[10%] xl:max-w-none xl:w-1/2 xl:h-screen xl:pb-0"
           id="world"
         >
           <div
@@ -209,11 +209,11 @@ export default function Hero() {
               className={
                 isPlaying
                   ? "h-full w-full"
-                  : "aspect-square w-full xl:aspect-auto xl:min-h-[360px]"
+                  : "aspect-[4/5] w-full xl:aspect-auto xl:min-h-[360px]"
               }
             >
               <World
-                size={isPlaying ? 1 : 0.8}
+                size={isPlaying ? 1 : hasSideBySideHeroLayout ? 0.8 : 1.15}
                 rotateWorld={!isPlaying}
                 interactiveMode={isPlaying}
                 closeUp={!isPlaying}

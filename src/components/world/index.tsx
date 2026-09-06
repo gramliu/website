@@ -245,7 +245,11 @@ function World({
     }
     // A new renderer releases the failed context and applies lite's smaller
     // drawing buffer and non-antialiased allocation. Never retry full quality.
-    if (activeQualityRef.current === "full" && !downgradedRef.current) {
+    if (
+      interactiveModeRef.current &&
+      activeQualityRef.current === "full" &&
+      !downgradedRef.current
+    ) {
       recoveringRef.current = true;
       downgradedRef.current = true;
       activeQualityRef.current = "lite";
@@ -320,6 +324,7 @@ function World({
 
       if (
         allowQualityDowngrade &&
+        interactiveModeRef.current &&
         activeQualityRef.current === "full" &&
         shouldDowngradeQuality(summary)
       ) {
@@ -521,14 +526,17 @@ function World({
                 />
               ) : null}
               <Suspense fallback={null}>
-                <Map
-                  size={size}
-                  rotateWorld={rotateWorld}
-                  interactiveMode={effectiveInteractiveMode}
-                  showFringe={effectiveShowFringe}
-                  quality={effectiveQuality}
-                  terrainMode={terrainMode}
-                />
+                {/* Center the taller mobile island, including its tree canopy. */}
+                <group position={[0, closeUp && size > 1 ? -4.5 : 0, 0]}>
+                  <Map
+                    size={size}
+                    rotateWorld={rotateWorld}
+                    interactiveMode={effectiveInteractiveMode}
+                    showFringe={effectiveShowFringe}
+                    quality={effectiveQuality}
+                    terrainMode={terrainMode}
+                  />
+                </group>
                 <WorldLoadedNotifier onReady={() => setAssetsReady(true)} />
                 <WorldPerformanceReporter onSample={handlePerformanceSample} />
                 {effectiveInteractiveMode ? (
@@ -546,10 +554,10 @@ function World({
       {failure ? (
         <div className="absolute inset-x-4 top-1/2 z-20 mx-auto flex max-w-sm -translate-y-1/2 flex-col items-center gap-3 rounded-lg bg-bgcolor-primary/90 p-4 text-center shadow-lg">
           <span>
-            The 3D preview could not load on this device. You can keep browsing
-            or retry in lite mode.
+            The 3D preview could not load on this device. You can keep browsing.
+            {interactiveMode && " Or retry in lite mode."}
           </span>
-          {failure ? (
+          {interactiveMode ? (
             <button
               type="button"
               onClick={retryLite}

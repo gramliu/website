@@ -97,27 +97,44 @@ export default function CameraControlsPanel({
       for (const marker of output.markers) {
         const point = project(marker.point);
         const origin = marker.origin ? project(marker.origin) : null;
-        ctx.strokeStyle = ctx.fillStyle =
-          marker.side === "Left" ? "#73ee87" : "#e6edf2";
-        ctx.lineWidth = 3;
+        const color = marker.side === "Left" ? "#60a5fa" : "#fb923c";
+        const outline = "#111827";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
         if (origin) {
           ctx.beginPath();
           ctx.arc(origin.x, origin.y, 14, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
           ctx.moveTo(origin.x, origin.y);
           ctx.lineTo(point.x, point.y);
+          ctx.strokeStyle = outline;
+          ctx.lineWidth = 7;
+          ctx.stroke();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 3;
           ctx.stroke();
         }
         ctx.beginPath();
-        ctx.arc(point.x, point.y, 7, 0, Math.PI * 2);
+        ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = color;
         ctx.fill();
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        const label = marker.side === "Left" ? "Move" : "Turn / jump";
         ctx.font = "bold 20px sans-serif";
-        ctx.fillText(
-          marker.side === "Left" ? "Move" : "Turn / jump",
-          point.x + 12,
-          point.y - 12
+        const labelWidth = ctx.measureText(label).width + 16;
+        const labelX = Math.max(
+          4,
+          Math.min(point.x + 12, canvas.width - labelWidth - 4)
         );
+        const labelY = Math.max(4, Math.min(point.y - 42, canvas.height - 34));
+        ctx.fillStyle = outline;
+        ctx.beginPath();
+        ctx.roundRect(labelX, labelY, labelWidth, 30, 6);
+        ctx.fill();
+        ctx.fillStyle = color;
+        ctx.fillText(label, labelX + 8, labelY + 22);
       }
     };
 
@@ -360,7 +377,7 @@ export default function CameraControlsPanel({
             <RotateCw
               size={16}
               strokeWidth={1.75}
-              className="mt-0.5 shrink-0 text-text-primary"
+              className="mt-0.5 shrink-0 text-orange-400"
               aria-hidden="true"
             />
             <div>
@@ -379,7 +396,7 @@ export default function CameraControlsPanel({
             <ArrowUp
               size={16}
               strokeWidth={1.75}
-              className="mt-0.5 shrink-0 text-text-primary"
+              className="mt-0.5 shrink-0 text-orange-400"
               aria-hidden="true"
             />
             <div>
