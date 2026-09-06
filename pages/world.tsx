@@ -15,13 +15,16 @@ import {
 import { useWorldControls } from "../src/components/world/useWorldControls";
 import { useHasSideBySideHeroLayout } from "../src/hooks/useHasSideBySideHeroLayout";
 
+import { useWorldInteractivity } from "../src/hooks/useWorldInteractivity";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export default function WorldPage() {
   const router = useRouter();
+  const canInteract = useWorldInteractivity();
   const { cameraInput, controlMode, autoStartCamera, closeCamera, selectMode } =
     useWorldControls(
-      router.isReady && router.query.controls === "camera"
+      canInteract && router.isReady && router.query.controls === "camera"
         ? "camera"
         : "keyboard"
     );
@@ -36,13 +39,21 @@ export default function WorldPage() {
 
   const queryWantsInteractive =
     router.isReady && router.query.mode === "interactive";
-  const isPlaying = playingOverride ?? queryWantsInteractive;
+  const isPlaying = canInteract && (playingOverride ?? queryWantsInteractive);
+
+  useEffect(() => {
+    if (!canInteract && controlMode === "camera") closeCamera();
+  }, [canInteract, closeCamera, controlMode]);
 
   useEffect(() => {
     setWorldQuality(
-      qualityOverride ?? getWorldQuality(hasSideBySideHeroLayout)
+      qualityOverride ??
+        getWorldQuality(
+          hasSideBySideHeroLayout && canInteract,
+          navigator.deviceMemory
+        )
     );
-  }, [hasSideBySideHeroLayout, qualityOverride]);
+  }, [hasSideBySideHeroLayout, qualityOverride, canInteract]);
 
   return (
     <CameraControlsContext.Provider
@@ -51,12 +62,12 @@ export default function WorldPage() {
       <main className={`flex h-screen w-screen ${inter.className} relative`}>
         <div className="flex-1 w-full h-full min-w-0">
           <World
-            rotateWorld={false}
+            size={canInteract ? 1 : 0.6}
+            rotateWorld={!canInteract}
             interactiveMode={isPlaying}
             showFringe
-            quality={qualityOverride ?? worldQuality}
-            terrainMode="infinite"
-            allowQualityDowngrade={!qualityOverride}
+            quality={canInteract ? worldQuality : "lite"}
+            terrainMode={canInteract ? "infinite" : "preview_island"}
             onLoaded={() => setWorldLoaded(true)}
             onInteractiveFailure={() => {
               setPlayingOverride(false);
@@ -72,35 +83,38 @@ export default function WorldPage() {
             }
           />
         </div>
-        <PlayWorldButton
-          ready={worldLoaded}
-          isPlaying={isPlaying}
-          onToggle={() => {
-            if (isPlaying) closeCamera();
-            setPlayingOverride(!isPlaying);
-          }}
-          controls={
-            <ControlModeSwitch
-              mode={controlMode}
-              onChange={(mode) => {
-                selectMode(mode);
-                if (mode === "camera" && controlMode !== "camera")
-                  setPlayingOverride(true);
-              }}
-            />
-          }
-          variant="overlay"
-        />
-        {controlMode === "camera" ? (
-          <CameraControlsPanel
-            inputRef={cameraInput}
-            autoStart={autoStartCamera}
-            onStart={() => setPlayingOverride(true)}
-            onClose={closeCamera}
+        {canInteract && (
+          <PlayWorldButton
+            ready={worldLoaded}
+            isPlaying={isPlaying}
+            onToggle={() => {
+              if (isPlaying) closeCamera();
+              setPlayingOverride(!isPlaying);
+            }}
+            controls={
+              <ControlModeSwitch
+                mode={controlMode}
+                onChange={(mode) => {
+                  selectMode(mode);
+                  if (mode === "camera" && controlMode !== "camera")
+                    setPlayingOverride(true);
+                }}
+              />
+            }
+            variant="overlay"
           />
-        ) : (
-          <KeyboardControlsPanel isPlaying={isPlaying} />
         )}
+        {canInteract &&
+          (controlMode === "camera" ? (
+            <CameraControlsPanel
+              inputRef={cameraInput}
+              autoStart={autoStartCamera}
+              onStart={() => setPlayingOverride(true)}
+              onClose={closeCamera}
+            />
+          ) : (
+            <KeyboardControlsPanel isPlaying={isPlaying} />
+          ))}
       </main>
     </CameraControlsContext.Provider>
   );

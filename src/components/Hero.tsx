@@ -7,6 +7,7 @@ import Portrait from "../../public/images/portrait.png";
 import { CameraControlsContext } from "../adapters/input/camera/context";
 import social from "../config/social";
 import { useHasSideBySideHeroLayout } from "../hooks/useHasSideBySideHeroLayout";
+import { useWorldInteractivity } from "../hooks/useWorldInteractivity";
 import World from "./world";
 import CameraControlsPanel from "./world/CameraControlsPanel";
 import ControlModeSwitch from "./world/ControlModeSwitch";
@@ -64,7 +65,9 @@ function SocialIcons() {
 }
 
 export default function Hero() {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [wantsToPlay, setIsPlaying] = useState(false);
+  const canInteract = useWorldInteractivity();
+  const isPlaying = canInteract && wantsToPlay;
   const { cameraInput, controlMode, autoStartCamera, closeCamera, selectMode } =
     useWorldControls();
   const playArea = useRef<HTMLDivElement>(null);
@@ -79,9 +82,21 @@ export default function Hero() {
   const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
 
   useEffect(() => {
-    setWorldQuality(getWorldQuality(hasSideBySideHeroLayout));
+    setWorldQuality(
+      getWorldQuality(
+        hasSideBySideHeroLayout && canInteract,
+        navigator.deviceMemory
+      )
+    );
     setTerrainMode(getWorldTerrainMode(hasSideBySideHeroLayout));
-  }, [hasSideBySideHeroLayout]);
+  }, [hasSideBySideHeroLayout, canInteract]);
+
+  useEffect(() => {
+    if (!canInteract && wantsToPlay) {
+      closeCamera();
+      setIsPlaying(false);
+    }
+  }, [canInteract, closeCamera, wantsToPlay]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -186,12 +201,12 @@ export default function Hero() {
                 <span className="ml-1 text-[10px] opacity-70">Esc</span>
               </button>
             )}
-            <div className={isPlaying ? "h-full w-full" : undefined}>
+            <div className={isPlaying ? "h-full w-full" : "min-h-[360px]"}>
               <World
-                size={isPlaying ? 1 : 0.8}
+                size={isPlaying ? 1 : canInteract ? 0.8 : 0.55}
                 rotateWorld={!isPlaying}
                 interactiveMode={isPlaying}
-                closeUp={!isPlaying}
+                closeUp={!isPlaying && canInteract}
                 showFringe
                 quality={worldQuality}
                 terrainMode={isPlaying ? "infinite" : terrainMode}
@@ -203,21 +218,25 @@ export default function Hero() {
                 }}
               />
             </div>
-            <PlayWorldButton
-              ready={worldLoaded}
-              isPlaying={isPlaying}
-              onToggle={() => (isPlaying ? stopPlaying() : setIsPlaying(true))}
-              variant={isPlaying ? "overlay" : "hero"}
-              controls={
-                <ControlModeSwitch
-                  mode={controlMode}
-                  onChange={(mode) => {
-                    selectMode(mode);
-                    if (mode === "camera") setIsPlaying(true);
-                  }}
-                />
-              }
-            />
+            {canInteract && (
+              <PlayWorldButton
+                ready={worldLoaded}
+                isPlaying={isPlaying}
+                onToggle={() =>
+                  isPlaying ? stopPlaying() : setIsPlaying(true)
+                }
+                variant={isPlaying ? "overlay" : "hero"}
+                controls={
+                  <ControlModeSwitch
+                    mode={controlMode}
+                    onChange={(mode) => {
+                      selectMode(mode);
+                      if (mode === "camera") setIsPlaying(true);
+                    }}
+                  />
+                }
+              />
+            )}
             {isPlaying &&
               (controlMode === "camera" ? (
                 <CameraControlsPanel

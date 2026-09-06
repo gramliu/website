@@ -34,34 +34,12 @@ const ROTATION_SPEED = 0.3;
 /** Exponential smoothing rate for the camera-follow counter-translation. */
 const FOLLOW_SMOOTHING = 6;
 
-// The infinite world is created lazily for an interactive session and released
-// when play stops so terrain caches do not survive in the static preview.
-let infiniteWorldSingleton: InfiniteWorld | null = null;
-
 function createInfiniteWorld(
   seed = Math.floor(Math.random() * 1_000_000)
 ): InfiniteWorld {
   return new InfiniteWorld(
     new TerrainGenerator(seed, loadWorldCellsFromString(worldData))
   );
-}
-
-function getInfiniteWorld(): InfiniteWorld {
-  if (!infiniteWorldSingleton) {
-    infiniteWorldSingleton = createInfiniteWorld();
-  }
-  return infiniteWorldSingleton;
-}
-
-function resetInfiniteWorld(): InfiniteWorld {
-  infiniteWorldSingleton?.clear();
-  infiniteWorldSingleton = createInfiniteWorld();
-  return infiniteWorldSingleton;
-}
-
-function releaseInfiniteWorld(): void {
-  infiniteWorldSingleton?.clear();
-  infiniteWorldSingleton = null;
 }
 
 type Vec3 = [number, number, number];
@@ -95,6 +73,29 @@ export default function Map({
   quality = "full",
   terrainMode = "infinite",
 }: Props) {
+  // Keep terrain caches owned by this canvas so a failed renderer can release
+  // them without retaining an entire full-quality world during a lite retry.
+  const infiniteWorldRef = useRef<InfiniteWorld | null>(null);
+  function getInfiniteWorld(): InfiniteWorld {
+    if (!infiniteWorldRef.current) {
+      infiniteWorldRef.current = createInfiniteWorld();
+    }
+    return infiniteWorldRef.current;
+  }
+
+  function resetInfiniteWorld(): InfiniteWorld {
+    infiniteWorldRef.current?.clear();
+    infiniteWorldRef.current = createInfiniteWorld();
+    return infiniteWorldRef.current;
+  }
+
+  function releaseInfiniteWorld(): void {
+    infiniteWorldRef.current?.clear();
+    infiniteWorldRef.current = null;
+  }
+
+  useEffect(() => () => releaseInfiniteWorld(), []);
+
   const qualityProfile = WORLD_QUALITY_PROFILES[quality];
   const fairyLightConfigs = useMemo(
     () => FAIRY_LIGHT_CONFIGS.slice(0, qualityProfile.fairyLightCount),

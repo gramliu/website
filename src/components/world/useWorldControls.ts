@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { emptyGestures } from "../../adapters/input/camera/gestures";
 
 export type ControlMode = "keyboard" | "camera";
@@ -8,11 +8,11 @@ export function useWorldControls(preferredMode: ControlMode = "keyboard") {
   const [override, setOverride] = useState<ControlMode | null>(null);
   const [autoStartCamera, setAutoStartCamera] = useState(false);
   const controlMode = override ?? preferredMode;
-  const closeCamera = () => {
+  const closeCamera = useCallback(() => {
     cameraInput.current = emptyGestures();
     setOverride("keyboard");
     setAutoStartCamera(false);
-  };
+  }, []);
   const selectMode = (mode: ControlMode) => {
     if (mode === controlMode) return;
     cameraInput.current = emptyGestures();

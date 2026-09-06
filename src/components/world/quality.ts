@@ -31,18 +31,21 @@ export const WORLD_QUALITY_PROFILES: Record<WorldQuality, WorldQualityProfile> =
       prefetchRadius: 16,
       prefetchChunksPerFrame: 1,
       cacheRadius: 18,
-      dpr: [1, 1.25],
+      dpr: [1, 1],
       shadows: true,
       shadowMapSize: 512,
-      antialias: true,
+      antialias: false,
       fairyLightCount: 1,
     },
   };
 
 export function getWorldQuality(
-  hasSideBySideHeroLayout: boolean
+  hasSideBySideHeroLayout: boolean,
+  deviceMemory?: number
 ): WorldQuality {
-  return hasSideBySideHeroLayout ? "full" : "lite";
+  return hasSideBySideHeroLayout && !(deviceMemory && deviceMemory <= 4)
+    ? "full"
+    : "lite";
 }
 
 export function parseWorldQualityOverride(
@@ -53,12 +56,10 @@ export function parseWorldQualityOverride(
 
 export function resolveWorldQuality(
   requestedQuality: WorldQuality,
-  interactiveMode: boolean,
-  terrainMode: WorldTerrainMode
+  _interactiveMode: boolean,
+  _terrainMode: WorldTerrainMode
 ): WorldQuality {
-  return interactiveMode && terrainMode === "infinite"
-    ? requestedQuality
-    : "full";
+  return requestedQuality;
 }
 
 export function getWorldTerrainMode(

@@ -35,7 +35,8 @@ export function shouldDowngradeQuality(
   summary: WorldPerformanceSummary
 ): boolean {
   return (
-    summary.sampleCount >= MIN_FRAME_SAMPLES &&
+    (summary.sampleCount >= MIN_FRAME_SAMPLES ||
+      (summary.sampleCount >= 10 && summary.averageFrameMs >= 250)) &&
     summary.p95FrameMs >= SEVERE_FRAME_TIME_MS
   );
 }

@@ -19,8 +19,8 @@ describe("world quality profiles", () => {
     expect(lite.cacheRadius).toBeGreaterThanOrEqual(lite.prefetchRadius);
     expect(lite.shadows).toBe(true);
     expect(lite.shadowMapSize).toBe(512);
-    expect(lite.antialias).toBe(true);
-    expect(lite.dpr).toEqual([1, 1.25]);
+    expect(lite.antialias).toBe(false);
+    expect(lite.dpr).toEqual([1, 1]);
     expect(lite.fairyLightCount).toBe(1);
   });
 
@@ -58,10 +58,10 @@ describe("world quality overrides", () => {
 });
 
 describe("world quality policy", () => {
-  it("always uses full quality outside interactive infinite terrain", () => {
-    expect(resolveWorldQuality("lite", false, "preview_island")).toBe("full");
-    expect(resolveWorldQuality("lite", false, "infinite")).toBe("full");
-    expect(resolveWorldQuality("lite", true, "preview_island")).toBe("full");
+  it("honors lite quality for idle and island previews", () => {
+    expect(resolveWorldQuality("lite", false, "preview_island")).toBe("lite");
+    expect(resolveWorldQuality("lite", false, "infinite")).toBe("lite");
+    expect(resolveWorldQuality("lite", true, "preview_island")).toBe("lite");
   });
 
   it("preserves the requested quality for interactive infinite terrain", () => {
@@ -77,5 +77,24 @@ describe("world performance policy", () => {
 
     const short = summarizeFrameTimes(Array.from({ length: 39 }, () => 110));
     expect(shouldDowngradeQuality(short)).toBe(false);
+  });
+});
+
+describe("resource constraints", () => {
+  it("starts low-memory desktops in lite without requiring a memory API", () => {
+    expect(getWorldQuality(true, 2)).toBe("lite");
+    expect(getWorldQuality(true, 4)).toBe("lite");
+    expect(getWorldQuality(true, 8)).toBe("full");
+    expect(getWorldQuality(true, undefined)).toBe("full");
+    expect(getWorldQuality(false, 8)).toBe("lite");
+  });
+  it("detects starvation even when fewer than forty frames can render", () => {
+    expect(
+      shouldDowngradeQuality(summarizeFrameTimes(Array(12).fill(400)))
+    ).toBe(true);
+    expect(shouldDowngradeQuality(summarizeFrameTimes([500]))).toBe(false);
+    expect(
+      shouldDowngradeQuality(summarizeFrameTimes(Array(300).fill(16)))
+    ).toBe(false);
   });
 });

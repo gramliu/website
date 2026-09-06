@@ -32,7 +32,7 @@ import WorldLoadingIndicator from "./WorldLoadingIndicator";
 import WorldLighting from "./world-lighting";
 
 const MIN_LOADING_DURATION_MS = 1_500;
-const STALL_PROGRESS = 100;
+const STALL_PROGRESS = 90;
 const PROGRESS_DURATION_MS = 1_300;
 const PERFORMANCE_SAMPLE_DURATION_MS = 5_000;
 
@@ -129,10 +129,11 @@ function WorldPerformanceReporter({
 }) {
   const startedAt = useRef<number | null>(null);
   const frameTimes = useRef<number[]>([]);
-  const reported = useRef(false);
 
   useFrame((state, delta) => {
-    if (reported.current) {
+    if (document.hidden) {
+      startedAt.current = null;
+      frameTimes.current = [];
       return;
     }
     const now = performance.now();
@@ -143,13 +144,14 @@ function WorldPerformanceReporter({
       return;
     }
 
-    reported.current = true;
     onSample({
       ...summarizeFrameTimes(frameTimes.current),
       drawCalls: state.gl.info.render.calls,
       geometries: state.gl.info.memory.geometries,
       textures: state.gl.info.memory.textures,
     });
+    startedAt.current = now;
+    frameTimes.current = [];
   });
 
   return null;
@@ -176,7 +178,8 @@ function World({
     resolveWorldQuality(quality, interactiveMode, terrainMode)
   );
   const [failure, setFailure] = useState<WorldFailureReason | null>(null);
-  const [retryUsed, setRetryUsed] = useState(false);
+  const downgradedRef = useRef(false);
+  const recoveringRef = useRef(false);
   const [canvasKey, setCanvasKey] = useState(0);
   const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(
     null
@@ -205,10 +208,8 @@ function World({
   const effectiveShowFringe = showFringe;
 
   useEffect(() => {
-    setActiveQuality(
-      resolveWorldQuality(quality, interactiveMode, terrainMode)
-    );
-  }, [interactiveMode, quality, terrainMode]);
+    setActiveQuality(downgradedRef.current ? "lite" : quality);
+  }, [quality]);
 
   useEffect(() => {
     interactiveModeRef.current = interactiveMode;
@@ -239,12 +240,29 @@ function World({
   }, [onLoaded]);
 
   const handleRuntimeFailure = useCallback((reason: WorldFailureReason) => {
-    if (!interactiveModeRef.current || failureRef.current) {
+    if (failureRef.current || recoveringRef.current) {
+      return;
+    }
+    // A new renderer releases the failed context and applies lite's smaller
+    // drawing buffer and non-antialiased allocation. Never retry full quality.
+    if (activeQualityRef.current === "full" && !downgradedRef.current) {
+      recoveringRef.current = true;
+      downgradedRef.current = true;
+      activeQualityRef.current = "lite";
+      setActiveQuality("lite");
+      setAssetsReady(false);
+      setOverlayVisible(true);
+      setCanvasKey((current) => current + 1);
+      telemetryRef.current.trackOnce("world_quality_downgraded", {
+        from_quality: "full",
+        to_quality: "lite",
+        reason,
+        world_mode: terrainModeRef.current,
+      });
       return;
     }
     failureRef.current = reason;
     setFailure(reason);
-    setCanvasKey((current) => current + 1);
 
     const qualityAtFailure = activeQualityRef.current;
     if (reason === "context_lost") {
@@ -263,7 +281,7 @@ function World({
       quality: qualityAtFailure,
       world_mode: terrainModeRef.current,
       reason,
-      fallback: "static_preview",
+      fallback: "unavailable",
     });
     onInteractiveFailureRef.current?.();
   }, []);
@@ -303,11 +321,14 @@ function World({
       if (
         allowQualityDowngrade &&
         activeQualityRef.current === "full" &&
-        terrainModeRef.current === "infinite" &&
         shouldDowngradeQuality(summary)
       ) {
+        downgradedRef.current = true;
         activeQualityRef.current = "lite";
         setActiveQuality("lite");
+        setAssetsReady(false);
+        setOverlayVisible(true);
+        setCanvasKey((current) => current + 1);
         telemetryRef.current.trackOnce("world_quality_downgraded", {
           from_quality: "full",
           to_quality: "lite",
@@ -332,22 +353,26 @@ function World({
     }
 
     wasInteractiveRef.current = true;
-    failureRef.current = null;
-    setFailure(null);
     interactiveReadyRef.current = false;
     startedAtRef.current = performance.now();
     telemetryRef.current.trackOnce("world_start_requested", {
       ...getWorldCapabilityTelemetry(activeQualityRef.current, terrainMode),
     });
+  }, [interactiveMode, terrainMode]);
 
+  useEffect(() => {
+    recoveringRef.current = false;
+  }, [canvasKey]);
+
+  useEffect(() => {
+    if (failure || (assetsReady && !interactiveMode)) return;
     const timeoutId = window.setTimeout(() => {
-      if (!interactiveReadyRef.current) {
+      if (!assetsReady || (interactiveMode && !interactiveReadyRef.current)) {
         handleRuntimeFailure("canvas_timeout");
       }
     }, INTERACTIVE_START_TIMEOUT_MS);
-
     return () => window.clearTimeout(timeoutId);
-  }, [handleRuntimeFailure, interactiveMode, terrainMode]);
+  }, [assetsReady, canvasKey, failure, handleRuntimeFailure, interactiveMode]);
 
   useEffect(() => {
     if (!canvasElement) {
@@ -370,7 +395,7 @@ function World({
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  const loadingComplete = assetsReady && minDurationMet;
+  const loadingComplete = (assetsReady || !!failure) && minDurationMet;
 
   useEffect(() => {
     loadingCompleteRef.current = loadingComplete;
@@ -406,16 +431,18 @@ function World({
   }, [loadingComplete]);
 
   const retryLite = () => {
-    if (retryUsed || !onRetryLite || terrainMode !== "infinite") {
+    if (!failure) {
       return;
     }
-    setRetryUsed(true);
+    downgradedRef.current = true;
+    setAssetsReady(false);
+    setOverlayVisible(true);
     failureRef.current = null;
     setFailure(null);
     activeQualityRef.current = "lite";
     setActiveQuality("lite");
     setCanvasKey((current) => current + 1);
-    onRetryLite();
+    onRetryLite?.();
   };
 
   const indicatorProgress = loadingComplete ? 100 : displayProgress;
@@ -423,6 +450,10 @@ function World({
   return (
     <div
       className="relative w-full h-full"
+      data-world-quality={effectiveQuality}
+      data-world-status={
+        failure ? "unavailable" : assetsReady ? "ready" : "loading"
+      }
       style={{ height: closeUp ? "900px" : undefined }}
     >
       <AnimatePresence onExitComplete={notifyLoaded}>
@@ -450,68 +481,76 @@ function World({
         }}
         transition={{ duration: MAP_FADE_DURATION_S }}
       >
-        <WorldErrorBoundary
-          resetKey={canvasKey}
-          onError={() => handleRuntimeFailure("render_error")}
-        >
-          <Canvas
-            key={canvasKey}
-            camera={{
-              position: [15, 10, 15],
-              fov: closeUp ? 50 : 60,
-            }}
-            className="h-full"
-            dpr={qualityProfile.dpr}
-            gl={{
-              antialias: qualityProfile.antialias,
-              powerPreference:
-                effectiveQuality === "lite" ? "low-power" : "high-performance",
-            }}
-            shadows={qualityProfile.shadows}
-            fallback={
-              <div className="flex h-full items-center justify-center text-center text-text-faded">
-                3D preview is not supported on this device.
-              </div>
-            }
-            onCreated={({ gl }) => {
-              setCanvasElement(gl.domElement);
-              const version = gl.capabilities.isWebGL2 ? "webgl2" : "webgl1";
-              webglVersionRef.current = version;
-              setWebglVersion(version);
-            }}
+        {!failure && (
+          <WorldErrorBoundary
+            resetKey={canvasKey}
+            onError={() => handleRuntimeFailure("render_error")}
           >
-            <WorldLighting quality={effectiveQuality} />
-            {!rotateWorld ? (
-              <OrbitControls makeDefault enabled={!effectiveInteractiveMode} />
-            ) : null}
-            <Suspense fallback={null}>
-              <Map
-                size={size}
-                rotateWorld={rotateWorld}
-                interactiveMode={effectiveInteractiveMode}
-                showFringe={effectiveShowFringe}
-                quality={effectiveQuality}
-                terrainMode={terrainMode}
-              />
-              <WorldLoadedNotifier onReady={() => setAssetsReady(true)} />
-              {effectiveInteractiveMode ? (
-                <>
-                  <InteractiveReadyNotifier onReady={handleInteractiveReady} />
-                  <WorldPerformanceReporter
-                    onSample={handlePerformanceSample}
-                  />
-                </>
+            <Canvas
+              key={canvasKey}
+              camera={{
+                position: [15, 10, 15],
+                fov: closeUp ? 50 : 60,
+              }}
+              className="h-full"
+              dpr={qualityProfile.dpr}
+              gl={{
+                antialias: qualityProfile.antialias,
+                powerPreference:
+                  effectiveQuality === "lite"
+                    ? "low-power"
+                    : "high-performance",
+              }}
+              shadows={qualityProfile.shadows}
+              fallback={
+                <div className="flex h-full items-center justify-center text-center text-text-faded">
+                  3D preview is not supported on this device.
+                </div>
+              }
+              onCreated={({ gl }) => {
+                setCanvasElement(gl.domElement);
+                const version = gl.capabilities.isWebGL2 ? "webgl2" : "webgl1";
+                webglVersionRef.current = version;
+                setWebglVersion(version);
+              }}
+            >
+              <WorldLighting quality={effectiveQuality} />
+              {!rotateWorld ? (
+                <OrbitControls
+                  makeDefault
+                  enabled={!effectiveInteractiveMode}
+                />
               ) : null}
-            </Suspense>
-          </Canvas>
-        </WorldErrorBoundary>
+              <Suspense fallback={null}>
+                <Map
+                  size={size}
+                  rotateWorld={rotateWorld}
+                  interactiveMode={effectiveInteractiveMode}
+                  showFringe={effectiveShowFringe}
+                  quality={effectiveQuality}
+                  terrainMode={terrainMode}
+                />
+                <WorldLoadedNotifier onReady={() => setAssetsReady(true)} />
+                <WorldPerformanceReporter onSample={handlePerformanceSample} />
+                {effectiveInteractiveMode ? (
+                  <>
+                    <InteractiveReadyNotifier
+                      onReady={handleInteractiveReady}
+                    />
+                  </>
+                ) : null}
+              </Suspense>
+            </Canvas>
+          </WorldErrorBoundary>
+        )}
       </motion.div>
       {failure ? (
-        <div className="absolute inset-x-4 bottom-8 z-20 flex flex-col items-center gap-3 rounded-lg bg-bgcolor-primary/90 p-4 text-center shadow-lg">
+        <div className="absolute inset-x-4 top-1/2 z-20 mx-auto flex max-w-sm -translate-y-1/2 flex-col items-center gap-3 rounded-lg bg-bgcolor-primary/90 p-4 text-center shadow-lg">
           <span>
-            Interactive mode could not start. Showing the preview instead.
+            The 3D preview could not load on this device. You can keep browsing
+            or retry in lite mode.
           </span>
-          {!retryUsed && onRetryLite && terrainMode === "infinite" ? (
+          {failure ? (
             <button
               type="button"
               onClick={retryLite}
