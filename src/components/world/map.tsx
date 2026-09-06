@@ -1,6 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
+import { useCameraControls } from "../../adapters/input/camera/context";
 import { useKeyboardState } from "../../adapters/input/keyboard";
 import WorldRenderer from "../../adapters/three/world-renderer";
 import { type Vec3 as GameVec3, vec3 } from "../../game/core/math/vec3";
@@ -24,6 +25,7 @@ import {
   type WorldQuality,
   type WorldTerrainMode,
 } from "./quality";
+import { useCameraOrbit } from "./useCameraOrbit";
 import worldData from "./world-data";
 
 const staticWorld = new VoxelWorld(loadWorldCellsFromString(worldData));
@@ -104,7 +106,8 @@ export default function Map({
   const followRef = useRef<Group>(null);
   /** Player position when interactive mode began; the camera anchor. */
   const followOriginRef = useRef<GameVec3 | null>(null);
-  const keyControlsRef = useKeyboardState();
+  const cameraInput = useCameraControls();
+  const keyControlsRef = useKeyboardState(interactiveMode && !cameraInput);
   const gameStateRef = useRef<GameState>(
     createGameState(staticWorld, DEFAULT_PLAYER_STATE_POSITION)
   );
@@ -235,7 +238,9 @@ export default function Map({
       followPosition.z +=
         (origin.z - playerPosition.z - followPosition.z) * blend;
     }
-  });
+  }, -1);
+
+  useCameraOrbit(playerRef, interactiveMode);
 
   useEffect(() => {
     if (terrainBehavior.usesInfiniteWorld) {

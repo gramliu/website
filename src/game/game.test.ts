@@ -44,6 +44,31 @@ function runStepsWithHistory(
 }
 
 describe("game simulation", () => {
+  it("preserves analog walking speed and caps diagonal keyboard input", () => {
+    const initial = createGameState(createFlatFloorWorld(), vec3(2.5, 1, 2.5));
+    const full = simulateTick(
+      initial,
+      createPlayerInputFrame({ moveX: 1 }),
+      fixedDt
+    );
+    const half = simulateTick(
+      initial,
+      createPlayerInputFrame({ moveX: 0.5 }),
+      fixedDt
+    );
+    const diagonal = simulateTick(
+      initial,
+      createPlayerInputFrame({ moveX: 1, moveZ: 1 }),
+      fixedDt
+    );
+    expect(half.player.velocity.x).toBeCloseTo(full.player.velocity.x / 2);
+    expect(
+      Math.hypot(diagonal.player.velocity.x, diagonal.player.velocity.z)
+    ).toBeCloseTo(full.player.velocity.x);
+    const stopped = simulateTick(half, createPlayerInputFrame(), fixedDt);
+    expect(stopped.player.velocity.x).toBe(0);
+  });
+
   it("lands the player on the floor and marks them grounded", () => {
     const initial = createGameState(createFlatFloorWorld(), vec3(2.5, 4, 2.5));
     const settled = runSteps(initial, () => createPlayerInputFrame(), 180);

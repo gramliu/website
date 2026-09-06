@@ -20,10 +20,15 @@ export function createKeyboardState(): KeyboardState {
   };
 }
 
-export function useKeyboardState() {
+export function useKeyboardState(enabled = true) {
   const keyState = useRef<KeyboardState>(createKeyboardState());
 
   useEffect(() => {
+    keyState.current = createKeyboardState();
+    if (!enabled) return;
+    const reset = () => {
+      keyState.current = createKeyboardState();
+    };
     const handleKeyDown = (event: KeyboardEvent) => {
       let handled = true;
 
@@ -88,6 +93,8 @@ export function useKeyboardState() {
       }
     };
 
+    window.addEventListener("blur", reset);
+    document.addEventListener("visibilitychange", reset);
     window.addEventListener("keydown", handleKeyDown, {
       capture: true,
     });
@@ -96,6 +103,9 @@ export function useKeyboardState() {
     });
 
     return () => {
+      reset();
+      window.removeEventListener("blur", reset);
+      document.removeEventListener("visibilitychange", reset);
       window.removeEventListener("keydown", handleKeyDown, {
         capture: true,
       });
@@ -103,7 +113,7 @@ export function useKeyboardState() {
         capture: true,
       });
     };
-  }, []);
+  }, [enabled]);
 
   return keyState;
 }

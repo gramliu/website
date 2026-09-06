@@ -1,11 +1,12 @@
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useHasSideBySideHeroLayout } from "../../hooks/useHasSideBySideHeroLayout";
 
 const BOUNCE_DELAY_MS = 3_000;
 
 interface Props {
+  controls?: ReactNode;
   ready: boolean;
   isPlaying: boolean;
   onToggle: () => void;
@@ -45,6 +46,7 @@ export default function PlayWorldButton({
   isPlaying,
   onToggle,
   variant = "hero",
+  controls,
 }: Props) {
   const [bounce, setBounce] = useState(false);
   const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
@@ -72,9 +74,10 @@ export default function PlayWorldButton({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap"
       >
         <PlayButton isPlaying={isPlaying} onToggle={onToggle} bounce={bounce} />
+        {controls}
       </motion.div>
     );
   }

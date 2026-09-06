@@ -4,8 +4,8 @@
   "private": true,
   "packageManager": "bun@1.3.10",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "bun run scripts/prepare-hand-tracker.ts && next dev",
+    "build": "bun run scripts/prepare-hand-tracker.ts && next build",
     "start": "next start",
     "test": "bun test",
     "lint": "biome check .",
@@ -18,6 +18,7 @@
     "@markdoc/next.js": "^0.5.0",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
+    "@mediapipe/tasks-vision": "1.0.1",
     "@next/mdx": "^16.1.6",
     "@radix-ui/react-navigation-menu": "^1.1.3",
     "@radix-ui/react-slot": "^1.2.4",

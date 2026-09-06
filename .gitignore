@@ -36,3 +36,5 @@ bun-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 .env
+# Generated from the pinned MediaPipe package by dev/build
+/public/hand-tracker/

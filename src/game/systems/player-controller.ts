@@ -117,13 +117,17 @@ export function simulatePlayerStep(
   dt: number
 ): PlayerState {
   const moveResult = createMoveResult(player.grounded);
-  const desiredDirection = normalizeXZ(vec3(input.moveX, 0, input.moveZ));
+  const magnitude = Math.hypot(input.moveX, input.moveZ);
+  const speed = Number.isFinite(magnitude) ? Math.min(1, magnitude) : 0;
+  const desiredDirection = speed
+    ? normalizeXZ(vec3(input.moveX, 0, input.moveZ))
+    : vec3();
 
   const nextPosition = { ...player.position };
   const nextVelocity = {
     ...player.velocity,
-    x: desiredDirection.x * PLAYER_MOVE_SPEED,
-    z: desiredDirection.z * PLAYER_MOVE_SPEED,
+    x: desiredDirection.x * PLAYER_MOVE_SPEED * speed,
+    z: desiredDirection.z * PLAYER_MOVE_SPEED * speed,
   };
 
   if (input.jumpPressed && player.grounded) {

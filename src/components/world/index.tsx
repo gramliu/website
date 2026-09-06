@@ -482,7 +482,7 @@ function World({
           >
             <WorldLighting quality={effectiveQuality} />
             {!rotateWorld ? (
-              <OrbitControls enabled={!effectiveInteractiveMode} />
+              <OrbitControls makeDefault enabled={!effectiveInteractiveMode} />
             ) : null}
             <Suspense fallback={null}>
               <Map
