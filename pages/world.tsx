@@ -30,7 +30,7 @@ export default function WorldPage() {
     );
   const [playingOverride, setPlayingOverride] = useState<boolean | null>(null);
   const [worldLoaded, setWorldLoaded] = useState(false);
-  const [worldQuality, setWorldQuality] = useState<WorldQuality>("lite");
+  const [worldQuality, setWorldQuality] = useState<WorldQuality>("full");
   const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
 
   const qualityOverride = router.isReady
@@ -49,8 +49,9 @@ export default function WorldPage() {
     setWorldQuality(
       qualityOverride ??
         getWorldQuality(
-          hasSideBySideHeroLayout && canInteract,
-          navigator.deviceMemory
+          hasSideBySideHeroLayout,
+          navigator.deviceMemory,
+          canInteract
         )
     );
   }, [hasSideBySideHeroLayout, qualityOverride, canInteract]);
@@ -66,7 +67,7 @@ export default function WorldPage() {
             rotateWorld={!canInteract}
             interactiveMode={isPlaying}
             showFringe
-            quality={canInteract ? worldQuality : "lite"}
+            quality={worldQuality}
             terrainMode={canInteract ? "infinite" : "preview_island"}
             onLoaded={() => setWorldLoaded(true)}
             onInteractiveFailure={() => {

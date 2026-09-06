@@ -41,8 +41,11 @@ export const WORLD_QUALITY_PROFILES: Record<WorldQuality, WorldQualityProfile> =
 
 export function getWorldQuality(
   hasSideBySideHeroLayout: boolean,
-  deviceMemory?: number
+  deviceMemory?: number,
+  canInteract = true
 ): WorldQuality {
+  // The bounded island can retain full visuals without allocating infinite terrain.
+  if (!canInteract) return "full";
   return hasSideBySideHeroLayout && !(deviceMemory && deviceMemory <= 4)
     ? "full"
     : "lite";

@@ -10,7 +10,7 @@ import {
 import { shouldDowngradeQuality, summarizeFrameTimes } from "./runtime";
 
 describe("world quality profiles", () => {
-  it("uses lite quality on mobile with a bounded render and cache radius", () => {
+  it("uses lite quality for a compact interactive layout with bounded caches", () => {
     const lite = WORLD_QUALITY_PROFILES.lite;
     expect(getWorldQuality(false)).toBe("lite");
     expect(getWorldTerrainMode(false)).toBe("preview_island");
@@ -95,6 +95,16 @@ describe("resource constraints", () => {
     expect(shouldDowngradeQuality(summarizeFrameTimes([500]))).toBe(false);
     expect(
       shouldDowngradeQuality(summarizeFrameTimes(Array(300).fill(16)))
+    ).toBe(false);
+  });
+});
+
+describe("non-interactive mobile previews", () => {
+  it("keeps full visuals even on a low-memory phone", () => {
+    expect(getWorldQuality(false, 2, false)).toBe("full");
+    expect(getWorldQuality(false, undefined, false)).toBe("full");
+    expect(
+      getWorldTerrainBehavior(false, "preview_island").usesInfiniteWorld
     ).toBe(false);
   });
 });

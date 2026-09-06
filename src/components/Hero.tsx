@@ -76,7 +76,7 @@ export default function Hero() {
     setIsPlaying(false);
   };
   const [worldLoaded, setWorldLoaded] = useState(false);
-  const [worldQuality, setWorldQuality] = useState<WorldQuality>("lite");
+  const [worldQuality, setWorldQuality] = useState<WorldQuality>("full");
   const [terrainMode, setTerrainMode] =
     useState<WorldTerrainMode>("preview_island");
   const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
@@ -84,8 +84,9 @@ export default function Hero() {
   useEffect(() => {
     setWorldQuality(
       getWorldQuality(
-        hasSideBySideHeroLayout && canInteract,
-        navigator.deviceMemory
+        hasSideBySideHeroLayout,
+        navigator.deviceMemory,
+        canInteract
       )
     );
     setTerrainMode(getWorldTerrainMode(hasSideBySideHeroLayout));
