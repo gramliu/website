@@ -1,11 +1,16 @@
 import clsx from "clsx";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Portrait from "../../public/images/portrait.png";
+import { CameraControlsContext } from "../adapters/input/camera/context";
 import social from "../config/social";
 import { useHasSideBySideHeroLayout } from "../hooks/useHasSideBySideHeroLayout";
 import World from "./world";
+import CameraControlsPanel from "./world/CameraControlsPanel";
+import ControlModeSwitch from "./world/ControlModeSwitch";
+import KeyboardControlsPanel from "./world/KeyboardControlsPanel";
 import PlayWorldButton from "./world/PlayWorldButton";
 import {
   getWorldQuality,
@@ -13,6 +18,7 @@ import {
   type WorldQuality,
   type WorldTerrainMode,
 } from "./world/quality";
+import { useWorldControls } from "./world/useWorldControls";
 
 function HeroContent() {
   return (
@@ -59,6 +65,13 @@ function SocialIcons() {
 
 export default function Hero() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const { cameraInput, controlMode, autoStartCamera, closeCamera, selectMode } =
+    useWorldControls();
+  const playArea = useRef<HTMLDivElement>(null);
+  const stopPlaying = () => {
+    closeCamera();
+    setIsPlaying(false);
+  };
   const [worldLoaded, setWorldLoaded] = useState(false);
   const [worldQuality, setWorldQuality] = useState<WorldQuality>("lite");
   const [terrainMode, setTerrainMode] =
@@ -71,18 +84,47 @@ export default function Hero() {
   }, [hasSideBySideHeroLayout]);
 
   useEffect(() => {
-    const preventScroll = (e: KeyboardEvent) => {
-      if (isPlaying && e.code === "Space") {
-        e.preventDefault();
+    if (!isPlaying) return;
+    const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
+    document.body.style.overflow = "hidden";
+    playArea.current
+      ?.querySelector<HTMLButtonElement>('[aria-label="Stop playing"]')
+      ?.focus({ preventScroll: true });
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        stopPlaying();
+      }
+      if (event.key !== "Tab") return;
+      const buttons = Array.from(
+        playArea.current?.querySelectorAll<HTMLElement>(
+          "button:not(:disabled), a[href]"
+        ) ?? []
+      );
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
       }
     };
-
-    window.addEventListener("keydown", preventScroll);
-    return () => window.removeEventListener("keydown", preventScroll);
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKey);
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected)
+        previousFocus.focus({ preventScroll: true });
+    };
   }, [isPlaying]);
 
   return (
-    <>
+    <CameraControlsContext.Provider
+      value={isPlaying && controlMode === "camera" ? cameraInput : null}
+    >
       <div
         className={clsx(
           "items-center justify-center h-auto",
@@ -117,33 +159,79 @@ export default function Hero() {
             <SocialIcons />
           </motion.div>
         </div>
-        <div
-          className="mt-[10%] pt-[10%] xl:w-1/2 h-screen grid grid-rows-2"
-          id="world"
-        >
-          <div>
-            <World
-              size={0.8}
-              interactiveMode={isPlaying}
-              closeUp
-              showFringe
-              quality={worldQuality}
-              terrainMode={terrainMode}
-              onLoaded={() => setWorldLoaded(true)}
-              onInteractiveFailure={() => setIsPlaying(false)}
-              onRetryLite={() => {
-                setWorldQuality("lite");
-                setIsPlaying(true);
-              }}
+        <div className="mt-[10%] pt-[10%] xl:w-1/2 h-screen" id="world">
+          <div
+            ref={playArea}
+            {...(isPlaying
+              ? {
+                  role: "dialog",
+                  "aria-modal": true,
+                  "aria-label": "Explore the world",
+                }
+              : {})}
+            className={
+              isPlaying
+                ? "fixed inset-0 z-50 bg-bgcolor-primary"
+                : "grid h-full grid-rows-2"
+            }
+          >
+            {isPlaying && (
+              <button
+                type="button"
+                onClick={stopPlaying}
+                className="absolute left-4 top-4 z-30 inline-flex items-center gap-2 rounded-full border border-divider/70 bg-bgcolor-primary/90 px-4 py-2 text-xs text-text-faded hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-highlight"
+              >
+                <ArrowLeft size={14} aria-hidden="true" />
+                Back to homepage
+                <span className="ml-1 text-[10px] opacity-70">Esc</span>
+              </button>
+            )}
+            <div className={isPlaying ? "h-full w-full" : undefined}>
+              <World
+                size={isPlaying ? 1 : 0.8}
+                rotateWorld={!isPlaying}
+                interactiveMode={isPlaying}
+                closeUp={!isPlaying}
+                showFringe
+                quality={worldQuality}
+                terrainMode={isPlaying ? "infinite" : terrainMode}
+                onLoaded={() => setWorldLoaded(true)}
+                onInteractiveFailure={stopPlaying}
+                onRetryLite={() => {
+                  setWorldQuality("lite");
+                  setIsPlaying(true);
+                }}
+              />
+            </div>
+            <PlayWorldButton
+              ready={worldLoaded}
+              isPlaying={isPlaying}
+              onToggle={() => (isPlaying ? stopPlaying() : setIsPlaying(true))}
+              variant={isPlaying ? "overlay" : "hero"}
+              controls={
+                <ControlModeSwitch
+                  mode={controlMode}
+                  onChange={(mode) => {
+                    selectMode(mode);
+                    if (mode === "camera") setIsPlaying(true);
+                  }}
+                />
+              }
             />
+            {isPlaying &&
+              (controlMode === "camera" ? (
+                <CameraControlsPanel
+                  inputRef={cameraInput}
+                  autoStart={autoStartCamera}
+                  onStart={() => setIsPlaying(true)}
+                  onClose={closeCamera}
+                />
+              ) : (
+                <KeyboardControlsPanel isPlaying={isPlaying} />
+              ))}
           </div>
-          <PlayWorldButton
-            ready={worldLoaded}
-            isPlaying={isPlaying}
-            onToggle={() => setIsPlaying(!isPlaying)}
-          />
         </div>
       </div>
-    </>
+    </CameraControlsContext.Provider>
   );
 }

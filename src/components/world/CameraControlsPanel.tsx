@@ -1,3 +1,4 @@
+import { ArrowUp, Camera, Move, RotateCw, ShieldCheck } from "lucide-react";
 import { type MutableRefObject, useEffect, useRef, useState } from "react";
 import {
   emptyGestures,
@@ -6,6 +7,7 @@ import {
   type Hand,
   STALE_MS,
 } from "../../adapters/input/camera/gestures";
+import ControlsPanel from "./ControlsPanel";
 
 interface Props {
   inputRef: MutableRefObject<GestureOutput>;
@@ -96,7 +98,7 @@ export default function CameraControlsPanel({
         const point = project(marker.point);
         const origin = marker.origin ? project(marker.origin) : null;
         ctx.strokeStyle = ctx.fillStyle =
-          marker.side === "Left" ? "#67e8f9" : "#fde047";
+          marker.side === "Left" ? "#73ee87" : "#e6edf2";
         ctx.lineWidth = 3;
         if (origin) {
           ctx.beginPath();
@@ -282,22 +284,8 @@ export default function CameraControlsPanel({
   }, [attempt, inputRef]);
 
   return (
-    <section
-      aria-label="Camera controls"
-      className="absolute bottom-28 right-4 z-30 w-[280px] max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-white/20 bg-slate-950/95 text-white shadow-xl sm:bottom-24 lg:bottom-6"
-    >
-      <div className="flex items-center justify-between px-3 py-2 text-sm font-medium">
-        <span>Camera controls</span>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close camera and use keyboard"
-          className="rounded px-2 py-1 hover:bg-white/10 focus-visible:outline focus-visible:outline-2"
-        >
-          ✕
-        </button>
-      </div>
-      <div className="relative h-[180px] bg-black">
+    <ControlsPanel mode="camera" onClose={onClose}>
+      <div className="relative mx-3 h-[180px] overflow-hidden rounded-xl border border-divider/50 bg-bgcolor-light">
         <video
           ref={videoRef}
           muted
@@ -314,10 +302,16 @@ export default function CameraControlsPanel({
           className="pointer-events-none absolute inset-0 h-full w-full"
         />
         {(!attempt || error) && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-bgcolor-light">
+            <Camera
+              size={28}
+              strokeWidth={1.25}
+              className="text-text-faded"
+              aria-hidden="true"
+            />
             <button
               type="button"
-              className="rounded-lg bg-yellow-500 px-4 py-2 text-black"
+              className="inline-flex items-center gap-2 rounded-full bg-highlight px-4 py-2 text-xs font-semibold text-bgcolor-primary transition-colors hover:bg-highlight/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-highlight focus-visible:ring-offset-2 focus-visible:ring-offset-bgcolor-light"
               onClick={() => {
                 onStart();
                 setAttempt((value) => value + 1);
@@ -328,27 +322,88 @@ export default function CameraControlsPanel({
           </div>
         )}
       </div>
-      <div className="space-y-2 p-3 text-xs leading-relaxed">
-        <p
-          role="status"
-          aria-live="polite"
-          className={error ? "text-red-300" : "text-yellow-200"}
-        >
-          {status}
-        </p>
-        <p>
-          <span className="text-cyan-300">Right thumb + index:</span> pinch and
-          move to walk.
-        </p>
-        <p>
-          <span className="text-yellow-200">Left thumb + index:</span> pinch and
-          move sideways to turn the view.
-        </p>
-        <p>Left thumb + middle: jump. Release to stop.</p>
-        <p className="text-slate-400">
-          Processed on your device. No video is uploaded.
+      <div className="px-4 pb-4 pt-3 text-xs leading-relaxed">
+        <div className="mb-3 flex items-start gap-2">
+          <span
+            aria-hidden="true"
+            className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${error ? "bg-red-300" : "bg-highlight/70"}`}
+          />
+          <p
+            role="status"
+            aria-live="polite"
+            className={error ? "text-red-300" : "text-text-faded"}
+          >
+            {status}
+          </p>
+        </div>
+        <dl className="space-y-3 border-t border-divider/50 pt-3">
+          <div className="flex items-start gap-3">
+            <Move
+              size={16}
+              strokeWidth={1.75}
+              className="mt-0.5 shrink-0 text-text-highlight"
+              aria-hidden="true"
+            />
+            <div>
+              <dt className="font-medium">
+                Move{" "}
+                <span className="ml-1 font-normal text-text-faded">
+                  · Right hand
+                </span>
+              </dt>
+              <dd className="text-text-faded">
+                Pinch thumb + index, then move.
+              </dd>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <RotateCw
+              size={16}
+              strokeWidth={1.75}
+              className="mt-0.5 shrink-0 text-text-primary"
+              aria-hidden="true"
+            />
+            <div>
+              <dt className="font-medium">
+                Rotate{" "}
+                <span className="ml-1 font-normal text-text-faded">
+                  · Left hand
+                </span>
+              </dt>
+              <dd className="text-text-faded">
+                Pinch thumb + index, move sideways.
+              </dd>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <ArrowUp
+              size={16}
+              strokeWidth={1.75}
+              className="mt-0.5 shrink-0 text-text-primary"
+              aria-hidden="true"
+            />
+            <div>
+              <dt className="font-medium">
+                Jump{" "}
+                <span className="ml-1 font-normal text-text-faded">
+                  · Left hand
+                </span>
+              </dt>
+              <dd className="text-text-faded">Pinch thumb + middle once.</dd>
+            </div>
+          </div>
+        </dl>
+        <p className="mt-3 text-text-faded">Release your pinch to stop.</p>
+        <p className="mt-3 flex items-center gap-2 border-t border-divider/50 pt-3 text-[11px] text-text-faded">
+          <ShieldCheck
+            size={13}
+            strokeWidth={1.75}
+            className="shrink-0"
+            aria-hidden="true"
+          />
+          On-device only. No video is uploaded.
         </p>
       </div>
-    </section>
+    </ControlsPanel>
   );
 }

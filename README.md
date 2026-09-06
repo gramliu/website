@@ -19,3 +19,5 @@ Detection runs in a worker on the device, with one frame in flight. Frames are n
 `quality=lite|full` still selects rendering quality. The dedicated `/world` page uses infinite terrain at every viewport width during play, with lighter rendering on smaller screens. The homepage preview retains its responsive island behavior. Gesture thresholds, smoothing and stale-frame limits live in `src/adapters/input/camera/gestures.ts`.
 
 Validation: `bun run test`, `bun run lint`, `bun run build`. For a webcam trial, test both hands together, jumping while moving, release-to-stop, leaving/re-entering the frame while pinched, hiding/restoring the tab, quarter/half-turn orbits, and closing/reopening the preview. Verify direction and comfort with a real camera before adjusting the initial sensitivity defaults.
+
+The homepage preview shares the keyboard/camera selector. Starting play opens a focused full-window view with the same instruction panel; Stop, Back to homepage, or Escape returns to the preview and releases the camera. The keyboard diagram highlights WASD (including arrow-key equivalents), Space, and R while held, and clears when play stops or focus is lost.

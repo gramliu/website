@@ -1,9 +1,8 @@
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { type ReactNode, useEffect, useState } from "react";
+import { Play, Square } from "lucide-react";
+import type { ReactNode } from "react";
 import { useHasSideBySideHeroLayout } from "../../hooks/useHasSideBySideHeroLayout";
-
-const BOUNCE_DELAY_MS = 3_000;
 
 interface Props {
   controls?: ReactNode;
@@ -16,27 +15,36 @@ interface Props {
 function PlayButton({
   isPlaying,
   onToggle,
-  bounce,
   className,
+  compact = false,
 }: {
   isPlaying: boolean;
   onToggle: () => void;
-  bounce: boolean;
   className?: string;
+  compact?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onToggle}
+      aria-label={isPlaying ? "Stop playing" : "Start playing"}
       className={clsx(
-        "px-4 py-2 bg-yellow-500 text-black rounded-lg shadow-lg hover:bg-yellow-600 transition-all",
-        {
-          "animate-bounce": bounce && !isPlaying,
-        },
+        "inline-flex h-10 items-center gap-2 rounded-full bg-highlight px-4 text-xs font-semibold text-bgcolor-primary transition-colors hover:bg-highlight/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-highlight focus-visible:ring-offset-2 focus-visible:ring-offset-bgcolor-primary",
         className
       )}
     >
-      {isPlaying ? "Stop playing" : "Start playing"}
+      {isPlaying ? (
+        <Square size={13} fill="currentColor" aria-hidden="true" />
+      ) : (
+        <Play size={14} fill="currentColor" aria-hidden="true" />
+      )}
+      {compact
+        ? isPlaying
+          ? "Stop"
+          : "Play"
+        : isPlaying
+          ? "Stop playing"
+          : "Start playing"}
     </button>
   );
 }
@@ -48,21 +56,7 @@ export default function PlayWorldButton({
   variant = "hero",
   controls,
 }: Props) {
-  const [bounce, setBounce] = useState(false);
   const hasSideBySideHeroLayout = useHasSideBySideHeroLayout();
-
-  useEffect(() => {
-    if (!ready || isPlaying) {
-      setBounce(false);
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setBounce(true);
-    }, BOUNCE_DELAY_MS);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [ready, isPlaying]);
 
   if (!ready) {
     return null;
@@ -74,9 +68,12 @@ export default function PlayWorldButton({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap"
+        className="absolute bottom-6 left-1/2 z-20 flex max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-divider/70 bg-bgcolor-primary/90 p-1.5 shadow-[0_8px_32px_#00000026] backdrop-blur-xl"
       >
-        <PlayButton isPlaying={isPlaying} onToggle={onToggle} bounce={bounce} />
+        <PlayButton isPlaying={isPlaying} onToggle={onToggle} compact />
+        {controls && (
+          <span aria-hidden="true" className="mx-1 h-5 w-px bg-divider/70" />
+        )}
         {controls}
       </motion.div>
     );
@@ -89,13 +86,24 @@ export default function PlayWorldButton({
       transition={{ duration: 0.5 }}
       className="flex flex-col justify-start items-center text-center gap-5 pt-32"
     >
-      <PlayButton
-        isPlaying={isPlaying}
-        onToggle={onToggle}
-        bounce={bounce}
-        className="z-10"
-      />
-      {isPlaying && hasSideBySideHeroLayout ? (
+      <div
+        className={clsx(
+          "relative z-10 flex items-center gap-1",
+          !!controls &&
+            "max-w-[calc(100vw-1rem)] rounded-full border border-divider/70 bg-bgcolor-primary/90 p-1.5 shadow-[0_8px_32px_#00000026] backdrop-blur-xl"
+        )}
+      >
+        <PlayButton
+          isPlaying={isPlaying}
+          onToggle={onToggle}
+          compact={!!controls}
+        />
+        {controls && (
+          <span aria-hidden="true" className="mx-1 h-5 w-px bg-divider/70" />
+        )}
+        {controls}
+      </div>
+      {isPlaying && hasSideBySideHeroLayout && !controls ? (
         <span className="text-center">Use WASD + Space to move around.</span>
       ) : null}
     </motion.div>

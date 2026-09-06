@@ -39,7 +39,7 @@ export function useCameraOrbit(player: RefObject<Group>, interactive: boolean) {
       restore();
       return;
     }
-    if (!player.current || (!input && !session.current)) return;
+    if (!player.current) return;
     player.current.getWorldPosition(pivot.current);
     pivot.current.y += 0.8;
     if (!session.current) {
