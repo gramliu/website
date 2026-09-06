@@ -449,12 +449,11 @@ function World({
 
   return (
     <div
-      className="relative w-full h-full"
+      className={`relative w-full h-full${closeUp ? " xl:h-[900px]" : ""}`}
       data-world-quality={effectiveQuality}
       data-world-status={
         failure ? "unavailable" : assetsReady ? "ready" : "loading"
       }
-      style={{ height: closeUp ? "900px" : undefined }}
     >
       <AnimatePresence onExitComplete={notifyLoaded}>
         {overlayVisible ? (

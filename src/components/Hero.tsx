@@ -175,7 +175,10 @@ export default function Hero() {
             <SocialIcons />
           </motion.div>
         </div>
-        <div className="mt-[10%] pt-[10%] xl:w-1/2 h-screen" id="world">
+        <div
+          className="mx-auto w-full max-w-xl pb-12 xl:mt-[10%] xl:pt-[10%] xl:max-w-none xl:w-1/2 xl:h-screen xl:pb-0"
+          id="world"
+        >
           <div
             ref={playArea}
             {...(isPlaying
@@ -188,7 +191,7 @@ export default function Hero() {
             className={
               isPlaying
                 ? "fixed inset-0 z-50 bg-bgcolor-primary"
-                : "grid h-full grid-rows-2"
+                : "grid gap-6 xl:h-full xl:grid-rows-2 xl:gap-0"
             }
           >
             {isPlaying && (
@@ -202,12 +205,18 @@ export default function Hero() {
                 <span className="ml-1 text-[10px] opacity-70">Esc</span>
               </button>
             )}
-            <div className={isPlaying ? "h-full w-full" : "min-h-[360px]"}>
+            <div
+              className={
+                isPlaying
+                  ? "h-full w-full"
+                  : "aspect-square w-full xl:aspect-auto xl:min-h-[360px]"
+              }
+            >
               <World
-                size={isPlaying ? 1 : canInteract ? 0.8 : 0.55}
+                size={isPlaying ? 1 : 0.8}
                 rotateWorld={!isPlaying}
                 interactiveMode={isPlaying}
-                closeUp={!isPlaying && canInteract}
+                closeUp={!isPlaying}
                 showFringe
                 quality={worldQuality}
                 terrainMode={isPlaying ? "infinite" : terrainMode}
