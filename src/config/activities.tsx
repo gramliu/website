@@ -17,6 +17,7 @@ const activities: Activity[] = [
     dates: "Oct 2024 - Present",
     role: "Member of Technical Staff",
     description: [
+      "Tech Lead for Enterprise/Core Product Platform",
       "Led technical and product direction across core product. Built or led the development of:",
       <span key="product">
         <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
