@@ -24,8 +24,8 @@ const activities: Activity[] = [
         <ul className="mt-2 ml-5 space-y-2 list-[circle]">
           <li>
             <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
-            Watchtower, Simulations, Agent Assist, Memory, Browser Actions
-            (Computer Use), Personal Agent (PACT) Protocol
+            User Memory, Simulations, Browser Actions (Browser Use), Personal
+            Agent (PACT) Protocol, Watchtower, Agent Assist
           </li>
           <li>
             <strong>SDKs &amp; Integrations:</strong> Tools SDK, Browser SDK,
