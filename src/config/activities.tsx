@@ -35,11 +35,9 @@ const activities: Activity[] = [
             <strong>Platform:</strong> RBAC, App Security, Frontend Platform,
             ClickHouse, Postgres, Cloud Agent Development
           </li>
-          <li>
-            <strong>Eng Ops:</strong> Incident Response, Code Quality
-          </li>
         </ul>
       </div>,
+      "Helped drive engineering excellence in incident response and code quality.",
     ],
   },
   {
