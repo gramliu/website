@@ -18,7 +18,7 @@ const activities: Activity[] = [
     role: "Member of Technical Staff",
     description: [
       "Tech Lead for Enterprise/Core Product Platform",
-      "Led technical and product direction across core product. Built or led the development of:",
+      "Led technical and product direction across core product. Designed, built, or led the development of:",
       <span key="product">
         <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
         Watchtower, Simulations, Agent Assist, Memory, Browser Actions (Computer
