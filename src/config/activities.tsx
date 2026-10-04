@@ -25,7 +25,7 @@ const activities: Activity[] = [
           <li>
             <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
             Watchtower, Simulations, Agent Assist, Memory, Browser Actions
-            (Computer Use)
+            (Computer Use), Personal Agent (PACT) Protocol
           </li>
           <li>
             <strong>SDKs &amp; Integrations:</strong> Tools SDK, Browser SDK,
