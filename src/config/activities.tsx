@@ -18,23 +18,28 @@ const activities: Activity[] = [
     role: "Member of Technical Staff",
     description: [
       "Tech Lead for Enterprise/Core Product Platform",
-      "Led technical and product direction across core product. Designed, built, or led the development of:",
-      <span key="product">
-        <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
-        Watchtower, Simulations, Agent Assist, Memory, Browser Actions (Computer
-        Use), Personal Agent (PACT) Protocol
-      </span>,
-      <span key="sdks-integrations">
-        <strong>SDKs &amp; Integrations:</strong> Tools SDK, Browser SDK, Custom
-        Integrations
-      </span>,
-      <span key="platform">
-        <strong>Platform:</strong> RBAC, App Security, Frontend Platform,
-        ClickHouse, Postgres, Cloud Agent Development
-      </span>,
-      <span key="eng-ops">
-        <strong>Eng Ops:</strong> Incident Response, Code Quality
-      </span>,
+      <div key="development">
+        Led technical and product direction across core product. Designed,
+        built, or led the development of:
+        <ul className="mt-2 ml-5 space-y-2 list-[circle]">
+          <li>
+            <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
+            Watchtower, Simulations, Agent Assist, Memory, Browser Actions
+            (Computer Use), Personal Agent (PACT) Protocol
+          </li>
+          <li>
+            <strong>SDKs &amp; Integrations:</strong> Tools SDK, Browser SDK,
+            Custom Integrations
+          </li>
+          <li>
+            <strong>Platform:</strong> RBAC, App Security, Frontend Platform,
+            ClickHouse, Postgres, Cloud Agent Development
+          </li>
+          <li>
+            <strong>Eng Ops:</strong> Incident Response, Code Quality
+          </li>
+        </ul>
+      </div>,
     ],
   },
   {
