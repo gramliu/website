@@ -16,7 +16,25 @@ const activities: Activity[] = [
     url: "https://decagon.ai/",
     dates: "Oct 2024 - Present",
     role: "Member of Technical Staff",
-    description: ["Building"],
+    description: [
+      "Led technical and product direction across core product. Built or led the development of:",
+      <span key="product">
+        <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
+        Watchtower, Simulations, Agent Assist, Memory, Browser Actions (Computer
+        Use), Personal Agent (PACT) Protocol
+      </span>,
+      <span key="sdks-integrations">
+        <strong>SDKs &amp; Integrations:</strong> Tools SDK, Browser SDK, Custom
+        Integrations
+      </span>,
+      <span key="platform">
+        <strong>Platform:</strong> RBAC, App Security, Frontend Platform,
+        ClickHouse, Postgres, Cloud Agent Development
+      </span>,
+      <span key="eng-ops">
+        <strong>Eng Ops:</strong> Incident Response, Code Quality
+      </span>,
+    ],
   },
   {
     title: "Stripe",
