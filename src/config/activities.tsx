@@ -23,13 +23,14 @@ const activities: Activity[] = [
         built, or led the development of:
         <ul className="mt-2 ml-5 space-y-2 list-[circle]">
           <li>
-            <strong>Product:</strong> Duet, Autopilot, Agent Versioning, AOPs,
-            User Memory, Simulations, Browser Actions (Browser Use), Personal
-            Agent (PACT) Protocol, Watchtower, Agent Assist
+            <strong>Product (agent building &amp; analytics):</strong> Duet,
+            Autopilot, Agent Versioning, AOPs, User Memory, Simulations, Browser
+            Actions (Browser Use), Personal Agent (PACT) Protocol, Watchtower,
+            Agent Assist
           </li>
           <li>
-            <strong>SDKs &amp; Integrations:</strong> Tools SDK, Browser SDK,
-            Custom Integrations
+            <strong>SDKs &amp; Integrations (external connectors):</strong>{" "}
+            Tools SDK, Browser SDK, Custom Integrations
           </li>
           <li>
             <strong>Platform:</strong> RBAC, App Security, Frontend Platform,
