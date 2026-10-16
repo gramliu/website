@@ -39,7 +39,7 @@ const activities: Activity[] = [
           </li>
         </ul>
       </div>,
-      "Helped drive engineering excellence in incident response and code quality.",
+      "Established engineering standards for incident response and code quality, adopted across the organization.",
     ],
   },
   {
