@@ -19,8 +19,9 @@ const activities: Activity[] = [
     description: [
       "Tech Lead for Enterprise/Core Product Platform",
       <div key="development">
-        Led technical and product direction across core product. Designed,
-        built, or led the development of:
+        Set technical and product direction across core product, leading key
+        company initiatives and aligning teams on architecture, priorities, and
+        execution. Designed, built, or led the development of:
         <ul className="mt-2 ml-5 space-y-2 list-[circle]">
           <li>
             <strong>Product (agent building &amp; analytics):</strong> Duet,
