@@ -27,13 +27,12 @@ const activities: Activity[] = [
             <strong>Agent building &amp; analytics:</strong> Led development of
             flagship products including Duet, Autopilot, Agent Versioning, and
             Watchtower. Additional work included AOPs, User Memory, Simulations,
-            Browser Actions (Browser Use), Personal Agent (PACT) Protocol, and
-            Agent Assist.
+            Browser Actions (Browser Use), and Agent Assist.
           </li>
           <li>
-            <strong>Developer platform:</strong> Designed SDKs and integration
-            frameworks including the Tools SDK, Browser SDK, and Custom
-            Integrations.
+            <strong>Developer platform:</strong> Designed SDKs, integration
+            frameworks, and protocols including the Tools SDK, Browser SDK,
+            Custom Integrations, and Personal Agent (PACT) Protocol.
           </li>
           <li>
             <strong>Product infrastructure:</strong> Led initiatives spanning
