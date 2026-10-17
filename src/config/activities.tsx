@@ -14,7 +14,7 @@ const activities: Activity[] = [
   {
     title: "Decagon",
     url: "https://decagon.ai/",
-    dates: "Oct 2024 - Present",
+    dates: "Oct 2024 - Oct 2026",
     role: "Member of Technical Staff",
     description: [
       "Tech Lead for Enterprise/Core Product Platform",
