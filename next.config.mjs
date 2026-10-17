@@ -31,19 +31,6 @@ const nextConfig = {
     ],
   },
   pageExtensions: ["md", "mdx", "tsx", "ts", "jsx", "js"],
-  async headers() {
-    return [
-      {
-        source: "/Gram_Liu_Resume.pdf",
-        headers: [
-          {
-            key: "X-Robots-Tag",
-            value: "noindex, nofollow",
-          },
-        ],
-      },
-    ];
-  },
   async rewrites() {
     return [
       {
