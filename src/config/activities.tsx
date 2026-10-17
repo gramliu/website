@@ -17,24 +17,29 @@ const activities: Activity[] = [
     dates: "Oct 2024 - Oct 2026",
     role: "Member of Technical Staff",
     description: [
-      "Tech Lead for Enterprise/Core Product Platform",
+      "Tech Lead, Enterprise & Core Product Platform",
       <div key="development">
-        Set technical and product direction across core product and led key
-        company initiatives across teams. Designed, built, or led:
+        Set technical direction across the engineering organization and helped
+        shape company product strategy. Designed, built, and led major initiatives
+        spanning core product, developer tooling, and product infrastructure:
         <ul className="mt-2 ml-5 space-y-2 list-[circle]">
           <li>
-            <strong>Product (agent building &amp; analytics):</strong> Duet,
-            Autopilot, Agent Versioning, AOPs, User Memory, Simulations, Browser
-            Actions (Browser Use), Personal Agent (PACT) Protocol, Watchtower,
-            Agent Assist
+            <strong>Agent building &amp; analytics:</strong> Led development of
+            flagship products including Duet, Autopilot, Agent Versioning, and
+            Watchtower. Additional work included AOPs, User Memory, Simulations,
+            Browser Actions (Browser Use), Personal Agent (PACT) Protocol, and
+            Agent Assist.
           </li>
           <li>
-            <strong>SDKs &amp; Integrations (external connectors):</strong>{" "}
-            Tools SDK, Browser SDK, Custom Integrations
+            <strong>Developer platform:</strong> Designed SDKs and integration
+            frameworks including the Tools SDK, Browser SDK, and Custom
+            Integrations.
           </li>
           <li>
-            <strong>Platform:</strong> RBAC, App Security, Frontend Platform,
-            ClickHouse, Postgres, Cloud Agent Development
+            <strong>Product infrastructure:</strong> Led initiatives spanning
+            RBAC, application security, frontend architecture, and data
+            infrastructure, including ClickHouse, Postgres, and Cloud Agent
+            Development.
           </li>
         </ul>
       </div>,
