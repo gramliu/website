@@ -43,6 +43,7 @@ const activities: Activity[] = [
         </ul>
       </div>,
       "Established engineering standards for incident response and code quality, adopted across the organization.",
+      "Engineer #7",
     ],
   },
   {
