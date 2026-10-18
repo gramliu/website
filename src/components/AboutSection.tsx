@@ -5,7 +5,7 @@ export default function About() {
   return (
     <>
       <div
-        className="flex flex-col pt-10 my-0 mx-auto md:grid md:grid-cols-[1fr,3fr]"
+        className="flex flex-col pt-10 my-0 mx-auto md:max-w-7xl md:grid md:grid-cols-[1fr,3fr]"
         id="about"
       >
         <div className="flex flex-col items-center justify-center order-2 md:order-1 md:ml-20">
