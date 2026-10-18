@@ -20,7 +20,7 @@ export default function About() {
         </div>
         <div className="flex flex-col items-center justify-center order-1 md:order-2">
           <div className="flex items-center font-bold text-3xl">About Me</div>
-          <div className="w-10/12 md:w-8/12 mt-8 text-lg text-left">
+          <div className="w-10/12 md:w-8/12 mt-8 space-y-5 text-lg text-left">
             <Bio />
           </div>
         </div>
