@@ -44,7 +44,7 @@ function HeroContent() {
           Gram Liu.
         </span>
         <br />
-        <span className="text-base">Developer. Engineer. Tech Enthusiast.</span>
+        <span className="text-base">Software Engineer</span>
       </div>
     </div>
   );
